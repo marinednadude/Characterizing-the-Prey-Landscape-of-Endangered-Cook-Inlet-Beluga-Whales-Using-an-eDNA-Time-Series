@@ -1,0 +1,4 @@
+"0","short_edna %>% "
+"0","  filter(., Class==""Hyperoartia"") %>% "
+"0","  filter(., Class!=""Insecta"") %>% "
+"0","  dplyr::select(Species) %>%  unique() %>% arrange(Species)"

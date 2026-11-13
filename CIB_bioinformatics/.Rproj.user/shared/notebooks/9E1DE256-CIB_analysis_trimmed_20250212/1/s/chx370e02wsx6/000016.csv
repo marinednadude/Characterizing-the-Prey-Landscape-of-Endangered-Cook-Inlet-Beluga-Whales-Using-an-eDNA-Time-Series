@@ -1,0 +1,5 @@
+"0","max_prop_per_sample %>% 
+  left_join(ss_metric) %>% 
+  ggplot(aes(x=max_prop_per_sample, y=species_richness, colour=SS)) + geom_point() +geom_line(data=expected_decay, aes(y=richness, x=expected_mean_perc_based_on_richness), colour=""red"")  +theme_pubclean() + xlab(""Max Proportion of Species in a Sample"") + ylab(""Species"") +geom_point()
+"
+"2","Joining with `by = join_by(Seq_number)`"

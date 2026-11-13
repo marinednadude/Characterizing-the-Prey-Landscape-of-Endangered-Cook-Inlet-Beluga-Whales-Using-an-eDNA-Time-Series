@@ -1,0 +1,7 @@
+{
+    "installOptions": {
+        "installFromRepository": true,
+        "libraryPath": "/Users/zgold/Library/R/arm64/4.6/library",
+        "installDependencies": true
+    }
+}

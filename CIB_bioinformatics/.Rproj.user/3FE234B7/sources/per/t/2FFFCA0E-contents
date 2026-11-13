@@ -1,0 +1,176 @@
+---
+title: "Remove Sequences"
+output: html_document
+date: "2026-06-12"
+---
+
+```{r}
+library(here)
+library(tidyverse)
+library(Biostrings)
+library(DECIPHER)
+library(ggpubr)
+
+```
+
+
+# 12S
+```{r}
+x12S_tax <- read.table(here("rcrux_12S_QiimeClassifier",
+                          "12S_efc_derep",
+                          "12S_efc_rcrux_blastoutput_uniq-taxa_addAtr.tsv"), 
+                         header=T, sep="\t")
+
+x12S_fasta <- readDNAStringSet(here("rcrux_12S_QiimeClassifier",
+                      "12S_efc_derep",
+                      "12S_efc_rcrux_blastoutput_uniq-seqs_addAtr.fasta"))
+
+names(x12S_fasta) %>% 
+  as_tibble() %>% 
+  dplyr::rename(Feature.ID=value)-> x12S_accessions
+
+x12S_tax %>% 
+  filter(., !str_detect(Taxon,"uncultured")) %>% 
+   filter(., !str_detect(Taxon,"environmental samples")) %>% 
+   filter(., !str_detect(Taxon,"metagenome")) %>% 
+   filter(., !str_detect(Taxon,"unidentified")) %>% 
+   filter(., !str_detect(Taxon,"unclassified")) -> x12S_tax_2_keep
+
+x12S_tax %>% 
+  filter(., Feature.ID %in% x12S_tax_2_keep$Feature.ID) -> x12S_accessions_2_keep
+
+x12S_tax %>% 
+  filter(., !Feature.ID %in% x12S_accessions_2_keep$Feature.ID) -> x12S_accessions_2_toss
+
+x12S_subset_sequences <- x12S_fasta[x12S_accessions_2_keep$Feature.ID]
+
+writeXStringSet(x12S_subset_sequences,file=here("rcrux_12S_QiimeClassifier",
+                                                "12S_cleaned_June12_2026",
+                                                "12S_cleaned.fasta"))
+
+write_delim(x12S_tax_2_keep,file=here("rcrux_12S_QiimeClassifier",
+                                                "12S_cleaned_June12_2026",
+                                                "12S_cleaned.tsv"), delim = "\t")
+
+```
+
+# 16Sv4
+```{r}
+x16Sv4_tax <- read.table(here("rcrux_16Sv4_QiimeClassifier",
+                          "derep_qiime_db",
+                          "rcrux_16Sv4_NA_removed_uniq-taxa.tsv"), 
+                         header=T, sep="\t")
+
+x16Sv4_fasta <- readDNAStringSet(here("rcrux_16Sv4_QiimeClassifier",
+                      "derep_qiime_db",
+                      "rcrux_16Sv4_NA_removed_uniq-seqs.fasta"))
+
+names(x16Sv4_fasta) %>% 
+  as_tibble() %>% 
+  dplyr::rename(Feature.ID=value)-> x16Sv4_accessions
+
+x16Sv4_tax %>% 
+  filter(., !str_detect(Taxon,"uncultured")) %>% 
+   filter(., !str_detect(Taxon,"environmental samples")) %>% 
+   filter(., !str_detect(Taxon,"metagenome")) %>% 
+   filter(., !str_detect(Taxon,"unidentified")) %>% 
+   filter(., !str_detect(Taxon,"unclassified")) -> x16Sv4_tax_2_keep
+
+x16Sv4_tax %>% 
+  filter(., Feature.ID %in% x16Sv4_tax_2_keep$Feature.ID) -> x16Sv4_accessions_2_keep
+
+
+x16Sv4_tax %>% 
+  filter(., !Feature.ID %in% x16Sv4_tax_2_keep$Feature.ID) -> x16Sv4_accessions_2_toss
+
+x16Sv4_subset_sequences <- x16Sv4_fasta[x16Sv4_accessions_2_keep$Feature.ID]
+
+writeXStringSet(x16Sv4_subset_sequences,file=here("rcrux_16Sv4_QiimeClassifier",
+                                                "16Sv4_cleaned_June12_2026",
+                                                "16Sv4_cleaned.fasta"))
+
+write_delim(x16Sv4_tax_2_keep,file=here("rcrux_16Sv4_QiimeClassifier",
+                                                "16Sv4_cleaned_June12_2026",
+                                                "16Sv4_cleaned.tsv"), delim = "\t")
+
+```
+
+# CO1
+```{r}
+xCO1_tax <- read.table(here("rcrux_CO1_QiimeClassifier",
+                          "derep_qiime_db",
+                          "rcrux_CO1_no_NA_insect_amphib_uniq-tax.tsv"), 
+                         header=T, sep="\t")
+
+xCO1_fasta <- readDNAStringSet(here("rcrux_CO1_QiimeClassifier",
+                      "derep_qiime_db",
+                      "rcrux_CO1_no_NA_insect_amphib_uniq-seqs.fasta"))
+
+names(xCO1_fasta) %>% 
+  as_tibble() %>% 
+  dplyr::rename(Feature.ID=value)-> xCO1_accessions
+
+xCO1_tax %>% 
+  filter(., !str_detect(Taxon,"uncultured")) %>% 
+   filter(., !str_detect(Taxon,"environmental samples")) %>% 
+   filter(., !str_detect(Taxon,"metagenome")) %>% 
+   filter(., !str_detect(Taxon,"unidentified")) %>% 
+   filter(., !str_detect(Taxon,"unclassified")) -> xCO1_tax_2_keep
+
+xCO1_tax %>% 
+  filter(., Feature.ID %in% xCO1_tax_2_keep$Feature.ID) -> xCO1_accessions_2_keep
+
+
+xCO1_tax %>% 
+  filter(., !Feature.ID %in% xCO1_tax_2_keep$Feature.ID) -> xCO1_accessions_2_toss
+
+xCO1_subset_sequences <- xCO1_fasta[xCO1_accessions_2_keep$Feature.ID]
+
+writeXStringSet(xCO1_subset_sequences,file=here("rcrux_CO1_QiimeClassifier",
+                                                "derep_qiime_db",
+                                                "CO1_cleaned_June12_2026",
+                                                "CO1_cleaned.fasta"))
+
+write_delim(xCO1_tax_2_keep,file=here("rcrux_CO1_QiimeClassifier",
+                                                "derep_qiime_db",
+                                                "CO1_cleaned_June12_2026",
+                                                "CO1_cleaned.tsv"), delim = "\t")
+
+```
+
+# Comparison
+
+```{r}
+
+data_accessions <- tibble(Marker = c("16Sv4","12S","CO1"),
+       Unfiltered_Accessions = c(length(x16Sv4_accessions$Feature.ID),length(x12S_accessions$Feature.ID),length(xCO1_accessions$Feature.ID) ),
+       Clean_Accessions = c(length(x16Sv4_accessions_2_keep$Feature.ID),length(x12S_accessions_2_keep$Feature.ID),length(xCO1_accessions_2_keep$Feature.ID) ),
+)
+
+data_accessions %>% 
+  pivot_longer(., cols=-Marker, values_to = "Accessions", names_to = ("Type")) %>% 
+  ggplot(., aes(x= Type, y= Accessions, fill=Marker)) + geom_bar(position = "dodge", stat = "identity") + facet_wrap(.~Marker, scales="free") +theme_pubclean() +theme(legend.position = "null")
+
+
+ggsave("rcrux_accessions_compare.png")
+
+
+```
+
+```{r}
+
+data_tax <- tibble(Marker = c("16Sv4","12S","CO1"),
+       Unfiltered_tax = c(length(unique(x16Sv4_tax$Taxon)),length(unique(x12S_tax$Taxon)),length(unique(xCO1_tax$Taxon)) ),
+       Clean_tax = c(length(unique(x16Sv4_accessions_2_keep$Taxon)),length(unique(x12S_accessions_2_keep$Taxon)),length(unique(xCO1_accessions_2_keep$Taxon)) ))
+ 
+data_tax %>% 
+  pivot_longer(., cols=-Marker, values_to = "Taxa", names_to = ("Type")) %>% 
+  ggplot(., aes(x= Type, y= Taxa, fill=Marker)) + geom_bar(position = "dodge", stat = "identity") + facet_wrap(.~Marker, scales="free") +theme_pubclean() +theme(legend.position = "null")
+
+ggsave("rcrux_taxa_compare.png")
+
+```
+
+```{r}
+sessionInfo()
+```

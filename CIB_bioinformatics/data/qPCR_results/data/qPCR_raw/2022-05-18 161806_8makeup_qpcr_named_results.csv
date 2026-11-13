@@ -1,0 +1,218 @@
+Block Type,384-Well Block,,,,,,,,,,,,,
+Calibration Background is expired ,No,,,,,,,,,,,,,
+Calibration Background performed on,04-21-2022,,,,,,,,,,,,,
+Calibration Normalization FAM-ROX is expired,No,,,,,,,,,,,,,
+Calibration Normalization FAM-ROX performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Normalization VIC-ROX is expired,No,,,,,,,,,,,,,
+Calibration Normalization VIC-ROX performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye ABY is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye ABY performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye FAM is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye FAM performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye JUN is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye JUN performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye MUSTANGP is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye MUSTANGP performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye NED is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye NED performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye ROX is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye ROX performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye SYBR is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye SYBR performed on,03-23-2022,,,,,,,,,,,,,
+Calibration Pure Dye TAMRA is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye TAMRA performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye VIC is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye VIC performed on,03-15-2022,,,,,,,,,,,,,
+Calibration ROI is expired ,No,,,,,,,,,,,,,
+Calibration ROI performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Uniformity is expired ,No,,,,,,,,,,,,,
+Calibration Uniformity performed on,03-15-2022,,,,,,,,,,,,,
+Chemistry,TAQMAN,,,,,,,,,,,,,
+Date Created,2022-05-18 16:18:05 PM PDT,,,,,,,,,,,,,
+Experiment Barcode,,,,,,,,,,,,,,
+Experiment Comment,,,,,,,,,,,,,,
+Experiment File Name,D:\Applied Biosystems\QuantStudio Real-Time PCR Software\User Files\zjg\2022-05-18 161806_8 LEFT DLEU.eds,,,,,,,,,,,,,
+Experiment Name,2022-05-18 161806_8 LEFT DLEU,,,,,,,,,,,,,
+Experiment Run End Time,2022-05-19 02:08:56 AM PDT,,,,,,,,,,,,,
+Experiment Type,Standard Curve,,,,,,,,,,,,,
+Instrument Name,278862711,,,,,,,,,,,,,
+Instrument Serial Number,278862711,,,,,,,,,,,,,
+Instrument Type,QuantStudio(TM) 6 Flex System,,,,,,,,,,,,,
+Passive Reference,MUSTANGP,,,,,,,,,,,,,
+Quantification Cycle Method,Ct,,,,,,,,,,,,,
+Signal Smoothing On,true,,,,,,,,,,,,,
+Stage/ Cycle where Analysis is performed,"Stage 2, Step 2",,,,,,,,,,,,,
+User Name,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+Target Name,Reporter,Well,Well Position,Sample Name,Task,CT,Quantity,Slope,Efficiency,Y-Intercept,R(superscript 2),Baseline Start,Baseline End,Ct Threshold
+Delph,FAM,1,A1,gBlocks,STANDARD,Undetermined,"100,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,1,A1,gBlocks,UNKNOWN,26.802,,,,,,6,15,0.263
+cetacea,JUN,1,A1,gBlocks,STANDARD,22.210,"100,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,2,A2,gBlocks,STANDARD,Undetermined,"100,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,2,A2,gBlocks,UNKNOWN,26.735,,,,,,6,15,0.263
+cetacea,JUN,2,A2,gBlocks,STANDARD,22.205,"100,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,3,A3,gBlocks,STANDARD,Undetermined,"100,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,3,A3,gBlocks,UNKNOWN,26.716,,,,,,6,15,0.263
+cetacea,JUN,3,A3,gBlocks,STANDARD,21.682,"100,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,4,A4,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,4,A4,unknowns,UNKNOWN,26.679,,,,,,6,15,0.263
+cetacea,JUN,4,A4,unknowns,UNKNOWN,41.352,0.111,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,5,A5,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,5,A5,unknowns,UNKNOWN,26.706,,,,,,6,15,0.263
+cetacea,JUN,5,A5,unknowns,UNKNOWN,42.220,0.060,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,6,A6,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,6,A6,unknowns,UNKNOWN,26.960,,,,,,6,15,0.263
+cetacea,JUN,6,A6,unknowns,UNKNOWN,41.526,0.098,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,22,A22,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,22,A22,ntc,NTC,26.586,,,,,,6,15,0.263
+cetacea,JUN,22,A22,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,23,A23,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,23,A23,ntc,NTC,26.415,,,,,,6,15,0.263
+cetacea,JUN,23,A23,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,24,A24,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,24,A24,ntc,NTC,26.609,,,,,,6,15,0.263
+cetacea,JUN,24,A24,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,25,B1,gBlocks,STANDARD,Undetermined,"10,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,25,B1,gBlocks,UNKNOWN,26.792,,,,,,6,15,0.263
+cetacea,JUN,25,B1,gBlocks,STANDARD,24.538,"10,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,26,B2,gBlocks,STANDARD,Undetermined,"10,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,26,B2,gBlocks,UNKNOWN,26.867,,,,,,6,15,0.263
+cetacea,JUN,26,B2,gBlocks,STANDARD,25.388,"10,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,27,B3,gBlocks,STANDARD,Undetermined,"10,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,27,B3,gBlocks,UNKNOWN,26.832,,,,,,6,15,0.263
+cetacea,JUN,27,B3,gBlocks,STANDARD,25.106,"10,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,28,B4,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,28,B4,unknowns,UNKNOWN,26.687,,,,,,6,15,0.263
+cetacea,JUN,28,B4,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,29,B5,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,29,B5,unknowns,UNKNOWN,26.771,,,,,,6,15,0.263
+cetacea,JUN,29,B5,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,30,B6,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,30,B6,unknowns,UNKNOWN,26.601,,,,,,6,15,0.263
+cetacea,JUN,30,B6,unknowns,UNKNOWN,37.237,1.942,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,46,B22,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,46,B22,ntc,NTC,26.566,,,,,,6,15,0.263
+cetacea,JUN,46,B22,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,47,B23,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,47,B23,ntc,NTC,26.566,,,,,,6,15,0.263
+cetacea,JUN,47,B23,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,48,B24,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,48,B24,ntc,NTC,26.592,,,,,,6,15,0.263
+cetacea,JUN,48,B24,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,49,C1,gBlocks,STANDARD,Undetermined,"1,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,49,C1,gBlocks,UNKNOWN,26.713,,,,,,6,15,0.263
+cetacea,JUN,49,C1,gBlocks,STANDARD,28.148,"1,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,50,C2,gBlocks,STANDARD,Undetermined,"1,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,50,C2,gBlocks,UNKNOWN,26.504,,,,,,6,15,0.263
+cetacea,JUN,50,C2,gBlocks,STANDARD,28.011,"1,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,51,C3,gBlocks,STANDARD,Undetermined,"1,000.000",0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,51,C3,gBlocks,UNKNOWN,26.714,,,,,,6,15,0.263
+cetacea,JUN,51,C3,gBlocks,STANDARD,28.116,"1,000.000",-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,52,C4,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,52,C4,unknowns,UNKNOWN,26.846,,,,,,6,15,0.263
+cetacea,JUN,52,C4,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,53,C5,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,53,C5,unknowns,UNKNOWN,26.703,,,,,,6,15,0.263
+cetacea,JUN,53,C5,unknowns,UNKNOWN,38.594,0.755,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,54,C6,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,54,C6,unknowns,UNKNOWN,26.606,,,,,,6,15,0.263
+cetacea,JUN,54,C6,unknowns,UNKNOWN,42.623,0.046,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,70,C22,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,70,C22,ntc,NTC,26.597,,,,,,6,15,0.263
+cetacea,JUN,70,C22,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,71,C23,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,71,C23,ntc,NTC,26.581,,,,,,6,15,0.263
+cetacea,JUN,71,C23,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,72,C24,ntc,NTC,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,72,C24,ntc,NTC,26.616,,,,,,6,15,0.263
+cetacea,JUN,72,C24,ntc,NTC,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,73,D1,gBlocks,STANDARD,Undetermined,100.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,73,D1,gBlocks,UNKNOWN,26.552,,,,,,6,15,0.263
+cetacea,JUN,73,D1,gBlocks,STANDARD,31.164,100.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,74,D2,gBlocks,STANDARD,Undetermined,100.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,74,D2,gBlocks,UNKNOWN,26.599,,,,,,6,15,0.263
+cetacea,JUN,74,D2,gBlocks,STANDARD,31.240,100.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,75,D3,gBlocks,STANDARD,Undetermined,100.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,75,D3,gBlocks,UNKNOWN,26.568,,,,,,6,15,0.263
+cetacea,JUN,75,D3,gBlocks,STANDARD,31.399,100.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,76,D4,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,76,D4,unknowns,UNKNOWN,26.797,,,,,,6,15,0.263
+cetacea,JUN,76,D4,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,77,D5,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,77,D5,unknowns,UNKNOWN,26.623,,,,,,6,15,0.263
+cetacea,JUN,77,D5,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,78,D6,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,78,D6,unknowns,UNKNOWN,26.686,,,,,,6,15,0.263
+cetacea,JUN,78,D6,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,97,E1,gBlocks,STANDARD,Undetermined,10.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,97,E1,gBlocks,UNKNOWN,26.461,,,,,,6,15,0.263
+cetacea,JUN,97,E1,gBlocks,STANDARD,33.971,10.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,98,E2,gBlocks,STANDARD,Undetermined,10.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,98,E2,gBlocks,UNKNOWN,26.651,,,,,,6,15,0.263
+cetacea,JUN,98,E2,gBlocks,STANDARD,33.449,10.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,99,E3,gBlocks,STANDARD,Undetermined,10.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,99,E3,gBlocks,UNKNOWN,26.656,,,,,,6,15,0.263
+cetacea,JUN,99,E3,gBlocks,STANDARD,35.038,10.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,100,E4,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,100,E4,unknowns,UNKNOWN,26.663,,,,,,6,15,0.263
+cetacea,JUN,100,E4,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,101,E5,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,101,E5,unknowns,UNKNOWN,26.829,,,,,,6,15,0.263
+cetacea,JUN,101,E5,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,102,E6,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,102,E6,unknowns,UNKNOWN,26.755,,,,,,6,15,0.263
+cetacea,JUN,102,E6,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,121,F1,gBlocks,STANDARD,Undetermined,5.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,121,F1,gBlocks,UNKNOWN,26.427,,,,,,6,15,0.263
+cetacea,JUN,121,F1,gBlocks,STANDARD,Undetermined,5.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,122,F2,gBlocks,STANDARD,Undetermined,5.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,122,F2,gBlocks,UNKNOWN,26.592,,,,,,6,15,0.263
+cetacea,JUN,122,F2,gBlocks,STANDARD,34.532,5.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,123,F3,gBlocks,STANDARD,Undetermined,5.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,123,F3,gBlocks,UNKNOWN,26.669,,,,,,6,15,0.263
+cetacea,JUN,123,F3,gBlocks,STANDARD,36.747,5.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,124,F4,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,124,F4,unknowns,UNKNOWN,26.537,,,,,,6,15,0.263
+cetacea,JUN,124,F4,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,125,F5,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,125,F5,unknowns,UNKNOWN,26.586,,,,,,6,15,0.263
+cetacea,JUN,125,F5,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,126,F6,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,126,F6,unknowns,UNKNOWN,26.770,,,,,,6,15,0.263
+cetacea,JUN,126,F6,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,145,G1,gBlocks,STANDARD,43.027,1.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,145,G1,gBlocks,UNKNOWN,26.682,,,,,,6,15,0.263
+cetacea,JUN,145,G1,gBlocks,STANDARD,39.562,1.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,146,G2,gBlocks,STANDARD,Undetermined,1.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,146,G2,gBlocks,UNKNOWN,26.939,,,,,,6,15,0.263
+cetacea,JUN,146,G2,gBlocks,STANDARD,Undetermined,1.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,147,G3,gBlocks,STANDARD,Undetermined,1.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,147,G3,gBlocks,UNKNOWN,26.945,,,,,,6,15,0.263
+cetacea,JUN,147,G3,gBlocks,STANDARD,39.747,1.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,148,G4,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,148,G4,unknowns,UNKNOWN,26.758,,,,,,6,15,0.263
+cetacea,JUN,148,G4,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,149,G5,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,149,G5,unknowns,UNKNOWN,26.836,,,,,,6,15,0.263
+cetacea,JUN,149,G5,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,150,G6,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,150,G6,unknowns,UNKNOWN,26.769,,,,,,6,15,0.263
+cetacea,JUN,150,G6,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,169,H1,gBlocks,STANDARD,Undetermined,1.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,169,H1,gBlocks,UNKNOWN,26.633,,,,,,6,15,0.263
+cetacea,JUN,169,H1,gBlocks,STANDARD,Undetermined,1.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,170,H2,gBlocks,STANDARD,Undetermined,1.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,170,H2,gBlocks,UNKNOWN,26.659,,,,,,6,15,0.263
+cetacea,JUN,170,H2,gBlocks,STANDARD,Undetermined,1.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,171,H3,gBlocks,STANDARD,39.345,1.000,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,171,H3,gBlocks,UNKNOWN,26.613,,,,,,6,15,0.263
+cetacea,JUN,171,H3,gBlocks,STANDARD,Undetermined,1.000,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,172,H4,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,172,H4,unknowns,UNKNOWN,26.828,,,,,,6,15,0.263
+cetacea,JUN,172,H4,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,173,H5,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,173,H5,unknowns,UNKNOWN,26.765,,,,,,6,15,0.263
+cetacea,JUN,173,H5,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193
+Delph,FAM,174,H6,unknowns,UNKNOWN,Undetermined,,0.000,-100.000,0.000,0.000,10,15,0.520
+Moa IPC,VIC,174,H6,unknowns,UNKNOWN,26.673,,,,,,6,15,0.263
+cetacea,JUN,174,H6,unknowns,UNKNOWN,Undetermined,,-3.306,100.690,38.190,0.981,12,15,0.193

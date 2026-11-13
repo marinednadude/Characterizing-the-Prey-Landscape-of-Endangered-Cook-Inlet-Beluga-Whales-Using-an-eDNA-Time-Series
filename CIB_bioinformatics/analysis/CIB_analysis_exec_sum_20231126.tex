@@ -1,0 +1,370 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Executive Summary of Cook Inlet Beluga eDNA Results},
+  pdfauthor={Zack Gold},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Executive Summary of Cook Inlet Beluga eDNA Results}
+\author{Zack Gold}
+\date{2023-11-27}
+
+\begin{document}
+\maketitle
+
+\textbf{Note: These are preliminary data and a first look at the eDNA
+results. Please only share internally with other NOAA \& AKBMP partners
+and collaborators.}
+
+\hypertarget{project-overview}{%
+\section{Project Overview}\label{project-overview}}
+
+These are the results of a pilot study of eDNA in Cook Inlet from
+Nov.~2020 to Nov.~2021. This pilot project consisted of 3 eDNA sample
+collections:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Monthly samples were collected at two sites in the Kenai River across
+  the year,
+\item
+  Higher frequency sampling (weekly/biweelky) of 20 Mile River was
+  conducted from August 2021-Nov.~2021, and
+\item
+  Oppurtunistic sampling within and adjacent to Belugas from ADF\&G
+  small vessels in August 2021.
+\end{enumerate}
+
+We successfully designed, optimized, and implemented sample collection
+and processing methodologies to track Beluga and their prey. We
+specifically applied qPCR assays for Beluga, Coho, Chinook, and Eulachon
+(\emph{Thaleichthys pacificus}) and vertebrate community metabarcoding
+assays (MiFish 12S) to all eDNA samples.
+
+\hypertarget{summary-of-major-findings-results}{%
+\section{Summary of Major Findings
+Results}\label{summary-of-major-findings-results}}
+
+\hypertarget{mile-river}{%
+\section{20 Mile River}\label{mile-river}}
+
+\hypertarget{edna-metabarcoding-vs.-qpcr-vs.-visual-observations}{%
+\subsection{eDNA Metabarcoding vs.~qPCR vs.~Visual
+Observations}\label{edna-metabarcoding-vs.-qpcr-vs.-visual-observations}}
+
+eDNA and visual observations of Cook Inlet Beluga whales were largely
+concordant within Turnagain Arm (Figure 1). eDNA detections at 20 Mile
+River during periods of time in which Beluga were only visually observed
+at Bird Point strongly suggest that Beluga DNA is being transported
+\textgreater10 km. These results demonstrate that both metabarcoding and
+qPCR eDNA approaches can provide valuable data on the presence of
+beluga.
+
+\hypertarget{figure-1}{%
+\subsubsection{Figure 1}\label{figure-1}}
+
+\includegraphics{CIB_analysis_exec_sum_20231126_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\hypertarget{beluga-run-timing-strongly-correlated-with-coho-salmon}{%
+\subsection{Beluga run timing strongly correlated with Coho
+salmon}\label{beluga-run-timing-strongly-correlated-with-coho-salmon}}
+
+We demonstrate that eDNA metabarcoding can successfully capture changes
+in fish assemblages across both space and time allowing for comparison
+to Beluga foraging patterns. Specifically, we find that Beluga run
+timing was strongly correlated with increases in Coho abundances (Figure
+2).
+
+\hypertarget{figure-2}{%
+\section{Figure 2}\label{figure-2}}
+
+We see similar patterns when comparing across eDNA indices (Figure 3).
+
+\#Figure 3
+
+\includegraphics{CIB_analysis_exec_sum_20231126_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+From the most abundantly detected taxa (over 1,000 reads detected in at
+least 10 technical replicates), we found signficant differences in eDNA
+index scores before and during beluga occurrences in 20 Mile River.
+
+\hypertarget{more-abundant-prior-to-beluga-occurrence}{%
+\paragraph{More Abundant Prior to Beluga
+Occurrence}\label{more-abundant-prior-to-beluga-occurrence}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.3125}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0875}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1750}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1000}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1250}}@{}}
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+Species
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Time
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Avg. eDNA Index
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+SD eDNA Index
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+p.value
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+statistic
+\end{minipage} \\
+\midrule()
+\endhead
+Oncorhynchus gorbuscha & Before & 0.6285946 & 0.1467596 & 0 &
+60.30885 \\
+Oncorhynchus gorbuscha & During & 0.2973284 & 0.2942747 & 0 &
+60.30885 \\
+Oncorhynchus tshawytscha & Before & 0.1797197 & 0.1253640 & 0 &
+72.23416 \\
+Oncorhynchus tshawytscha & During & 0.0140808 & 0.0169829 & 0 &
+72.23416 \\
+Thaleichthys pacificus & Before & 0.1331993 & 0.1150512 & 0 &
+37.74665 \\
+Thaleichthys pacificus & During & 0.0217129 & 0.0294135 & 0 &
+37.74665 \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{more-abundant-during-beluga-occurrence}{%
+\paragraph{More Abundant During Beluga
+Occurrence}\label{more-abundant-during-beluga-occurrence}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2692}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0897}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2051}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1795}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1282}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1282}}@{}}
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+Species
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Time
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Avg. eDNA Index
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+SD eDNA Index
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+p.value
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+statistic
+\end{minipage} \\
+\midrule()
+\endhead
+Oncorhynchus kisutch & Before & 0.0585469 & 0.0372569 & 0.0000000 &
+64.169594 \\
+Oncorhynchus kisutch & During & 0.4243747 & 0.3690432 & 0.0000000 &
+64.169594 \\
+Oncorhynchus nerka & Before & 0.0213065 & 0.0115372 & 0.0000000 &
+39.133972 \\
+Oncorhynchus nerka & During & 0.0946590 & 0.0944066 & 0.0000000 &
+39.133972 \\
+Pungitius pungitius & Before & 0.0405959 & 0.0513276 & 0.0028031 &
+9.364055 \\
+Pungitius pungitius & During & 0.0752271 & 0.0657437 & 0.0028031 &
+9.364055 \\
+Salvelinus malma & Before & 0.0299390 & 0.0292162 & 0.0067172 &
+7.644705 \\
+Salvelinus malma & During & 0.0475393 & 0.0365466 & 0.0067172 &
+7.644705 \\
+\bottomrule()
+\end{longtable}
+
+Coho is a known prey item for Cook Inlet Belugas (Quakenbush et al.
+2015) and thus aligns well with previous research (McGuire et al. 2020;
+Nelson et al. 2018; Castellote et al. 2020). Traditional ecological
+knowledge from informal interviews with local fisherman additionally
+supported that the timing of the Coho run coincided with the timing of
+Belugas arriving in 20 Mile river.
+
+\hypertarget{kenai-river}{%
+\section{Kenai River}\label{kenai-river}}
+
+\hypertarget{visual-observations}{%
+\subsection{Visual Observations}\label{visual-observations}}
+
+\hypertarget{figure-4}{%
+\subsubsection{Figure 4}\label{figure-4}}
+
+\includegraphics{CIB_analysis_exec_sum_20231126_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+Visual observations of Belugas in Kenai River demonstrate a noted
+absence in the summer with presence in Fall and Spring during AKBMP
+observations (Figure 4). Here we focus on what fish species were
+observed in higher abundances when Beluga were present by isolating the
+Winter to Spring transition and the Summer to Fall transition. In both
+cases Beluga are conspicously absent from the river in Winter/Summer,
+but present in Spring (March 25-April 30th, 2021) and Fall (September
+1st-November 2021).
+
+\hypertarget{winter-to-spring}{%
+\subsection{Winter to Spring}\label{winter-to-spring}}
+
+\hypertarget{summer-to-fall}{%
+\subsection{Summer to Fall}\label{summer-to-fall}}
+
+\hypertarget{conclusions}{%
+\subsection{Conclusions}\label{conclusions}}
+
+We demonstrate that eDNA metabarcoding can successfully capture changes
+in fish assemblages across both space and time allowing for comparison
+to Beluga foraging patterns. Time of sampling across seasons explained
+the greatest proportion of variance in our fish assemblage data aligning
+well with expectations of seasonally influenced fish assemblages driven
+by timing of anadromous migrations. We found that eDNA approaches are
+able to capture changes in fish assemblages on the sub-weekly scale,
+allowing for high resolution tracking of run timing. Site also had a
+signficant effect on fish assemblages, particularly across Cook Inlet
+rivers with less pronounced, but signficant differences across sites
+along the Kenai River. We observed no statistically signficant
+difference in depth within the Kenai River. Together, these results
+provide important baseline information needed to inform effective eDNA
+sampling efforts needed to resolve Cook Inlet Beluga foraging patterns.
+Specifically, these findings suggest that weekly sampling efforts at a
+single river site along multiple important foraging habitats would
+provide sufficient resolution to identify spatial and temporal river
+foraging habitat utilization of Cook Inlet Beluga whales.
+
+Ultimately, these results demonstrate that eDNA approaches are an
+effective tool for capturing changes of Beluga prey assemblages across
+both space and time. Targeted deployments of eDNA across Cook Inlet
+habits can reveal critical ecological insights into fish ecology and
+endangered Cook Inlet Beluga foraging patterns.
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-castellote_seasonal_2020}{}}%
+Castellote, Manuel, Robert J. Small, Marc O. Lammers, Justin Jenniges,
+Jeffrey Mondragon, Christopher D. Garner, Shannon Atkinson, Jade MS
+Delevaux, Richard Graham, and Delmar Westerholt. 2020. {``Seasonal
+Distribution and Foraging Occurrence of Cook Inlet Beluga Whales Based
+on Passive Acoustic Monitoring.''} \emph{Endangered Species Research}
+41: 225--43. \url{https://www.int-res.com/abstracts/esr/v41/p225-243}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-mcguire_distribution_2020}{}}%
+McGuire, Tamara L., Gina K. Himes Boor, John R. McClung, Amber D.
+Stephens, Christopher Garner, Kim E. W. Shelden, and Bruce Wright. 2020.
+{``Distribution and Habitat Use by Endangered Cook Inlet Beluga Whales:
+Patterns Observed During a Photo‐identification Study, 2005--2017.''}
+\emph{Aquatic Conservation: Marine and Freshwater Ecosystems} 30 (12):
+2402--27. \url{https://doi.org/10.1002/aqc.3378}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-nelson_fifty_2018}{}}%
+Nelson, Mark A., Lori T. Quakenbush, Barbara A. Mahoney, Brian D. Taras,
+and Matthew J. Wooller. 2018. {``Fifty Years of Cook Inlet Beluga Whale
+Feeding Ecology from Isotopes in Bone and Teeth.''} \emph{Endangered
+Species Research} 36: 77--87.
+\url{https://www.int-res.com/abstracts/esr/v36/p77-87/}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-quakenbush_diet_2015}{}}%
+Quakenbush, Lori T., Robert S. Suydam, Anna L. Bryan, Lloyd F. Lowry,
+Kathryn J. Frost, and Barbara A. Mahoney. 2015. {``Diet of Beluga Whales
+(Delphinapterus Leucas) in Alaska from Stomach Contents,
+March--November.''} \emph{Mar Fish Rev} 77 (1): 70--84.
+\url{https://spo.nmfs.noaa.gov/sites/default/files/pdf-content/MFR/mfr771/mfr7717.pdf}.
+
+\end{CSLReferences}
+
+\end{document}

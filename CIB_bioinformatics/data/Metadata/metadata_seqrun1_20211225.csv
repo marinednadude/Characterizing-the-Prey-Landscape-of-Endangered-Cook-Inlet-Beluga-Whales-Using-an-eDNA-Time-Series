@@ -1,0 +1,96 @@
+Seq_number,New_name,New_name_no_tech,LabID,Location,Site,Bio_rep,Tech_rep,Sample_date,Extraction_set,Sample_Control,Control_Type,High_Tide_ Time,Tide_height,Time_of_Collection,Beluga_Observed,Beluga,Date_Sampled,River,PCR_Cycles,Index Cycles,Project,Depth,Volume,Month
+TM.D1.01.R1.S7.L001,TM_D1_01_R1,TM_D1_01,52385_08,NA,Twentymile,1,1,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.01.R2.S75.L001,TM_D1_01_R2,TM_D1_01,52385_08,NA,Twentymile,1,2,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.01.R3.S87.L001,TM_D1_01_R3,TM_D1_01,52385_08,NA,Twentymile,1,3,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.02.R1.S8.L001,TM_D1_02_R1,TM_D1_02,52385_09,NA,Twentymile,2,1,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.02.R2.S76.L001,TM_D1_02_R2,TM_D1_02,52385_09,NA,Twentymile,2,2,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.02.R3.S88.L001,TM_D1_02_R3,TM_D1_02,52385_09,NA,Twentymile,2,3,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.03.R1.S9.L001,TM_D1_03_R1,TM_D1_03,52385_10,NA,Twentymile,3,1,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.03.R2.S77.L001,TM_D1_03_R2,TM_D1_03,52385_10,NA,Twentymile,3,2,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.03.R3.S89.L001,TM_D1_03_R3,TM_D1_03,52385_10,NA,Twentymile,3,3,8/4/21,2,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.04.R1.S1.L001,TM_D1_04_R1,TM_D1_04,52385_01,NA,Twentymile,4,1,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.04.R2.S69.L001,TM_D1_04_R2,TM_D1_04,52385_01,NA,Twentymile,4,2,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.04.R3.S81.L001,TM_D1_04_R3,TM_D1_04,52385_01,NA,Twentymile,4,3,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.05.R1.S2.L001,TM_D1_05_R1,TM_D1_05,52385_02,NA,Twentymile,5,1,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.05.R2.S70.L001,TM_D1_05_R2,TM_D1_05,52385_02,NA,Twentymile,5,2,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.05.R3.S82.L001,TM_D1_05_R3,TM_D1_05,52385_02,NA,Twentymile,5,3,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.06.R1.S3.L001,TM_D1_06_R1,TM_D1_06,52385_03,NA,Twentymile,6,1,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.06.R2.S71.L001,TM_D1_06_R2,TM_D1_06,52385_03,NA,Twentymile,6,2,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D1.06.R3.S83.L001,TM_D1_06_R3,TM_D1_06,52385_03,NA,Twentymile,6,3,8/4/21,1,Sample,NA,7:26 PM,25.9,7:30 PM,No,No,4-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.01.R1.S10.L001,TM_D2_01_R1,TM_D2_01,52385_17,NA,Twentymile,1,1,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.01.R2.S78.L001,TM_D2_01_R2,TM_D2_01,52385_17,NA,Twentymile,1,2,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.01.R3.S90.L001,TM_D2_01_R3,TM_D2_01,52385_17,NA,Twentymile,1,3,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.02.R1.S11.L001,TM_D2_02_R1,TM_D2_02,52385_18,NA,Twentymile,2,1,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.02.R2.S79.L001,TM_D2_02_R2,TM_D2_02,52385_18,NA,Twentymile,2,2,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.02.R3.S91.L001,TM_D2_02_R3,TM_D2_02,52385_18,NA,Twentymile,2,3,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.03.R1.S12.L001,TM_D2_03_R1,TM_D2_03,52385_19,NA,Twentymile,3,1,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.03.R2.S80.L001,TM_D2_03_R2,TM_D2_03,52385_19,NA,Twentymile,3,2,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.03.R3.S92.L001,TM_D2_03_R3,TM_D2_03,52385_19,NA,Twentymile,3,3,8/6/21,2,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.04.R1.S4.L001,TM_D2_04_R1,TM_D2_04,52385_04,NA,Twentymile,4,1,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.04.R2.S72.L001,TM_D2_04_R2,TM_D2_04,52385_04,NA,Twentymile,4,2,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.04.R3.S84.L001,TM_D2_04_R3,TM_D2_04,52385_04,NA,Twentymile,4,3,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.05.R1.S5.L001,TM_D2_05_R1,TM_D2_05,52385_05,NA,Twentymile,5,1,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.05.R2.S73.L001,TM_D2_05_R2,TM_D2_05,52385_05,NA,Twentymile,5,2,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.05.R3.S85.L001,TM_D2_05_R3,TM_D2_05,52385_05,NA,Twentymile,5,3,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.06.R1.S6.L001,TM_D2_06_R1,TM_D2_06,52385_06,NA,Twentymile,6,1,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.06.R2.S74.L001,TM_D2_06_R2,TM_D2_06,52385_06,NA,Twentymile,6,2,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D2.06.R3.S86.L001,TM_D2_06_R3,TM_D2_06,52385_06,NA,Twentymile,6,3,8/6/21,1,Sample,NA,8:34 PM,28,9:45 PM,No,No,6-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D3.01.S13.L001,TM_D3_01,TM_D3_01,52385_21,NA,Twentymile,1,1,8/7/21,2,Sample,NA,9:06 PM,28.8,9:06 PM,No,No,7-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D3.02.S14.L001,TM_D3_02,TM_D3_02,52385_22,NA,Twentymile,2,1,8/7/21,2,Sample,NA,9:06 PM,28.8,9:06 PM,No,No,7-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D3.03.S15.L001,TM_D3_03,TM_D3_03,52385_23,NA,Twentymile,3,1,8/7/21,2,Sample,NA,9:06 PM,28.8,9:06 PM,No,No,7-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D4.01.S16.L001,TM_D4_01,TM_D4_01,52385_31,NA,Twentymile,1,1,8/10/21,3,Sample,NA,10:02 AM,31,10:40 AM,No,No,10-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D4.02.S17.L001,TM_D4_02,TM_D4_02,52385_32,NA,Twentymile,2,1,8/10/21,3,Sample,NA,10:02 AM,31,10:40 AM,No,No,10-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D4.03.S18.L001,TM_D4_03,TM_D4_03,52385_33,NA,Twentymile,3,1,8/10/21,3,Sample,NA,10:02 AM,31,10:40 PM,No,No,10-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D5.01.S19.L001,TM_D5_01,TM_D5_01,52385_34,NA,Twentymile,1,1,8/12/21,3,Sample,NA,11:25 AM,30.2,11:25 AM,No,No,12-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D5.02.S20.L001,TM_D5_02,TM_D5_02,52385_35,NA,Twentymile,2,1,8/12/21,3,Sample,NA,11:25 AM,30.2,11:25 AM,No,No,12-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D5.03.S21.L001,TM_D5_03,TM_D5_03,52385_36,NA,Twentymile,3,1,8/12/21,3,Sample,NA,11:25 AM,30.2,11:25 AM,No,No,12-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D6.01.S22.L001,TM_D6_01,TM_D6_01,52385_47,NA,Twentymile,1,1,8/14/21,4,Sample,NA,1:03 PM,27.8,12:58 PM,Bird Point,Yes,14-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D6.02.S23.L001,TM_D6_02,TM_D6_02,52385_48,NA,Twentymile,2,1,8/14/21,4,Sample,NA,1:04 PM,27.8,12:58 PM,Bird Point,Yes,14-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D6.03.S24.L001,TM_D6_03,TM_D6_03,52385_49,NA,Twentymile,3,1,8/14/21,4,Sample,NA,1:05 PM,27.8,12:58 PM,Bird Point,Yes,14-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D7.01.S25.L001,TM_D7_01,TM_D7_01,52385_50,NA,Twentymile,1,1,8/16/21,4,Sample,NA,3:15 PM,24.8,3:16 PM,Bird Point,Yes,16-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D7.02.S26.L001,TM_D7_02,TM_D7_02,52385_51,NA,Twentymile,2,1,8/16/21,4,Sample,NA,3:16 PM,24.8,3:16 PM,Bird Point,Yes,16-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D7.03.S27.L001,TM_D7_03,TM_D7_03,52385_52,NA,Twentymile,3,1,8/16/21,4,Sample,NA,3:17 PM,24.8,3:16 PM,Bird Point,Yes,16-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D8.01.S28.L001,TM_D8_01,TM_D8_01,52385_60,NA,Twentymile,1,1,8/18/21,5,Sample,NA,6:28 PM,26.4,7:05 PM,Bird Point,Yes,18-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D8.02.S29.L001,TM_D8_02,TM_D8_02,52385_61,NA,Twentymile,2,1,8/18/21,5,Sample,NA,6:28 PM,26.4,7:10 PM,Bird Point,Yes,18-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D8.03.S30.L001,TM_D8_03,TM_D8_03,52385_62,NA,Twentymile,3,1,8/18/21,5,Sample,NA,6:28 PM,26.4,7:12 PM,Bird Point,Yes,18-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D9.01.S31.L001,TM_D9_01,TM_D9_01,52385_64,NA,Twentymile,1,1,8/20/21,5,Sample,NA,8:16 PM,28.4,8:15 PM,Bird Point,Yes,20-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D9.02.S32.L001,TM_D9_02,TM_D9_02,52385_65,NA,Twentymile,2,1,8/20/21,5,Sample,NA,8:16 PM,28.4,8:15 PM,Bird Point,Yes,20-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D9.03.S33.L001,TM_D9_03,TM_D9_03,52385_66,NA,Twentymile,3,1,8/20/21,5,Sample,NA,8:16 PM,28.4,8:15 PM,Bird Point,Yes,20-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+Lil.Su.01.R2.S42.L001,Lil_Su_01_R1,Lil_Su_01_R1,52385_92,Site 1,Little Susitna,1,1,8/21/21,6,Sample,NA,7:58PM,-2,2:22 PM,15 min prior,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil.Su.01.R2.S43.L001,Lil_Su_01_R2,Lil_Su_01_R2,52385_93,Site 1,Little Susitna,2,1,8/21/21,6,Sample,NA,7:58PM,-2,2:22 PM,15 min prior,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil.Su.01.R3.S47.L001,Lil_Su_01_R3,Lil_Su_01_R3,52385_94,Site 1,Little Susitna,3,1,8/21/21,6,Sample,NA,7:58PM,-2,2:22 PM,15 min prior,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil.Su.02.R1.S48.L001,Lil_Su_02_R1,Lil_Su_02_R1,52385_95,Site 2,Little Susitna,1,1,8/21/21,6,Sample,NA,7:58PM,-2,3:05 PM,10 min prior,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil_Su_02_R2_v1,Lil_Su_02_R2_v1,Lil_Su_02_R2_v1,52385_96,Site 2,Little Susitna,2,2,8/21/21,7,Sample,NA,7:58PM,0,3:05 PM,10 min prior,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil.Su.02.R2.v2.S50.L001,Lil_Su_02_R2,Lil_Su_02_R2,52385_98,Site 2,Little Susitna,2,1,8/21/21,7,Sample,NA,7:58PM,0,3:05 PM,10 min prior,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil.Su.02.R3.S49.L001,Lil_Su_02_R3,Lil_Su_02_R3,52385_97,Site 2,Little Susitna,3,1,8/21/21,6,Sample,NA,7:58PM,0,3:05 PM,10 min prior,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil.su.chanel.R3.v2.S67.L001,Lil_Su_Channel_R3_v2,Lil_Su_Channel_R3_v2,52385_117,Channel,Little Susitna,4,1,8/21/21,7,Sample,NA,7:58PM,0,3:35 PM,Large Pod,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil.su.channel.R1.S54.L001,Lil_Su_Channel_R1,Lil_Su_Channel_R1,52385_102,Channel,Little Susitna,1,1,8/21/21,7,Sample,NA,7:58PM,1,3:35 PM,Large Pod,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil_Su_Channel_R2,Lil_Su_Channel_R2,Lil_Su_Channel_R2,52385_103,Channel,Little Susitna,2,1,8/21/21,7,Sample,NA,7:58PM,1,3:35 PM,Large Pod,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Lil.su.channel.R3.S55.L001,Lil_Su_Channel_R3,Lil_Su_Channel_R3,52385_104,Channel,Little Susitna,3,1,8/21/21,7,Sample,NA,7:58PM,1,3:35 PM,Large Pod,Yes,21-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+Susitna.02.R1.S51.L001,Susitna_02_R1,Susitna_02_R1,52385_99,Delta,Susitna,1,1,8/21/21,7,Sample,NA,7:58PM,-1,1:45 PM,30 min prior,Yes,21-Aug,Susitna,39,8,Twentymile,Surface,1,Aug
+Susitna.02.R2.S52.L001,Susitna_02_R2,Susitna_02_R2,52385_100,Delta,Susitna,2,1,8/21/21,7,Sample,NA,7:58PM,-1,1:45 PM,30 min prior,Yes,21-Aug,Susitna,39,8,Twentymile,Surface,1,Aug
+Susitna.02.R3.S53.L001,Susitna_02_R3,Susitna_02_R3,52385_101,Delta,Susitna,3,1,8/21/21,7,Sample,NA,7:58PM,-1,1:45 PM,30 min prior,Yes,21-Aug,Susitna,39,8,Twentymile,Surface,1,Aug
+TM.D10.01.S34.L001,TM_D10_01,TM_D10_01,52385_74,NA,Twentymile,1,1,8/23/21,6,Sample,NA,9:21 AM,31.5,9:28 AM,Bird Point,Yes,23-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D10.02.S35.L001,TM_D10_02,TM_D10_02,52385_75,NA,Twentymile,2,1,8/23/21,6,Sample,NA,9:21 AM,31.5,9:28 AM,Bird Point,Yes,23-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D10.03.S36.L001,TM_D10_03,TM_D10_03,52385_76,NA,Twentymile,3,1,8/23/21,6,Sample,NA,9:21 AM,31.5,9:28 AM,Bird Point,Yes,23-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+Knik.01.R1.S58.L001,Knik_01_R1,Knik_01_R1,52385_108,1,Knik Arm,1,1,8/24/21,7,Sample,NA,9:36PM,-1.45,4:00 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+Knik.01.R2.S59.L001,Knik_01_R2,Knik_01_R2,52385_109,1,Knik Arm,2,1,8/24/21,7,Sample,NA,9:36PM,-1.45,4:00 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+Knik.01.R3.S60.L001,Knik_01_R3,Knik_01_R3,52385_110,1,Knik Arm,3,1,8/24/21,7,Sample,NA,9:36PM,-1.45,4:00 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+Knik.02.R1.S61.L001,Knik_02_R1,Knik_02_R1,52385_111,2,Knik Arm,1,1,8/24/21,7,Sample,NA,9:36PM,0,4:18 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+Knik.02.R2.S62.L001,Knik_02_R2,Knik_02_R2,52385_112,2,Knik Arm,2,1,8/24/21,7,Sample,NA,9:36PM,0,4:18 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+Knik.02.R3.S63.L001,Knik_02_R3,Knik_02_R3,52385_113,2,Knik Arm,3,1,8/24/21,7,Sample,NA,9:36PM,0,4:18 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+Knik.03.R1.S64.L001,Knik_03_R1,Knik_03_R1,52385_114,3,Knik Arm,1,1,8/24/21,7,Sample,NA,9:36PM,1,4:57 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+Knik.03.R2.S65.L001,Knik_03_R2,Knik_03_R2,52385_115,3,Knik Arm,2,1,8/24/21,7,Sample,NA,9:36PM,1,4:57 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+Knik.03.R3.S66.L001,Knik_03_R3,Knik_03_R3,52385_116,3,Knik Arm,3,1,8/24/21,7,Sample,NA,9:36PM,1,4:57 PM,Large Pod,Yes,24-Aug,Knik Arm,39,8,Twentymile,Surface,1,Aug
+LSD2.R1.S56.L001,LSD2_R1,LSD2,52385_105,Delta,Little Susitna,1,1,8/24/21,7,Sample,NA,9:36PM,5,2:35 PM,10 min prior,Yes,24-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+LSD2.R2.S57.L001,LSD2_R2,LSD2,52385_106,Delta,Little Susitna,2,1,8/24/21,7,Sample,NA,9:36PM,5,2:35 PM,10 min prior,Yes,24-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+LSD2_R3,LSD2_R3,LSD2,52385_107,Delta,Little Susitna,3,1,8/24/21,7,Sample,NA,9:36PM,5,2:35 PM,10 min prior,Yes,24-Aug,Little Susitna,39,8,Twentymile,Surface,1,Aug
+TM.D11.01.S37.L001,TM _D11_01,TM_D11_01,52385_78,NA,Twentymile,1,1,8/25/21,6,Sample,NA,10:44 AM,30.6,10:44 AM,20 Mile,Yes,25-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D11.02.S38.L001,TM _D11_02,TM_D11_02,52385_79,NA,Twentymile,2,1,8/25/21,6,Sample,NA,10:44 AM,30.6,10:44 AM,20 Mile,Yes,25-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D11.03.S39.L001,TM _D11_03,TM_D11_03,52385_80,NA,Twentymile,3,1,8/25/21,6,Sample,NA,10:44 AM,30.6,10:44 AM,20 Mile,Yes,25-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D12.01.S40.L001,TM_D12_01,TM_D12_01,52385_88,NA,Twentymile,1,1,8/26/21,6,Sample,NA,11:24 AM,29.5,11:24 AM,20 Mile,Yes,26-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D12.02.S41.L001,TM_D12_02,TM_D12_02,52385_89,NA,Twentymile,2,1,8/26/21,6,Sample,NA,11:24 AM,29.5,11:24 AM,20 Mile,Yes,26-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+TM.D12.03.S42.L001,TM_D12_03,TM_D12_03,52385_90,NA,Twentymile,3,1,8/26/21,6,Sample,NA,11:24 AM,29.5,11:24 AM,20 Mile,Yes,26-Aug,Twentymile,39,8,Twentymile,Surface,1,Aug
+Blackfin.tuna.S45.L001,Pos2_tuna,Pos2_tuna,52385_Pos_2,NA,NA,NA,NA,NA,NA,Control,Pos,NA,NA,NA,NA,NA,NA,NA,39,8,NA,Surface,NA,NA
+Tilapia.S44.L001,Tilapia_1,Tilapia_1,52385_Pos_1,NA,NA,NA,NA,NA,NA,Control,Pos,NA,NA,NA,NA,NA,NA,NA,39,8,NA,Surface,NA,NA
+Tilapia.S68.L001,Tilapia_2,Tilapia_2,52385_Pos_3,NA,NA,NA,NA,NA,NA,Control,Pos,NA,NA,NA,NA,NA,NA,NA,39,8,NA,Surface,NA,NA

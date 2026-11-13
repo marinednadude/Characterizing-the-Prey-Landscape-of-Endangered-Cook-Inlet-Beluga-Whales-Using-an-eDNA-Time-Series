@@ -1,0 +1,10 @@
+"0"," dropout_prop_all_pre %>% 
+  left_join(q_mean) %>% 
+  filter(., mean_Quantity> 0) %>% 
+     mutate(., `Concentration` = if_else(mean_Quantity> 10,""Greater than 10 copies/L"",""Less than 10 copies/L"")) %>% 
+  left_join(max_prop_per_New_name_no_tech, by=c(""New_name_no_tech""=""New_name_no_tech"")) %>% 
+  mutate(., drop_out = if_else(Drop_outs > 0, ""Drop Out"", ""No Drop Outs"") ) %>% 
+  ggplot(., aes(x=mean_Quantity, y=mean_prop_per_sample, colour=`drop_out`)) +facet_wrap(`Target Name`~Concentration) + geom_point(aes(alpha=0.2))
+"
+"2","Joining with `by = join_by(LabID, `Target Name`)`"
+"2","Warning: Detected an unexpected many-to-many relationship between `x` and `y`."

@@ -1,0 +1,459 @@
+Block Type,384-Well Block,,,,,,,,,,,,,
+Calibration Background is expired ,No,,,,,,,,,,,,,
+Calibration Background performed on,04-21-2022,,,,,,,,,,,,,
+Calibration Normalization FAM-ROX is expired,No,,,,,,,,,,,,,
+Calibration Normalization FAM-ROX performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Normalization VIC-ROX is expired,No,,,,,,,,,,,,,
+Calibration Normalization VIC-ROX performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye ABY is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye ABY performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye FAM is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye FAM performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye JUN is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye JUN performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye MUSTANGP is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye MUSTANGP performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye NED is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye NED performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye ROX is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye ROX performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye SYBR is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye SYBR performed on,03-23-2022,,,,,,,,,,,,,
+Calibration Pure Dye TAMRA is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye TAMRA performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Pure Dye VIC is expired,No,,,,,,,,,,,,,
+Calibration Pure Dye VIC performed on,03-15-2022,,,,,,,,,,,,,
+Calibration ROI is expired ,No,,,,,,,,,,,,,
+Calibration ROI performed on,03-15-2022,,,,,,,,,,,,,
+Calibration Uniformity is expired ,No,,,,,,,,,,,,,
+Calibration Uniformity performed on,03-15-2022,,,,,,,,,,,,,
+Chemistry,TAQMAN,,,,,,,,,,,,,
+Date Created,2022-05-18 14:26:58 PM PDT,,,,,,,,,,,,,
+Experiment Barcode,,,,,,,,,,,,,,
+Experiment Comment,,,,,,,,,,,,,,
+Experiment File Name,D:\Applied Biosystems\QuantStudio Real-Time PCR Software\User Files\zjg\2022-05-18 142658_8LEFT_SALMON.eds,,,,,,,,,,,,,
+Experiment Name,2022-05-18 142658,,,,,,,,,,,,,
+Experiment Run End Time,2022-05-19 00:27:37 AM PDT,,,,,,,,,,,,,
+Experiment Type,Standard Curve,,,,,,,,,,,,,
+Instrument Name,278862711,,,,,,,,,,,,,
+Instrument Serial Number,278862711,,,,,,,,,,,,,
+Instrument Type,QuantStudio(TM) 6 Flex System,,,,,,,,,,,,,
+Passive Reference,MUSTANGP,,,,,,,,,,,,,
+Quantification Cycle Method,Ct,,,,,,,,,,,,,
+Signal Smoothing On,true,,,,,,,,,,,,,
+Stage/ Cycle where Analysis is performed,"Stage 2, Step 2",,,,,,,,,,,,,
+User Name,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+Target Name,Reporter,Well,Well Position,Sample Name,Task,CT,Quantity,Slope,Efficiency,Y-Intercept,R(superscript 2),Baseline Start,Baseline End,Ct Threshold
+Chinook,VIC,1,A1,gBlocks,STANDARD,25.191,"10,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,1,A1,gBlocks,STANDARD,25.544,"10,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,1,A1,gBlocks,STANDARD,23.067,"10,000.000",-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,1,A1,gBlocks,UNKNOWN,30.221,,,,,,1,45,0.178
+Chinook,VIC,2,A2,gBlocks,STANDARD,25.265,"10,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,2,A2,gBlocks,STANDARD,25.642,"10,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,2,A2,gBlocks,STANDARD,23.009,"10,000.000",-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,2,A2,gBlocks,UNKNOWN,28.881,,,,,,1,45,0.178
+Chinook,VIC,3,A3,gBlocks,STANDARD,25.167,"10,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,3,A3,gBlocks,STANDARD,25.521,"10,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,3,A3,gBlocks,STANDARD,22.923,"10,000.000",-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,3,A3,gBlocks,UNKNOWN,29.792,,,,,,1,45,0.178
+Chinook,VIC,4,A4,unknowns,STANDARD,25.696,"10,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,4,A4,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,4,A4,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,4,A4,unknowns,UNKNOWN,28.310,,,,,,1,45,0.178
+Chinook,VIC,5,A5,unknowns,STANDARD,25.790,"10,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,5,A5,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,5,A5,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,5,A5,unknowns,UNKNOWN,28.237,,,,,,1,45,0.178
+Chinook,VIC,6,A6,unknowns,STANDARD,26.006,"10,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,6,A6,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,6,A6,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,6,A6,unknowns,UNKNOWN,28.313,,,,,,1,45,0.178
+Chinook,VIC,7,A7,unknowns,UNKNOWN,41.851,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,7,A7,unknowns,STANDARD,25.974,"10,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,7,A7,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,7,A7,unknowns,UNKNOWN,28.140,,,,,,1,45,0.178
+Chinook,VIC,8,A8,unknowns,UNKNOWN,42.457,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,8,A8,unknowns,STANDARD,25.966,"10,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,8,A8,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,8,A8,unknowns,UNKNOWN,28.146,,,,,,1,45,0.178
+Chinook,VIC,9,A9,unknowns,UNKNOWN,40.694,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,9,A9,unknowns,STANDARD,26.212,"10,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,9,A9,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,9,A9,unknowns,UNKNOWN,27.853,,,,,,1,45,0.178
+Chinook,VIC,10,A10,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,10,A10,unknowns,UNKNOWN,31.725,146.096,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,10,A10,unknowns,UNKNOWN,32.643,2.168,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,10,A10,unknowns,UNKNOWN,28.576,,,,,,1,45,0.178
+Chinook,VIC,11,A11,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,11,A11,unknowns,UNKNOWN,32.899,51.748,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,11,A11,unknowns,UNKNOWN,33.452,0.918,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,11,A11,unknowns,UNKNOWN,28.855,,,,,,1,45,0.178
+Chinook,VIC,12,A12,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,12,A12,unknowns,UNKNOWN,31.363,201.058,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,12,A12,unknowns,UNKNOWN,32.002,4.282,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,12,A12,unknowns,UNKNOWN,28.122,,,,,,1,45,0.178
+Chinook,VIC,22,A22,ntc,NTC,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,22,A22,ntc,NTC,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,22,A22,ntc,NTC,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,22,A22,ntc,UNKNOWN,28.330,,,,,,1,45,0.178
+Chinook,VIC,23,A23,ntc,NTC,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,23,A23,ntc,NTC,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,23,A23,ntc,NTC,43.463,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,23,A23,ntc,UNKNOWN,28.232,,,,,,1,45,0.178
+Chinook,VIC,24,A24,ntc,NTC,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,24,A24,ntc,NTC,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,24,A24,ntc,NTC,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,24,A24,ntc,UNKNOWN,27.999,,,,,,1,45,0.178
+Chinook,VIC,25,B1,gBlocks,STANDARD,28.540,"1,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,25,B1,gBlocks,STANDARD,28.561,"1,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,25,B1,gBlocks,STANDARD,26.106,"1,000.000",-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,25,B1,gBlocks,UNKNOWN,27.876,,,,,,1,45,0.178
+Chinook,VIC,26,B2,gBlocks,STANDARD,28.716,"1,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,26,B2,gBlocks,STANDARD,28.967,"1,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,26,B2,gBlocks,STANDARD,26.426,"1,000.000",-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,26,B2,gBlocks,UNKNOWN,28.135,,,,,,1,45,0.178
+Chinook,VIC,27,B3,gBlocks,STANDARD,28.818,"1,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,27,B3,gBlocks,STANDARD,29.086,"1,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,27,B3,gBlocks,STANDARD,26.515,"1,000.000",-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,27,B3,gBlocks,UNKNOWN,27.940,,,,,,1,45,0.178
+Chinook,VIC,28,B4,unknowns,STANDARD,28.938,"1,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,28,B4,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,28,B4,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,28,B4,unknowns,UNKNOWN,28.297,,,,,,1,45,0.178
+Chinook,VIC,29,B5,unknowns,STANDARD,29.071,"1,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,29,B5,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,29,B5,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,29,B5,unknowns,UNKNOWN,28.192,,,,,,1,45,0.178
+Chinook,VIC,30,B6,unknowns,STANDARD,29.147,"1,000.000",-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,30,B6,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,30,B6,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,30,B6,unknowns,UNKNOWN,28.017,,,,,,1,45,0.178
+Chinook,VIC,31,B7,unknowns,UNKNOWN,42.564,0.008,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,31,B7,unknowns,STANDARD,29.111,"1,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,31,B7,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,31,B7,unknowns,UNKNOWN,28.284,,,,,,1,45,0.178
+Chinook,VIC,32,B8,unknowns,UNKNOWN,43.062,0.005,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,32,B8,unknowns,STANDARD,29.459,"1,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,32,B8,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,32,B8,unknowns,UNKNOWN,28.207,,,,,,1,45,0.178
+Chinook,VIC,33,B9,unknowns,UNKNOWN,41.647,0.017,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,33,B9,unknowns,STANDARD,29.285,"1,000.000",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,33,B9,unknowns,UNKNOWN,42.944,0.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,33,B9,unknowns,UNKNOWN,27.969,,,,,,1,45,0.178
+Chinook,VIC,34,B10,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,34,B10,unknowns,UNKNOWN,31.438,188.170,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,34,B10,unknowns,UNKNOWN,33.534,0.842,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,34,B10,unknowns,UNKNOWN,29.041,,,,,,1,45,0.178
+Chinook,VIC,35,B11,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,35,B11,unknowns,UNKNOWN,31.697,149.661,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,35,B11,unknowns,UNKNOWN,33.802,0.633,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,35,B11,unknowns,UNKNOWN,29.014,,,,,,1,45,0.178
+Chinook,VIC,36,B12,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,36,B12,unknowns,UNKNOWN,30.959,287.497,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,36,B12,unknowns,UNKNOWN,32.126,3.755,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,36,B12,unknowns,UNKNOWN,28.280,,,,,,1,45,0.178
+Chinook,VIC,46,B22,ntc,NTC,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,46,B22,ntc,NTC,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,46,B22,ntc,NTC,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,46,B22,ntc,UNKNOWN,28.309,,,,,,1,45,0.178
+Chinook,VIC,47,B23,ntc,NTC,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,47,B23,ntc,NTC,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,47,B23,ntc,NTC,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,47,B23,ntc,UNKNOWN,27.972,,,,,,1,45,0.178
+Chinook,VIC,48,B24,ntc,NTC,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,48,B24,ntc,NTC,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,48,B24,ntc,NTC,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,48,B24,ntc,UNKNOWN,28.254,,,,,,1,45,0.178
+Chinook,VIC,49,C1,gBlocks,STANDARD,31.248,100.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,49,C1,gBlocks,STANDARD,31.861,100.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,49,C1,gBlocks,STANDARD,29.026,100.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,49,C1,gBlocks,UNKNOWN,28.299,,,,,,1,45,0.178
+Chinook,VIC,50,C2,gBlocks,STANDARD,31.591,100.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,50,C2,gBlocks,STANDARD,31.600,100.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,50,C2,gBlocks,STANDARD,29.152,100.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,50,C2,gBlocks,UNKNOWN,28.145,,,,,,1,45,0.178
+Chinook,VIC,51,C3,gBlocks,STANDARD,31.858,100.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,51,C3,gBlocks,STANDARD,32.006,100.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,51,C3,gBlocks,STANDARD,29.641,100.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,51,C3,gBlocks,UNKNOWN,28.155,,,,,,1,45,0.178
+Chinook,VIC,52,C4,unknowns,STANDARD,31.983,100.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,52,C4,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,52,C4,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,52,C4,unknowns,UNKNOWN,28.343,,,,,,1,45,0.178
+Chinook,VIC,53,C5,unknowns,STANDARD,32.268,100.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,53,C5,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,53,C5,unknowns,UNKNOWN,43.930,0.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,53,C5,unknowns,UNKNOWN,28.186,,,,,,1,45,0.178
+Chinook,VIC,54,C6,unknowns,STANDARD,32.248,100.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,54,C6,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,54,C6,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,54,C6,unknowns,UNKNOWN,27.984,,,,,,1,45,0.178
+Chinook,VIC,55,C7,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,55,C7,unknowns,STANDARD,32.127,100.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,55,C7,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,55,C7,unknowns,UNKNOWN,28.398,,,,,,1,45,0.178
+Chinook,VIC,56,C8,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,56,C8,unknowns,STANDARD,32.139,100.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,56,C8,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,56,C8,unknowns,UNKNOWN,28.084,,,,,,1,45,0.178
+Chinook,VIC,57,C9,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,57,C9,unknowns,STANDARD,32.560,100.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,57,C9,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,57,C9,unknowns,UNKNOWN,28.124,,,,,,1,45,0.178
+Chinook,VIC,58,C10,unknowns,UNKNOWN,40.304,0.057,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,58,C10,unknowns,UNKNOWN,31.280,216.365,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,58,C10,unknowns,UNKNOWN,31.741,5.654,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,58,C10,unknowns,UNKNOWN,28.279,,,,,,1,45,0.178
+Chinook,VIC,59,C11,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,59,C11,unknowns,UNKNOWN,31.460,184.591,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,59,C11,unknowns,UNKNOWN,32.072,3.974,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,59,C11,unknowns,UNKNOWN,28.212,,,,,,1,45,0.178
+Chinook,VIC,60,C12,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,60,C12,unknowns,UNKNOWN,31.433,189.103,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,60,C12,unknowns,UNKNOWN,32.663,2.121,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,60,C12,unknowns,UNKNOWN,28.104,,,,,,1,45,0.178
+Chinook,VIC,72,C24,ntc,NTC,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,72,C24,ntc,NTC,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,72,C24,ntc,NTC,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,72,C24,ntc,UNKNOWN,28.263,,,,,,1,45,0.178
+Chinook,VIC,73,D1,gBlocks,STANDARD,34.785,10.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,73,D1,gBlocks,STANDARD,34.683,10.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,73,D1,gBlocks,STANDARD,32.269,10.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,73,D1,gBlocks,UNKNOWN,28.435,,,,,,1,45,0.178
+Chinook,VIC,74,D2,gBlocks,STANDARD,34.318,10.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,74,D2,gBlocks,STANDARD,35.483,10.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,74,D2,gBlocks,STANDARD,32.096,10.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,74,D2,gBlocks,UNKNOWN,28.448,,,,,,1,45,0.178
+Chinook,VIC,75,D3,gBlocks,STANDARD,34.692,10.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,75,D3,gBlocks,STANDARD,34.535,10.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,75,D3,gBlocks,STANDARD,32.163,10.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,75,D3,gBlocks,UNKNOWN,28.281,,,,,,1,45,0.178
+Chinook,VIC,76,D4,unknowns,STANDARD,35.163,10.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,76,D4,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,76,D4,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,76,D4,unknowns,UNKNOWN,27.990,,,,,,1,45,0.178
+Chinook,VIC,77,D5,unknowns,STANDARD,37.273,10.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,77,D5,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,77,D5,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,77,D5,unknowns,UNKNOWN,28.155,,,,,,1,45,0.178
+Chinook,VIC,78,D6,unknowns,STANDARD,35.469,10.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,78,D6,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,78,D6,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,78,D6,unknowns,UNKNOWN,28.203,,,,,,1,45,0.178
+Chinook,VIC,79,D7,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,79,D7,unknowns,STANDARD,34.411,10.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,79,D7,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,79,D7,unknowns,UNKNOWN,28.297,,,,,,1,45,0.178
+Chinook,VIC,80,D8,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,80,D8,unknowns,STANDARD,35.744,10.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,80,D8,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,80,D8,unknowns,UNKNOWN,28.155,,,,,,1,45,0.178
+Chinook,VIC,81,D9,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,81,D9,unknowns,STANDARD,34.920,10.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,81,D9,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,81,D9,unknowns,UNKNOWN,27.821,,,,,,1,45,0.178
+Chinook,VIC,82,D10,unknowns,UNKNOWN,40.984,0.031,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,82,D10,unknowns,UNKNOWN,30.431,458.415,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,82,D10,unknowns,UNKNOWN,33.944,0.544,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,82,D10,unknowns,UNKNOWN,28.090,,,,,,1,45,0.178
+Chinook,VIC,83,D11,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,83,D11,unknowns,UNKNOWN,30.548,413.098,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,83,D11,unknowns,UNKNOWN,33.641,0.751,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,83,D11,unknowns,UNKNOWN,28.218,,,,,,1,45,0.178
+Chinook,VIC,84,D12,unknowns,UNKNOWN,40.372,0.054,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,84,D12,unknowns,UNKNOWN,30.261,532.781,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,84,D12,unknowns,UNKNOWN,33.861,0.595,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,84,D12,unknowns,UNKNOWN,28.110,,,,,,1,45,0.178
+Chinook,VIC,97,E1,gBlocks,STANDARD,35.293,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,97,E1,gBlocks,STANDARD,34.799,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,97,E1,gBlocks,STANDARD,33.668,5.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,97,E1,gBlocks,UNKNOWN,28.359,,,,,,1,45,0.178
+Chinook,VIC,98,E2,gBlocks,STANDARD,35.494,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,98,E2,gBlocks,STANDARD,35.390,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,98,E2,gBlocks,STANDARD,33.916,5.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,98,E2,gBlocks,UNKNOWN,28.525,,,,,,1,45,0.178
+Chinook,VIC,99,E3,gBlocks,STANDARD,35.514,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,99,E3,gBlocks,STANDARD,36.064,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,99,E3,gBlocks,STANDARD,33.126,5.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,99,E3,gBlocks,UNKNOWN,28.553,,,,,,1,45,0.178
+Chinook,VIC,100,E4,unknowns,STANDARD,35.577,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,100,E4,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,100,E4,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,100,E4,unknowns,UNKNOWN,28.170,,,,,,1,45,0.178
+Chinook,VIC,101,E5,unknowns,STANDARD,35.655,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,101,E5,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,101,E5,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,101,E5,unknowns,UNKNOWN,28.483,,,,,,1,45,0.178
+Chinook,VIC,102,E6,unknowns,STANDARD,35.421,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,102,E6,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,102,E6,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,102,E6,unknowns,UNKNOWN,27.986,,,,,,1,45,0.178
+Chinook,VIC,103,E7,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,103,E7,unknowns,STANDARD,34.982,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,103,E7,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,103,E7,unknowns,UNKNOWN,28.100,,,,,,1,45,0.178
+Chinook,VIC,104,E8,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,104,E8,unknowns,STANDARD,35.011,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,104,E8,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,104,E8,unknowns,UNKNOWN,27.916,,,,,,1,45,0.178
+Chinook,VIC,105,E9,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,105,E9,unknowns,STANDARD,34.972,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,105,E9,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,105,E9,unknowns,UNKNOWN,28.220,,,,,,1,45,0.178
+Chinook,VIC,106,E10,unknowns,UNKNOWN,43.750,0.003,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,106,E10,unknowns,UNKNOWN,29.925,716.846,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,106,E10,unknowns,UNKNOWN,33.042,1.420,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,106,E10,unknowns,UNKNOWN,28.050,,,,,,1,45,0.178
+Chinook,VIC,107,E11,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,107,E11,unknowns,UNKNOWN,29.932,712.024,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,107,E11,unknowns,UNKNOWN,33.906,0.567,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,107,E11,unknowns,UNKNOWN,28.489,,,,,,1,45,0.178
+Chinook,VIC,108,E12,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,108,E12,unknowns,UNKNOWN,29.107,"1,476.440",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,108,E12,unknowns,UNKNOWN,31.557,6.873,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,108,E12,unknowns,UNKNOWN,27.817,,,,,,1,45,0.178
+Chinook,VIC,121,F1,gBlocks,STANDARD,35.974,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,121,F1,gBlocks,STANDARD,34.975,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,121,F1,gBlocks,STANDARD,33.320,5.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,121,F1,gBlocks,UNKNOWN,28.397,,,,,,1,45,0.178
+Chinook,VIC,122,F2,gBlocks,STANDARD,36.175,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,122,F2,gBlocks,STANDARD,36.772,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,122,F2,gBlocks,STANDARD,33.071,5.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,122,F2,gBlocks,UNKNOWN,28.280,,,,,,1,45,0.178
+Chinook,VIC,123,F3,gBlocks,STANDARD,35.577,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,123,F3,gBlocks,STANDARD,36.394,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,123,F3,gBlocks,STANDARD,33.869,5.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,123,F3,gBlocks,UNKNOWN,28.351,,,,,,1,45,0.178
+Chinook,VIC,124,F4,unknowns,STANDARD,35.525,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,124,F4,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,124,F4,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,124,F4,unknowns,UNKNOWN,28.217,,,,,,1,45,0.178
+Chinook,VIC,125,F5,unknowns,STANDARD,38.007,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,125,F5,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,125,F5,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,125,F5,unknowns,UNKNOWN,28.199,,,,,,1,45,0.178
+Chinook,VIC,126,F6,unknowns,STANDARD,35.467,5.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,126,F6,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,126,F6,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,126,F6,unknowns,UNKNOWN,28.337,,,,,,1,45,0.178
+Chinook,VIC,127,F7,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,127,F7,unknowns,STANDARD,35.227,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,127,F7,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,127,F7,unknowns,UNKNOWN,28.026,,,,,,1,45,0.178
+Chinook,VIC,128,F8,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,128,F8,unknowns,STANDARD,35.639,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,128,F8,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,128,F8,unknowns,UNKNOWN,28.019,,,,,,1,45,0.178
+Chinook,VIC,129,F9,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,129,F9,unknowns,STANDARD,Undetermined,5.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,129,F9,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,129,F9,unknowns,UNKNOWN,28.459,,,,,,1,45,0.178
+Chinook,VIC,130,F10,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,130,F10,unknowns,UNKNOWN,29.532,"1,014.301",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,130,F10,unknowns,UNKNOWN,33.592,0.791,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,130,F10,unknowns,UNKNOWN,27.840,,,,,,1,45,0.178
+Chinook,VIC,131,F11,unknowns,UNKNOWN,38.761,0.225,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,131,F11,unknowns,UNKNOWN,29.495,"1,048.156",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,131,F11,unknowns,UNKNOWN,31.855,5.004,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,131,F11,unknowns,UNKNOWN,27.921,,,,,,1,45,0.178
+Chinook,VIC,132,F12,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,132,F12,unknowns,UNKNOWN,29.418,"1,121.805",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,132,F12,unknowns,UNKNOWN,32.560,2.369,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,132,F12,unknowns,UNKNOWN,27.889,,,,,,1,45,0.178
+Chinook,VIC,145,G1,gBlocks,STANDARD,35.495,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,145,G1,gBlocks,STANDARD,Undetermined,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,145,G1,gBlocks,STANDARD,34.600,1.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,145,G1,gBlocks,NTC,28.360,,,,,,1,45,0.178
+Chinook,VIC,146,G2,gBlocks,STANDARD,38.207,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,146,G2,gBlocks,STANDARD,36.886,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,146,G2,gBlocks,STANDARD,35.975,1.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,146,G2,gBlocks,NTC,28.351,,,,,,1,45,0.178
+Chinook,VIC,147,G3,gBlocks,STANDARD,Undetermined,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,147,G3,gBlocks,STANDARD,37.626,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,147,G3,gBlocks,STANDARD,35.942,1.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,147,G3,gBlocks,NTC,28.319,,,,,,1,45,0.178
+Chinook,VIC,148,G4,unknowns,STANDARD,36.441,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,148,G4,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,148,G4,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,148,G4,unknowns,UNKNOWN,28.498,,,,,,1,45,0.178
+Chinook,VIC,149,G5,unknowns,STANDARD,38.050,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,149,G5,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,149,G5,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,149,G5,unknowns,UNKNOWN,28.207,,,,,,1,45,0.178
+Chinook,VIC,150,G6,unknowns,STANDARD,Undetermined,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,150,G6,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,150,G6,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,150,G6,unknowns,UNKNOWN,28.397,,,,,,1,45,0.178
+Chinook,VIC,151,G7,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,151,G7,unknowns,STANDARD,36.847,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,151,G7,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,151,G7,unknowns,UNKNOWN,27.997,,,,,,1,45,0.178
+Chinook,VIC,152,G8,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,152,G8,unknowns,STANDARD,Undetermined,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,152,G8,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,152,G8,unknowns,UNKNOWN,28.127,,,,,,1,45,0.178
+Chinook,VIC,153,G9,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,153,G9,unknowns,STANDARD,Undetermined,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,153,G9,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,153,G9,unknowns,UNKNOWN,27.790,,,,,,1,45,0.178
+Chinook,VIC,154,G10,unknowns,UNKNOWN,41.758,0.016,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,154,G10,unknowns,UNKNOWN,29.153,"1,417.731",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,154,G10,unknowns,UNKNOWN,34.287,0.378,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,154,G10,unknowns,UNKNOWN,28.132,,,,,,1,45,0.178
+Chinook,VIC,155,G11,unknowns,UNKNOWN,41.921,0.014,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,155,G11,unknowns,UNKNOWN,29.293,"1,252.447",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,155,G11,unknowns,UNKNOWN,34.483,0.307,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,155,G11,unknowns,UNKNOWN,27.995,,,,,,1,45,0.178
+Chinook,VIC,156,G12,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,156,G12,unknowns,UNKNOWN,29.176,"1,388.768",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,156,G12,unknowns,UNKNOWN,37.216,0.017,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,156,G12,unknowns,UNKNOWN,28.035,,,,,,1,45,0.178
+Chinook,VIC,169,H1,gBlocks,STANDARD,Undetermined,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,169,H1,gBlocks,STANDARD,36.979,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,169,H1,gBlocks,STANDARD,35.232,1.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,169,H1,gBlocks,NTC,28.447,,,,,,1,45,0.178
+Chinook,VIC,170,H2,gBlocks,STANDARD,Undetermined,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,170,H2,gBlocks,STANDARD,Undetermined,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,170,H2,gBlocks,STANDARD,35.650,1.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,170,H2,gBlocks,NTC,28.310,,,,,,1,45,0.178
+Chinook,VIC,171,H3,gBlocks,STANDARD,36.756,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,171,H3,gBlocks,STANDARD,38.345,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,171,H3,gBlocks,STANDARD,Undetermined,1.000,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,171,H3,gBlocks,NTC,28.239,,,,,,1,45,0.178
+Chinook,VIC,172,H4,unknowns,STANDARD,36.807,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,172,H4,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,172,H4,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,172,H4,unknowns,UNKNOWN,28.462,,,,,,1,45,0.178
+Chinook,VIC,173,H5,unknowns,STANDARD,Undetermined,1,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,173,H5,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,173,H5,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,173,H5,unknowns,UNKNOWN,28.215,,,,,,1,45,0.178
+Chinook,VIC,174,H6,unknowns,STANDARD,37.238,1.000,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,174,H6,unknowns,UNKNOWN,Undetermined,,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,174,H6,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,174,H6,unknowns,UNKNOWN,28.068,,,,,,1,45,0.178
+Chinook,VIC,175,H7,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,175,H7,unknowns,STANDARD,Undetermined,1,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,175,H7,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,175,H7,unknowns,UNKNOWN,28.300,,,,,,1,45,0.178
+Chinook,VIC,176,H8,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,176,H8,unknowns,STANDARD,37.183,1.000,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,176,H8,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,176,H8,unknowns,UNKNOWN,28.773,,,,,,1,45,0.178
+Chinook,VIC,177,H9,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,177,H9,unknowns,STANDARD,Undetermined,1,-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,177,H9,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,177,H9,unknowns,UNKNOWN,27.862,,,,,,1,45,0.178
+Chinook,VIC,178,H10,unknowns,UNKNOWN,41.041,0.030,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,178,H10,unknowns,UNKNOWN,29.341,"1,201.118",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,178,H10,unknowns,UNKNOWN,36.173,0.051,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,178,H10,unknowns,UNKNOWN,28.262,,,,,,1,45,0.178
+Chinook,VIC,179,H11,unknowns,UNKNOWN,41.665,0.017,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,179,H11,unknowns,UNKNOWN,29.354,"1,186.666",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,179,H11,unknowns,UNKNOWN,Undetermined,,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,179,H11,unknowns,UNKNOWN,28.058,,,,,,1,45,0.178
+Chinook,VIC,180,H12,unknowns,UNKNOWN,Undetermined,,-2.598,142.653,37.080,0.965,1,45,0.499
+Coho,FAM,180,H12,unknowns,UNKNOWN,29.269,"1,280.026",-2.606,141.977,37.365,0.966,1,45,0.555
+Eulachon,JUN,180,H12,unknowns,UNKNOWN,36.193,0.050,-2.168,189.294,33.371,0.356,1,45,0.325
+Haast eagle IPC,ABY,180,H12,unknowns,UNKNOWN,28.213,,,,,,1,45,0.178

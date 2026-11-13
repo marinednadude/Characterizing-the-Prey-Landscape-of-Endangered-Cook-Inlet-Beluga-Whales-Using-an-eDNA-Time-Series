@@ -1,0 +1,964 @@
+---
+title: "qPCR Calibration Attempt"
+author: "Zachary Gold"
+date: "2023-02-23"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(broom.mixed)
+```
+
+```{r}
+
+qPCR_AK_data <- readRDS(file=here("data","qPCR_results","data","qPCR_results","qPCR_AK_data.RDS"))
+
+
+qPCR_AK_data <- qPCR_AK_data %>% 
+  mutate(., CT = case_when(Sample.Name %in% c("Kenai1a_plate_77","Kenai1a_plate_39") &`Target Name` =="cetacea" ~ "Delete these samples - funky things abound",
+                           TRUE~CT)) %>% 
+  filter(., CT !="Delete these samples - funky things abound")
+  
+qPCR_AK_data %>% 
+    mutate(., dilution = case_when(Task =="STANDARD" ~ NA,
+                                 TRUE ~ 1)) %>% 
+  mutate(., CT=if_else(CT=="Undetermined",NA,CT))-> qPCR_AK_data
+
+qPCR_AK_data %>% 
+  filter(., `Target Name` =="cetacea") %>% 
+  dplyr::select(Plate, Well=Well.Position, Sample =Sample.Name,Ct=CT, dilution, Adj_Vol=Volume) -> beluga_input_csv_for_stan
+
+beluga_input_csv_for_stan %>% write_csv(file=here("data","qPCR_results","data","qPCR_results","beluga_input_csv_for_stan.csv"))
+
+qPCR_AK_data %>% 
+  filter(., `Target Name` =="Coho") %>%
+dplyr::select(Plate, Well=Well.Position, Sample =Sample.Name,Ct=CT, dilution, Adj_Vol=Volume) -> Coho_input_csv_for_stan
+
+Coho_input_csv_for_stan %>% write_csv(file=here("data","qPCR_results","data","qPCR_results","Coho_input_csv_for_stan.csv"))
+
+qPCR_AK_data %>% 
+  filter(., `Target Name` =="Eulachon") %>% 
+  dplyr::select(Plate, Well=Well.Position, Sample =Sample.Name,Ct=CT, dilution, Adj_Vol=Volume) -> Eulachon_input_csv_for_stan
+
+Eulachon_input_csv_for_stan %>% write_csv(file=here("data","qPCR_results","data","qPCR_results","Eulachon_input_csv_for_stan.csv"))
+
+qPCR_AK_data %>% 
+  filter(., `Target Name` =="Chinook") %>% 
+  dplyr::select(Plate, Well=Well.Position, Sample =Sample.Name,Ct=CT, dilution, Adj_Vol=Volume) -> chinook_input_csv_for_stan
+
+chinook_input_csv_for_stan %>% write_csv(file=here("data","qPCR_results","data","qPCR_results","chinook_input_csv_for_stan.csv"))
+
+```
+
+
+
+## Chinook Input_csv function test
+```{r}
+
+format_qPCR_data_chinook <- function(input_csv){  
+   require(tidyverse)
+
+  qPCRdata <- read.csv(input_csv)
+       
+              qPCRdata <- qPCRdata %>% 
+                mutate(Task=ifelse(str_detect(Sample,"standard"), "STANDARD", "UNKNOWN"),
+                       Task=ifelse(str_detect(Sample,"Coho"), "UNKNOWN", Task),
+                       Task=ifelse(str_detect(Sample,"Eulachon"), "UNKNOWN", Task)) %>% 
+                mutate(z = ifelse(is.na(Ct), 0, 1),
+                       Ct = ifelse(is.na(Ct), 99, Ct)) %>% 
+                mutate(Ct = as.numeric(Ct),
+                       Ct = round(Ct, 2)) %>%  #do away with ridiculous decimal places 
+                mutate(conc = NA) %>% 
+                mutate(Quantity = 0) %>% 
+                mutate(., Quantity = case_when(Sample == "Chinook_E05_standard" ~ 100000,
+                                               Sample == "Chinook_E04_standard" ~ 10000,
+                                               Sample == "Chinook_E03_standard" ~ 1000,
+                                               Sample == "Chinook_E02_standard" ~ 100,
+                                               Sample == "Chinook_E01_standard" ~ 10,
+                                               Sample == "Chinook_E.7_standard" ~ 5,
+                                               Sample == "Chinook_E0_standard" ~ 1,
+                                               Sample == "Combo_E05_standard" ~ 100000,
+                                               Sample == "Combo_E04_standard" ~ 10000,
+                                               Sample == "Combo_E03_standard" ~ 1000,
+                                               Sample == "Combo_E02_standard" ~ 100,
+                                               Sample == "Combo_E01_standard" ~ 10,
+                                               Sample == "Combo_E.7_standard" ~ 5,
+                                               Sample == "Combo_E0_standard" ~ 1,
+                                               TRUE ~ Quantity)) %>% 
+                mutate(PlateName = Plate) %>% #retain original plate name
+                mutate(Plate = match(Plate, unique(Plate))) #index plates sequentially
+              
+         qPCRdata %>% 
+           mutate(., Sample = case_when(Task == "STANDARD"~as.character(Quantity),
+                                        TRUE ~Sample),
+                  conc = case_when(Task == "STANDARD"~as.numeric(Quantity),
+                                        TRUE ~conc))-> qPCRdata
+              
+              qPCRdata <- qPCRdata %>% 
+                unite(c(Plate,Sample), col = "plateSample", remove = F) %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) %>% 
+                group_by(plateSample) %>% 
+                add_tally(Ct == 99) %>% 
+                filter(n < 3) %>% #do away with examples of three non-detections; we have no basis for modeling these. 
+                dplyr::select(-n) %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) #reindex
+              
+              #QC filter
+              qPCRdata <- qPCRdata %>%
+                group_by(Plate, plateSample) %>% 
+                mutate(sdCt = sd(Ct)) %>% 
+               filter(sdCt < 1.5 | sdCt > 20) %>% #really bad triplicates; don't throw out instances where 1 or 2 out of 3 was a detection (which, because Ct = 99 for nondetect, inflates the sd)
+                ungroup() %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) #reindex
+               return(qPCRdata)
+}
+```
+
+```{r}
+format_qPCR_data_coho <- function(input_csv){  
+   require(tidyverse)
+
+    qPCRdata <- read.csv(input_csv)
+
+                  qPCRdata <- qPCRdata %>% 
+                mutate(Task=ifelse(str_detect(Sample,"standard"), "STANDARD", "UNKNOWN"),
+                       Task=ifelse(str_detect(Sample,"Chinook"), "UNKNOWN", Task),
+                       Task=ifelse(str_detect(Sample,"Eulachon"), "UNKNOWN", Task)) %>% 
+                mutate(z = ifelse(is.na(Ct), 0, 1),
+                       Ct = ifelse(is.na(Ct), 99, Ct)) %>% 
+                mutate(Ct = as.numeric(Ct),
+                       Ct = round(Ct, 2)) %>%  #do away with ridiculous decimal places 
+                mutate(conc = NA) %>% 
+                mutate(Quantity = 0) %>% 
+                mutate(., Quantity = case_when(Sample == "Coho_E05_standard" ~ 100000,
+                                               Sample == "Coho_E04_standard" ~ 10000,
+                                               Sample == "Coho_E03_standard" ~ 1000,
+                                               Sample == "Coho_E02_standard" ~ 100,
+                                               Sample == "Coho_E01_standard" ~ 10,
+                                               Sample == "Coho_E.7_standard" ~ 5,
+                                               Sample == "Coho_E0_standard" ~ 1,
+                                               Sample == "Combo_E05_standard" ~ 100000,
+                                               Sample == "Combo_E04_standard" ~ 10000,
+                                               Sample == "Combo_E03_standard" ~ 1000,
+                                               Sample == "Combo_E02_standard" ~ 100,
+                                               Sample == "Combo_E01_standard" ~ 10,
+                                               Sample == "Combo_E.7_standard" ~ 5,
+                                               Sample == "Combo_E0_standard" ~ 1,
+                                               TRUE ~ Quantity)) %>% 
+                mutate(PlateName = Plate) %>% #retain original plate name
+                mutate(Plate = match(Plate, unique(Plate))) #index plates sequentially
+              
+         qPCRdata %>% 
+           mutate(., Sample = case_when(Task == "STANDARD"~as.character(Quantity),
+                                        TRUE ~Sample),
+                  conc = case_when(Task == "STANDARD"~as.numeric(Quantity),
+                                        TRUE ~conc))-> qPCRdata
+              
+              qPCRdata <- qPCRdata %>% 
+                unite(c(Plate,Sample), col = "plateSample", remove = F) %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) %>% 
+                group_by(plateSample) %>% 
+                add_tally(Ct == 99) %>% 
+                filter(n < 3) %>% #do away with examples of three non-detections; we have no basis for modeling these. 
+                dplyr::select(-n) %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) #reindex
+              
+              #QC filter
+              qPCRdata <- qPCRdata %>%
+                group_by(Plate, plateSample) %>% 
+                mutate(sdCt = sd(Ct)) %>% 
+                filter(sdCt < 1.5 | sdCt > 20) %>% #really bad triplicates; don't throw out instances where 1 or 2 out of 3 was a detection (which, because Ct = 99 for nondetect, inflates the sd)
+                ungroup() %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) #reindex
+               return(qPCRdata)
+}
+
+
+```
+
+#format_qPCR_data_beluga
+```{r}
+
+format_qPCR_data_beluga <- function(input_csv){  
+   require(tidyverse)
+
+    qPCRdata <- read.csv(input_csv)
+              qPCRdata <- qPCRdata %>% 
+                mutate(Task=ifelse(str_detect(Sample,"standard"), "STANDARD", "UNKNOWN")) %>% 
+                mutate(z = ifelse(is.na(Ct), 0, 1),
+                       Ct = ifelse(is.na(Ct), 99, Ct),
+                       Ct = ifelse(Ct > 40, 99, Ct)) %>% 
+                mutate(Ct = as.numeric(Ct),
+                       Ct = round(Ct, 2)) %>%  #do away with ridiculous decimal places 
+                mutate(conc = NA) %>% 
+                mutate(Quantity = 0) %>% 
+                mutate(., Quantity = case_when(Sample == "Beluga_E05_standard" ~ 100000,
+                                               Sample == "Beluga_E04_standard" ~ 10000,
+                                               Sample == "Beluga_E03_standard" ~ 1000,
+                                               Sample == "Beluga_E02_standard" ~ 100,
+                                               Sample == "Beluga_E01_standard" ~ 10,
+                                               Sample == "Beluga_E.7_standard" ~ 5,
+                                               Sample == "Beluga_E0_standard" ~ 1,
+                                               TRUE ~ Quantity)) %>% 
+                mutate(PlateName = Plate) %>% #retain original plate name
+                mutate(Plate = match(Plate, unique(Plate))) #index plates sequentially
+              
+         qPCRdata %>% 
+           mutate(., Sample = case_when(Task == "STANDARD"~as.character(Quantity),
+                                        TRUE ~Sample),
+                  conc = case_when(Task == "STANDARD"~as.numeric(Quantity),
+                                        TRUE ~conc))-> qPCRdata
+              
+              qPCRdata <- qPCRdata %>% 
+                unite(c(Plate,Sample), col = "plateSample", remove = F) %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) %>% 
+                group_by(plateSample) %>% 
+                add_tally(Ct == 99) %>% 
+                filter(n < 3) %>% #do away with examples of three non-detections; we have no basis for modeling these. 
+                dplyr::select(-n) %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) #reindex
+              
+              #QC filter
+              qPCRdata <- qPCRdata %>%
+                group_by(Plate, plateSample) %>% 
+            mutate(, detections = case_when(Ct < 99 ~ 1,
+                                  TRUE ~ 0),
+         num_detections = sum(detections)) %>% 
+                mutate(sdCt = sd(Ct), 
+                       meanCt=mean(Ct)) %>% 
+                filter(sdCt < 1.5 | sdCt > 20 ) %>% #really bad triplicates; don't throw out instances where 1 or 2 out of 3 was a detection (which, because Ct = 99 for nondetect, inflates the sd), below these are one off samples with very low Ct and only 1 replicate
+                mutate(., to_drop =case_when(num_detections < 3 & meanCt >70 & Ct <35~ "drop",
+                       TRUE ~"keep")) %>%
+                filter(., to_drop!="drop") %>% 
+                ungroup() %>% 
+                group_by(plateSample) %>% 
+                mutate(meanCt2=mean(Ct)) %>%  
+                filter(., meanCt2 !=99) %>% #do away with examples of three non-detections; we have no basis for modeling these. 
+                                ungroup() %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) #reindex
+               return(qPCRdata)
+}
+
+```
+
+```{r}
+
+format_qPCR_data_eulachon<- function(input_csv){  
+   require(tidyverse)
+
+      qPCRdata <- read.csv(input_csv)
+              qPCRdata <- qPCRdata %>% 
+                mutate(Task=ifelse(str_detect(Sample,"standard"), "STANDARD", "UNKNOWN"),
+                       Task=ifelse(str_detect(Sample,"Chinook"), "UNKNOWN", Task),
+                       Task=ifelse(str_detect(Sample,"Coho"), "UNKNOWN", Task)) %>% 
+                mutate(z = ifelse(is.na(Ct), 0, 1),
+                       Ct = ifelse(is.na(Ct), 99, Ct)) %>% 
+                mutate(Ct = as.numeric(Ct),
+                       Ct = round(Ct, 2)) %>%  #do away with ridiculous decimal places 
+                mutate(conc = NA) %>% 
+                mutate(Quantity = 0) %>% 
+                mutate(., Quantity = case_when(Sample == "Eulachon_E05_standard" ~ 100000,
+                                               Sample == "Eulachon_E04_standard" ~ 10000,
+                                               Sample == "Eulachon_E03_standard" ~ 1000,
+                                               Sample == "Eulachon_E02_standard" ~ 100,
+                                               Sample == "Eulachon_E01_standard" ~ 10,
+                                               Sample == "Eulachon_E.7_standard" ~ 5,
+                                               Sample == "Eulachon_E0_standard" ~ 1,
+                                               Sample == "Combo_E05_standard" ~ 100000,
+                                               Sample == "Combo_E04_standard" ~ 10000,
+                                               Sample == "Combo_E03_standard" ~ 1000,
+                                               Sample == "Combo_E02_standard" ~ 100,
+                                               Sample == "Combo_E01_standard" ~ 10,
+                                               Sample == "Combo_E.7_standard" ~ 5,
+                                               Sample == "Combo_E0_standard" ~ 1,
+                                               TRUE ~ Quantity)) %>%
+                mutate(PlateName = Plate) %>% #retain original plate name
+                mutate(Plate = match(Plate, unique(Plate))) #index plates sequentially
+              
+         qPCRdata %>% 
+           mutate(., Sample = case_when(Task == "STANDARD"~as.character(Quantity),
+                                        TRUE ~Sample),
+                  conc = case_when(Task == "STANDARD"~as.numeric(Quantity),
+                                        TRUE ~conc))-> qPCRdata
+              
+              qPCRdata <- qPCRdata %>% 
+                unite(c(Plate,Sample), col = "plateSample", remove = F) %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) %>% 
+                group_by(plateSample) %>% 
+                add_tally(Ct == 99) %>% 
+                filter(n < 3) %>% #do away with examples of three non-detections; we have no basis for modeling these. 
+                dplyr::select(-n) %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) #reindex
+              
+              #QC filter
+              qPCRdata <- qPCRdata %>%
+                group_by(Plate, plateSample) %>% 
+                mutate(sdCt = sd(Ct)) %>% 
+                filter(sdCt < 1.5 | sdCt > 20 ) %>% #really bad triplicates; don't throw out instances where 1 or 2 out of 3 was a detection (which, because Ct = 99 for nondetect, inflates the sd)
+                ungroup() %>% 
+                mutate(plateSample_idx = match(plateSample, unique(plateSample))) #reindex
+               return(qPCRdata)
+}
+
+```
+
+```{r}
+qPCRdata_beluga <- format_qPCR_data_beluga(here("data","qPCR_results","data","qPCR_results","beluga_input_csv_for_stan.csv"))
+
+qPCRdata_chinook <- format_qPCR_data_chinook(here("data","qPCR_results","data","qPCR_results","chinook_input_csv_for_stan.csv"))
+qPCRdata_coho <- format_qPCR_data_coho(here("data","qPCR_results","data","qPCR_results","coho_input_csv_for_stan.csv"))
+
+qPCRdata_eulachon <- format_qPCR_data_eulachon(here("data","qPCR_results","data","qPCR_results","eulachon_input_csv_for_stan.csv"))
+
+```
+
+
+# Process Beluga
+
+```{r}
+
+
+qPCRdata_beluga %>% 
+  ggplot(aes(x=Ct)) +geom_histogram()
+
+
+qPCRdata_beluga %>% 
+  group_by(Sample) %>%
+  mutate(group_index = as.numeric(row_number())) %>% 
+  mutate(, detections = case_when(Ct < 99 ~ 1,
+                                  TRUE ~ 0),
+         num_detections = sum(detections)) %>% 
+  #filter(Sample %in% samples_w_issues$Sample.Name) %>% 
+  mutate(., Ct = ifelse(Ct>98, NA,Ct)) %>% 
+  filter(., Task=="UNKNOWN") %>% 
+  ggplot(., aes(y=reorder(Sample, num_detections), x=group_index, color=Ct, fill=Ct)) + geom_tile()
+
+
+qPCRdata_beluga %>% 
+    filter(., Task !="UNKNOWN") %>% 
+    mutate(., Ct = ifelse(Ct>98, NA,Ct)) %>% 
+  ggplot(., aes(y=Ct, x=log10(Quantity), color=Plate)) + geom_point()
+
+
+```
+# Process Chinook
+
+```{r}
+
+
+qPCRdata_chinook %>% 
+  ggplot(aes(x=Ct)) +geom_histogram()
+
+
+qPCRdata_chinook %>% 
+  group_by(Sample) %>%
+  mutate(group_index = as.numeric(row_number())) %>% 
+  mutate(, detections = case_when(Ct < 99 ~ 1,
+                                  TRUE ~ 0),
+         num_detections = sum(detections)) %>% 
+  #filter(Sample %in% samples_w_issues$Sample.Name) %>% 
+  mutate(., Ct = ifelse(Ct>98, NA,Ct)) %>% 
+  filter(., Task=="UNKNOWN") %>% 
+  ggplot(., aes(y=reorder(Sample, num_detections), x=group_index, color=Ct, fill=Ct)) + geom_tile()
+
+
+qPCRdata_chinook %>% 
+    filter(., Task !="UNKNOWN") %>% 
+    mutate(., Ct = ifelse(Ct>98, NA,Ct)) %>% 
+  ggplot(., aes(y=Ct, x=log10(Quantity), color=Plate)) + geom_point()
+
+```
+# Process coho
+
+```{r}
+
+
+qPCRdata_coho %>% 
+  ggplot(aes(x=Ct)) +geom_histogram()
+
+
+qPCRdata_coho %>% 
+  group_by(Sample) %>%
+  mutate(group_index = as.numeric(row_number())) %>% 
+  mutate(, detections = case_when(Ct < 99 ~ 1,
+                                  TRUE ~ 0),
+         num_detections = sum(detections)) %>% 
+  #filter(Sample %in% samples_w_issues$Sample.Name) %>% 
+  mutate(., Ct = ifelse(Ct>98, NA,Ct)) %>% 
+  filter(., Task=="UNKNOWN") %>% 
+  ggplot(., aes(y=reorder(Sample, num_detections), x=group_index, color=Ct, fill=Ct)) + geom_tile()
+
+
+qPCRdata_coho %>% 
+    filter(., Task !="UNKNOWN") %>% 
+    mutate(., Ct = ifelse(Ct>98, NA,Ct)) %>% 
+  ggplot(., aes(y=Ct, x=log10(Quantity), color=Plate)) + geom_point()
+
+```
+# Process eulachon
+
+```{r}
+
+
+qPCRdata_eulachon %>% 
+  ggplot(aes(x=Ct)) +geom_histogram()
+
+
+qPCRdata_eulachon %>% 
+  group_by(Sample) %>%
+  mutate(group_index = as.numeric(row_number())) %>% 
+  mutate(, detections = case_when(Ct < 99 ~ 1,
+                                  TRUE ~ 0),
+         num_detections = sum(detections)) %>% 
+  #filter(Sample %in% samples_w_issues$Sample.Name) %>% 
+  mutate(., Ct = ifelse(Ct>98, NA,Ct)) %>% 
+  filter(., Task=="UNKNOWN") %>% 
+  ggplot(., aes(y=reorder(Sample, num_detections), x=group_index, color=Ct, fill=Ct)) + geom_tile()
+
+
+qPCRdata_eulachon %>% 
+    filter(., Task !="UNKNOWN") %>% 
+    mutate(., Ct = ifelse(Ct>98, NA,Ct)) %>% 
+  ggplot(., aes(y=Ct, x=log10(Quantity), color=Plate)) + geom_point()
+
+```
+
+
+
+
+```{r}
+
+prepare_stan_data_qPCR <- function(qPCRdataname){
+        
+        require(tidyverse)
+        qPCRdata_beluga -> qPCRdataname
+        qPCRdata <- qPCRdataname
+        
+        type <- qPCRdata %>% dplyr::select(plateSample, Task) %>% distinct() %>% pull(Task)
+        
+        stan_qPCR_data <- list(
+          Nplates = length(unique(qPCRdata$Plate)),
+          Nobs = nrow(qPCRdata),
+          NSamples = length(unique(qPCRdata$plateSample)),
+          NstdSamples = qPCRdata %>% filter(Task == "STANDARD") %>% dplyr::select(plateSample) %>% distinct() %>% nrow(),
+          plate_idx = qPCRdata$Plate, 
+          std_idx =  which(type=="STANDARD"),
+          unkn_idx = which(type != "STANDARD"),
+          plateSample_idx = qPCRdata$plateSample_idx, 
+          y = qPCRdata$Ct,
+          z = qPCRdata$z,
+          known_concentration = qPCRdata %>% filter(Task == "STANDARD") %>% dplyr::select(plateSample_idx, conc) %>% distinct() %>% pull(conc),
+          stdCurvePrior_intercept = c(39, 3), #normal distr, mean and sd ; hyperpriors
+          stdCurvePrior_slope = c(-3, 1) #normal distr, mean and sd ; hyperpriors
+        )
+
+
+        return(stan_qPCR_data)
+        
+}
+```
+
+# Prepare stan beluga
+```{r}
+prepare_stan_data_qPCR(qPCRdata_beluga) -> stan_qPCR_data_beluga
+
+
+```
+
+```{r}
+prepare_stan_data_qPCR(qPCRdata_chinook) -> stan_qPCR_data_chinook
+prepare_stan_data_qPCR(qPCRdata_coho) -> stan_qPCR_data_coho
+prepare_stan_data_qPCR(qPCRdata_eulachon) -> stan_qPCR_data_eulachon
+```
+
+
+```{r}
+calibrate_qPCR <- function(stanmodelname, dataname, NCHAINS = 10, WARMUP = 500, ITER = 5000){
+        #actual calibration in stan
+        #input = named list
+        #output = posterior samples for many params
+        #dependencies = listed packages
+        
+        require(tidyverse)
+        require(rstan)
+        rstan_options(auto_write = TRUE)
+        options(mc.cores = parallel::detectCores())
+        
+        qMod = stan(file = stanmodelname, data = dataname,
+                    verbose = FALSE, chains = NCHAINS, thin = 1,
+                    warmup = WARMUP, iter = ITER,
+                    control = list(adapt_init_buffer = 175,
+                                   max_treedepth=18,
+                                   stepsize=0.01,
+                                   adapt_delta=.95,
+                                   metric="diag_e"),
+                    refresh = 10,
+                    boost_lib = NULL
+        )
+        
+        return(qMod)
+        
+}
+      
+stanmodelname  <-  here("data","qPCR_results","code","qPCR_calibration_enchilada.stan")
+calibrate_qPCR(stanmodelname,stan_qPCR_data_chinook) -> qMod_chinook
+calibrate_qPCR(stanmodelname,stan_qPCR_data_coho) -> qMod_coho
+calibrate_qPCR(stanmodelname,stan_qPCR_data_beluga) -> qMod_beluga
+calibrate_qPCR(stanmodelname,stan_qPCR_data_eulachon) -> qMod_eulachon
+
+
+check_hmc_diagnostics(qMod_chinook)
+check_hmc_diagnostics(qMod_coho)
+check_hmc_diagnostics(qMod_beluga)
+check_hmc_diagnostics(qMod_eulachon)
+
+saveRDS(qMod_eulachon, file=here("analysis","qMod_eulachon.RDS"))
+save(qMod_eulachon, file=here("analysis","qMod_eulachon.RData"))
+
+saveRDS(qMod_coho, file=here("analysis","qMod_coho.RDS"))
+save(qMod_coho, file=here("analysis","qMod_coho.RData"))
+
+saveRDS(qMod_beluga, file=here("analysis","qMod_beluga.RDS"))
+save(qMod_beluga, file=here("analysis","qMod_beluga.RData"))
+saveRDS(qMod_chinook, file=here("analysis","qMod_chinook.RDS"))
+save(qMod_chinook, file=here("analysis","qMod_chinook.RData"))
+
+qMod_beluga2 <- load(file=here("analysis","qMod_beluga.RData"))
+
+```
+
+```{r}
+
+qPCR_AK_data %>% 
+  filter(., Plate=="20m_1a") %>% 
+  mutate(., Quantity= str_remove_all(Quantity,",")) %>% 
+  filter(., `Target Name`=="cetacea") %>% 
+    filter(., `Task`!="STANDARD") %>% 
+  mutate(., Quantity=as.numeric(Quantity)) %>% 
+  mutate(., CT=as.numeric(CT)) %>% 
+  #filter(., !Well %in% c(50, 123,97,99) ) %>% 
+  ggplot(aes(x=New_name_no_tech, y=log10(Quantity), color=log10(Quantity))) +geom_tile()
+  
+
+
+```
+
+
+
+
+
+
+### Namers chinook
+```{r}
+type_chinook_all <- qPCRdata_chinook %>% dplyr::select(plateSample, Task) %>% distinct() %>% mutate(plateSample_idx = row_number())
+
+type_chinook_order_idx <- qPCRdata_chinook %>% dplyr::select(plateSample, Task) %>% distinct() %>% filter(., Task != "STANDARD") %>% mutate(order_idx = row_number())
+
+qPCRdata_chinook %>% 
+  left_join(type_chinook_all) %>% 
+  left_join(type_chinook_order_idx) %>%
+  dplyr::select(Sample.Name=Sample, plateSample,Task, plateSample_idx, order_idx) %>% distinct() -> namers_sample_chinook
+```
+
+### Namers coho
+```{r}
+type_coho_all <- qPCRdata_coho %>% dplyr::select(plateSample, Task) %>% distinct() %>% mutate(plateSample_idx = row_number())
+
+type_coho_order_idx <- qPCRdata_coho %>% dplyr::select(plateSample, Task) %>% distinct() %>% filter(., Task != "STANDARD") %>% mutate(order_idx = row_number())
+
+qPCRdata_coho %>% 
+  left_join(type_coho_all) %>% 
+  left_join(type_coho_order_idx) %>%
+  dplyr::select(Sample.Name=Sample, plateSample,Task, plateSample_idx, order_idx) %>% distinct() -> namers_sample_coho
+```
+
+### Namers beluga
+```{r}
+type_beluga_all <- qPCRdata_beluga %>% dplyr::select(plateSample, Task) %>% distinct() %>% mutate(plateSample_idx = row_number())
+
+type_beluga_order_idx <- qPCRdata_beluga %>% dplyr::select(plateSample, Task) %>% distinct() %>% filter(., Task != "STANDARD") %>% mutate(order_idx = row_number())
+
+qPCRdata_beluga %>% 
+  left_join(type_beluga_all) %>% 
+  left_join(type_beluga_order_idx) %>%
+  dplyr::select(Sample.Name=Sample, plateSample,Task, plateSample_idx, order_idx) %>% distinct() -> namers_sample_beluga
+```
+
+### Namers eulachon
+```{r}
+type_eulachon_all <- qPCRdata_eulachon %>% dplyr::select(plateSample, Task) %>% distinct() %>% mutate(plateSample_idx = row_number())
+
+type_eulachon_order_idx <- qPCRdata_eulachon %>% dplyr::select(plateSample, Task) %>% distinct() %>% filter(., Task != "STANDARD") %>% mutate(order_idx = row_number())
+
+qPCRdata_eulachon %>% 
+  left_join(type_eulachon_all) %>% 
+  left_join(type_eulachon_order_idx) %>%
+  dplyr::select(Sample.Name=Sample, plateSample,Task, plateSample_idx, order_idx) %>% distinct() -> namers_sample_eulachon
+```
+
+## Tidy chinook
+
+```{r}
+
+tidy_summary_chinook <- as.data.frame(qMod_chinook) %>%
+  # Reshape data to long format, keeping only the parameter name and its value
+  pivot_longer(everything(), names_to = "parameter", values_to = "draws") %>%
+  # Group by parameter to perform calculations for each parameter
+  group_by(parameter) %>%
+  # Summarize to compute the mean and credible intervals
+  summarise(
+    # Posterior mean
+    mean = mean(draws),
+    # 95% credible interval (equal-tailed)
+    q2.5 = quantile(draws, 0.025),
+    q97.5 = quantile(draws, 0.975),
+    q25 = quantile(draws, 0.25),
+    q75 = quantile(draws, 0.75),
+    .groups = "drop" # Drop grouping for final output
+  )
+
+tidy_summary_chinook %>% 
+  filter(., str_detect(parameter,"envir_concentration")) %>% 
+    mutate(., order_idx = str_remove(parameter, "envir_concentration\\["),
+          order_idx = as.integer(str_remove(order_idx, "\\]"))) %>% 
+  left_join(namers_sample_chinook) %>% 
+  mutate(., `Target Name` = "Chinook") -> qMod_chinook_tibble
+
+saveRDS(qMod_chinook_tibble, file=here("analysis","qMod_chinook_tibble.RDS"))
+
+
+tidy_summary_coho <- as.data.frame(qMod_coho) %>%
+  # Reshape data to long format, keeping only the parameter name and its value
+  pivot_longer(everything(), names_to = "parameter", values_to = "draws") %>%
+  # Group by parameter to perform calculations for each parameter
+  group_by(parameter) %>%
+  # Summarize to compute the mean and credible intervals
+  summarise(
+    # Posterior mean
+    mean = mean(draws),
+    # 95% credible interval (equal-tailed)
+    q2.5 = quantile(draws, 0.025),
+    q97.5 = quantile(draws, 0.975),
+    q25 = quantile(draws, 0.25),
+    q75 = quantile(draws, 0.75),
+    .groups = "drop" # Drop grouping for final output
+  )
+
+tidy_summary_coho %>% 
+  filter(., str_detect(parameter,"envir_concentration")) %>% 
+  mutate(., order_idx = str_remove(parameter, "envir_concentration\\["),
+          order_idx = as.integer(str_remove(order_idx, "\\]"))) %>% 
+  left_join(namers_sample_coho) %>% 
+  mutate(., `Target Name` ="Coho") -> qMod_coho_tibble
+
+saveRDS(qMod_coho_tibble, file=here("analysis","qMod_coho_tibble.RDS"))
+
+
+
+tidy_summary_eulachon <- as.data.frame(qMod_eulachon) %>%
+  # Reshape data to long format, keeping only the parameter name and its value
+  pivot_longer(everything(), names_to = "parameter", values_to = "draws") %>%
+  # Group by parameter to perform calculations for each parameter
+  group_by(parameter) %>%
+  # Summarize to compute the mean and credible intervals
+  summarise(
+    # Posterior mean
+    mean = mean(draws),
+    # 95% credible interval (equal-tailed)
+    q2.5 = quantile(draws, 0.025),
+    q97.5 = quantile(draws, 0.975),
+    q25 = quantile(draws, 0.25),
+    q75 = quantile(draws, 0.75),
+    .groups = "drop" # Drop grouping for final output
+  )
+
+
+tidy_summary_eulachon %>% 
+  filter(., str_detect(parameter,"envir_concentration")) %>% 
+    mutate(., order_idx = str_remove(parameter, "envir_concentration\\["),
+          order_idx = as.integer(str_remove(order_idx, "\\]"))) %>% 
+  left_join(namers_sample_eulachon) %>% 
+  mutate(., `Target Name` ="Eulachon") -> qMod_eulachon_tibble
+
+saveRDS(qMod_eulachon_tibble, file=here("analysis","qMod_eulachon_tibble.RDS"))
+```
+
+# beluga tidy
+```{r}
+# 
+# fit_summary <- summary(qMod_beluga)
+# fit_summary$summary %>% as.tibble(rownames = "parameter") %>% 
+#   filter(., Rhat>1.1) %>% 
+#   left_join(qMod_beluga_tibble) %>% 
+#   left_join(qPCR_AK_data)-> samples_w_issues
+# as.data.frame(qMod_beluga) -> test
+# stan_qPCR_data_beluga$unkn_idx %>% length()
+
+tidy_summary_beluga <- as.data.frame(qMod_beluga) %>%
+  # Reshape data to long format, keeping only the parameter name and its value
+  pivot_longer(everything(), names_to = "parameter", values_to = "draws") %>%
+  # Group by parameter to perform calculations for each parameter
+  group_by(parameter) %>%
+  # Summarize to compute the mean and credible intervals
+  summarise(
+    # Posterior mean
+    mean = mean(draws),
+    # 95% credible interval (equal-tailed)
+    q2.5 = quantile(draws, 0.025),
+    q97.5 = quantile(draws, 0.975),
+    q25 = quantile(draws, 0.25),
+    q75 = quantile(draws, 0.75),
+    .groups = "drop" # Drop grouping for final output
+  )
+
+tidy_summary_beluga %>% 
+  filter(., str_detect(parameter,"envir_concentration")) %>% 
+  mutate(., order_idx = str_remove(parameter, "envir_concentration\\["),
+          order_idx = as.integer(str_remove(order_idx, "\\]"))) %>% 
+  left_join(namers_sample_beluga) %>% 
+  mutate(., `Target Name` ="cetacea")  -> qMod_beluga_tibble
+
+saveRDS(qMod_beluga_tibble, file=here("analysis","qMod_beluga_tibble.RDS"))
+
+qMod_beluga_tibble$mean %>%  max()
+```
+
+```{r}
+qMod_chinook_tibble <- readRDS(file=here("analysis","qMod_chinook_tibble.RDS"))
+qMod_coho_tibble <- readRDS(file=here("analysis","qMod_coho_tibble.RDS"))
+qMod_eulachon_tibble <- readRDS(file=here("analysis","qMod_eulachon_tibble.RDS"))
+qMod_beluga_tibble <- readRDS(file=here("analysis","qMod_beluga_tibble.RDS"))
+
+```
+
+### qPCR_AK_data_with_model.RDS
+```{r}
+
+bind_rows(qMod_chinook_tibble, qMod_coho_tibble,qMod_eulachon_tibble,qMod_beluga_tibble) %>% 
+  dplyr::select(-Task) -> model_tibble_c
+
+qPCR_AK_data %>% 
+  left_join(model_tibble_c, by = c("Target Name", "Sample.Name")) -> qPCR_AK_data_with_model
+
+saveRDS(qPCR_AK_data_with_model, file=here("analysis","qPCR_AK_data_with_model.RDS"))
+
+```
+
+
+```{r}
+
+qPCR_AK_data %>% 
+    filter(., `Target Name` =="Chinook") %>% 
+  left_join(qMod_chinook_tibble) %>% 
+  filter(., Task =="UNKNOWN") %>% 
+    mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>% 
+  filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+ ggplot(aes(x=log10(Quantity), y=mean, color=`Target Name`)) +  geom_errorbar(aes(ymin=q2.5, ymax=q97.5, x=log10(Quantity)), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + xlab("log10(Quant Studio)") + ylab("log10(Stan Model))")
+
+
+qPCR_AK_data %>% 
+    filter(., `Target Name` =="Chinook") %>% 
+  left_join(qMod_chinook_tibble) %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>% 
+  filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+ ggplot(aes(x=Quantity, y=10^mean, color=`Sample.Name`)) +  geom_errorbar(aes(ymin=10^(q2.5), ymax=10^(q97.5), x=Quantity), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), legend.position = "null") + xlab("Quant Studio") + ylab("Stan Model)")
+```
+
+
+
+```{r}
+qPCR_AK_data %>% 
+    filter(., `Target Name` =="Chinook") %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>%   filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+  group_by(Sample.Name) %>% 
+  dplyr::summarise(quant_stuido = mean(Quantity)) %>% 
+    left_join(qMod_chinook_tibble) %>% 
+ ggplot(aes(x=quant_stuido, y=10^mean)) +  geom_errorbar(aes(ymin=10^(q2.5), ymax=10^(q97.5), x=quant_stuido), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), legend.position = "null") + xlab("Quant Studio") + ylab("Stan Model")+ geom_abline(slope = 1)
+
+
+```
+
+```{r}
+
+qPCR_AK_data %>% 
+    filter(., `Target Name` =="Coho") %>% 
+  left_join(qMod_coho_tibble) %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>%   filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+ ggplot(aes(x=log10(Quantity), y=mean, color=`Target Name`)) +  geom_errorbar(aes(ymin=q2.5, ymax=q97.5, x=log10(Quantity)), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + xlab("log10(Quant Studio)") + ylab("log10(Stan Model))")
+```
+
+```{r}
+qPCR_AK_data %>% 
+    filter(., `Target Name` =="Coho") %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>%   filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+  group_by(Sample.Name,Plate) %>% 
+  dplyr::summarise(quant_stuido = mean(Quantity)) %>% 
+    left_join(qMod_coho_tibble) %>% 
+ ggplot(aes(x=quant_stuido, y=10^mean,color=`Plate`)) +  geom_errorbar(aes(ymin=10^(q2.5), ymax=10^(q97.5), x=quant_stuido), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), legend.position = "null") + xlab("Quant Studio") + ylab("Stan Model")+ geom_abline(slope = 1)
+
+
+```
+
+# Beluga plot check
+```{r}
+
+
+qPCR_AK_data %>% 
+  filter(., Sample.Name %in% qPCRdata_beluga$Sample) %>% 
+    filter(., `Target Name` =="cetacea") %>% 
+  left_join(qMod_beluga_tibble) %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>%   filter(., !is.na(LabID)) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+ ggplot(aes(x=log10(Quantity), y=mean, color=`Target Name`)) +  geom_errorbar(aes(ymin=q2.5, ymax=q97.5, x=log10(Quantity)), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + xlab("log10(Quant Studio)") + ylab("log10(Stan Model))")
+```
+
+# Beluga model data is untrustworthy. Near LoD for everything. NEED TO ADDREASS
+
+
+```{r}
+qPCR_AK_data %>% 
+    filter(., Sample.Name %in% qPCRdata_beluga$Sample) %>% 
+    filter(., `Target Name` =="cetacea") %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>%   filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+  group_by(Sample.Name,Plate) %>% 
+  dplyr::summarise(quant_stuido = mean(Quantity)) %>% 
+    left_join(qMod_coho_tibble) %>% 
+ ggplot(aes(x=quant_stuido, y=10^mean,color=`Plate`)) +  geom_errorbar(aes(ymin=10^(q2.5), ymax=10^(q97.5), x=quant_stuido), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), legend.position = "null") + xlab("Quant Studio") + ylab("Stan Model")+ geom_abline(slope = 1)
+
+```
+
+```{r}
+stan_qPCR_data_beluga
+qPCRdata_beluga
+
+```
+
+```{r}
+
+qPCR_AK_data %>%
+    filter(., `Target Name` =="cetacea") %>% 
+  left_join(qMod_beluga_tibble) %>% 
+  filter(., sd > 0.8 | Task =="STANDARD" ) %>% 
+  dplyr::select(Plate, `Sample.Name`, CT,LabID, Quantity, mean, sd) %>% 
+  arrange(desc(Quantity)) %>%  View()
+  
+  arrange(desc(sd))
+  
+  Kenai1a_plate_39
+  Kenai1a_plate_77
+
+```
+
+# Eulachon Plot Check
+```{r}
+
+
+qPCR_AK_data %>% 
+    filter(., `Target Name` =="Eulachon") %>% 
+  left_join(qMod_eulachon_tibble) %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>%   filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+ ggplot(aes(x=log10(Quantity), y=mean, color=`Plate`)) +  geom_errorbar(aes(ymin=q2.5, ymax=q97.5, x=log10(Quantity)), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + xlab("log10(Quant Studio)") + ylab("log10(Stan Model))")
+```
+
+
+```{r}
+
+qPCR_AK_data %>% 
+    filter(., `Target Name` =="Eulachon") %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(., Quantity = as.numeric(str_remove_all(Quantity,","))) %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity),
+         Quantity = ifelse(Quantity=="", 0, Quantity)) %>%   filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+  group_by(Sample.Name) %>% 
+  dplyr::summarise(quant_stuido = mean(Quantity)) %>% 
+    left_join(qMod_eulachon_tibble) %>% 
+ ggplot(aes(x=quant_stuido, y=10^mean)) +  geom_errorbar(aes(ymin=10^(q2.5), ymax=10^(q97.5), x=quant_stuido), width=.2) + geom_point()+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), legend.position = "null") + xlab("Quant Studio") + ylab("Stan Model")+ geom_abline(slope = 1)
+```
+
+

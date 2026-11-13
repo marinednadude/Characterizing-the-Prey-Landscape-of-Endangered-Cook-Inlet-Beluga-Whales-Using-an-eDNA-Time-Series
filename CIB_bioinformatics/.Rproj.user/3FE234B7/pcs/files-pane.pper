@@ -1,0 +1,17 @@
+{
+    "sortOrder": [
+        {
+            "columnIndex": 4,
+            "ascending": false
+        },
+        {
+            "columnIndex": 1,
+            "ascending": true
+        },
+        {
+            "columnIndex": 2,
+            "ascending": false
+        }
+    ],
+    "path": "~/Documents/GitHub/CIB_2021/CIB_bioinformatics/data/Mock_community_data/code"
+}

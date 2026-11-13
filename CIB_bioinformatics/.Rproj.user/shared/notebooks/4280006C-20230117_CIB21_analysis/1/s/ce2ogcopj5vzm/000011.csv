@@ -1,0 +1,6 @@
+"0",""
+"0","combined_data_long_reads_c %>% "
+"0","  filter(., str_detect(New_name, ""_R"")) %>% "
+"0","  filter(., River %in% c(""Twentymile"")) %>% "
+"0","  dplyr::select(New_name_no_tech,Station,Site,Bio_rep,Tech_rep) %>% "
+"0","  distinct()"

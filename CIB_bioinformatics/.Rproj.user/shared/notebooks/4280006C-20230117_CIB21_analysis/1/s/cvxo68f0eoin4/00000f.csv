@@ -1,0 +1,14 @@
+"0","plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+  mutate(., Detection = case_when(mean_Quantity ==0 & mean_reads ==0 ~""Both Absent"",
+                                  mean_Quantity ==0 & mean_reads >0 ~""Metabarcoding Only"",
+                                  mean_Quantity >0 & mean_reads ==0 ~""qPCR Only"",
+                                  mean_Quantity >0 & mean_reads >0 ~""Both Detected"",
+)) %>% 
+  group_by(`Target Name`) %>% 
+  count(Detection) %>% 
+  ggplot(., aes(x=Detection, y=n, fill=Detection)) +geom_bar(stat=""identity"") +facet_wrap(`Target Name`~.) +theme(axis.text.x = element_text(angle=30, hjust = 1)) +ylab(""Count"") + xlab(""Detection Type"") +theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = ""grey50""))
+"
+"2","Error in left_join(., q_mean) : object 'plotting_drop_outs_all' not found
+"

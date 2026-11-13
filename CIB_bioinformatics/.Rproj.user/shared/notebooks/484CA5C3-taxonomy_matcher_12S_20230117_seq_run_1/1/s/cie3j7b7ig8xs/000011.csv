@@ -1,0 +1,16 @@
+"0","accessions_on_genbank_not_in_crux %>% 
+  mutate(., IDs = new_salmon_accessions) %>% 
+  left_join(new_salmon_taxonomy) %>% 
+  distinct() %>% dplyr::select(Accession, sum.taxonomy) -> not_in_crux_Id
+"
+"1","[38;5;232mJoining with `by = join_by(IDs)`[39m
+"
+"2","Warning in left_join(., new_salmon_taxonomy) :"
+"2","
+ "
+"2"," [38;5;232mDetected an unexpected many-to-many relationship between `x` and `y`.
+[36mℹ[38;5;232m Row 2 of `x` matches multiple rows in `y`.
+[36mℹ[38;5;232m Row 3 of `y` matches multiple rows in `x`.
+[36mℹ[38;5;232m If a many-to-many relationship is expected, set `relationship = ""many-to-many""` to
+  silence this warning.[39m
+"

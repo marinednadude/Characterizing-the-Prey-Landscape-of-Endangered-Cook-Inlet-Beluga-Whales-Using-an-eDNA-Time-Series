@@ -1,0 +1,10 @@
+"0","dropout_prop_all_pre %>% 
+  left_join(q_mean) %>% 
+     filter(., !is.na(`Target Name`)) %>% 
+    mutate(., drop_out= if_else(New_name_no_tech %in% sample_w_problems_tib$New_name_no_tech,New_name_no_tech,"""")) %>% 
+  group_by(`Target Name`) %>% 
+  filter(., Drop_outs >0) %>% 
+  filter(., `Target Name`==""Coho"") %>% 
+  arrange(desc(mean_mean_dnacopy_L))
+"
+"2","Joining with `by = join_by(LabID, `Target Name`)`"

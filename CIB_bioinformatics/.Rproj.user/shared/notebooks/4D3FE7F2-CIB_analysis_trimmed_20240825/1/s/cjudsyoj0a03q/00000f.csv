@@ -1,0 +1,6 @@
+"0","rbind(oke_table_abund, ogo_table_abund,ots_table_abund) %>% "
+"0","   mutate(., `Avg. DNA Conc.` = round(`Avg. DNA Conc.`,1),"
+"0","         `SD DNA Conc.` = round(`SD DNA Conc.`,1),"
+"0","         `p.value` = round(`p.value`,3),"
+"0","         `statistic` = round(`statistic`,2)) %>% "
+"0","knitr::kable()"

@@ -1,0 +1,97 @@
+---
+title: "Beluga Visual Data Organization"
+author: "Zack Gold"
+date: "2024-08-23"
+output: html_document
+---
+
+# Loading Libraries
+```{r}
+library(tidyverse)
+library(here)
+```
+
+# Import Visual data
+```{r}
+# Read the CSV file for AKBMP Fall 2021 eDNA observations and assign it to beluga_visual
+read.csv(here("data","Visual_observations","data","AKBMP-Fall2021-eDNA_20220208.csv"), header = T) -> beluga_visual
+
+# Read the CSV file for AKBMP Kenai River Spring sightings and assign it to beluga_visual_2
+read.csv(here("data","Visual_observations","data","AKBMP-KenaiRiver-Sightings_spring.csv"), header = T) -> beluga_visual_2
+
+# Read the CSV file for Sonia Kumar's visual observations and assign it to beluga_visual_sonia
+read.csv(here("data","Visual_observations","data","sonia_kumar_visual_observations.csv"), header = T) -> beluga_visual_sonia
+
+
+# Clean Data from AKBMP Fall 2021 Observations
+# Transform the beluga_visual dataset
+beluga_visual %>% 
+     # Convert the 'Session.Date' column to Date format
+     mutate(., Sample_date = as.Date(Session.Date, "%m/%d/%y")) %>% 
+     # Group data by 'Sample_date' to perform operations within each date
+     group_by(Sample_date) %>% 
+     # Calculate the maximum group size across columns Group.A, Group.B, and Group.C, ignoring NA values
+     mutate(max_group_size = pmax(Group.A..Estimated.Group.Size, Group.B..Estimated.Group.Size, Group.C..Estimated.Group.Size, na.rm = TRUE)) %>% 
+     # Replace NA values in 'max_group_size' with 0
+     dplyr::mutate(max_group_size = replace_na(max_group_size, 0)) -> beluga_visual
+
+# Clean Data from AKBMP Kenai River Observations
+# Transform the beluga_visual_2 dataset
+beluga_visual_2 %>% 
+     # Convert the 'Session.Date' column to Date format
+     mutate(., Sample_date = as.Date(Session.Date, "%m/%d/%y")) %>% 
+     # Group data by 'Sample_date' to perform operations within each date
+     group_by(Sample_date) %>% 
+     # Calculate the maximum group size across columns Group.A, Group.B, and Group.C, ignoring NA values
+     mutate(max_group_size = pmax(Group.A..Estimated.Group.Size, Group.B..Estimated.Group.Size, Group.C..Estimated.Group.Size, na.rm = TRUE)) %>% 
+     # Replace NA values in 'max_group_size' with 0
+     dplyr::mutate(max_group_size = replace_na(max_group_size, 0)) -> beluga_visual_2
+
+# Transform the beluga_visual_sonia dataset
+beluga_visual_sonia %>% 
+  # Filter data to only include observations from 'Kenai River'
+  filter(., `Site.Name` == "Kenai River") %>% 
+     # Convert the 'Session.Date' column to Date format
+     mutate(., Sample_date = as.Date(Session.Date, "%m/%d/%y")) %>% 
+     # Group data by 'Sample_date' to perform operations within each date
+     group_by(Sample_date) %>% 
+     # Calculate the maximum group size across columns Group.A, Group.B, and Group.C, ignoring NA values
+     mutate(max_group_size = pmax(Group.A..Estimated.Group.Size, Group.B..Estimated.Group.Size, Group.C..Estimated.Group.Size, na.rm = TRUE)) %>% 
+     # Replace NA values in 'max_group_size' with 0
+     dplyr::mutate(max_group_size = replace_na(max_group_size, 0)) -> beluga_visual_sonia
+
+# Organize Files
+# Select relevant columns from beluga_visual and assign to beluga_visual_1
+beluga_visual %>% 
+  dplyr::select(Sample_date, Site.Name, Were.belugas.observed.during.the.monitoring.session., max_group_size) -> beluga_visual_1
+
+# Select relevant columns from beluga_visual_2 and assign to beluga_visual_2
+beluga_visual_2 %>% 
+  dplyr::select(Sample_date, Site.Name, Were.belugas.observed.during.the.monitoring.session., max_group_size) -> beluga_visual_2
+
+# Select relevant columns from beluga_visual_sonia and assign to beluga_visual_sonia
+beluga_visual_sonia %>% 
+  dplyr::select(Sample_date, Site.Name, Were.belugas.observed.during.the.monitoring.session., max_group_size) -> beluga_visual_sonia
+
+# Merge Files
+# Combine the three datasets into one, filter out rows with empty 'Site.Name', and remove duplicates
+rbind(beluga_visual_1,beluga_visual_2,beluga_visual_sonia) %>% 
+  filter(., Site.Name != "") %>% distinct() %>%  ungroup()-> beluga_visual_3
+
+# Save the cleaned dataset beluga_visual_3 to an RDS file for future use
+
+saveRDS(beluga_visual_3,here("data","Visual_observations","data","beluga_visual_3.RDS"))
+
+
+```
+
+# Quick Plot
+```{r}
+# Create a plot of beluga observations
+  beluga_visual_3 %>% 
+    ungroup() %>% 
+    filter(., Site.Name !="The Point at Alaska Wildlife Conservation Center") %>%   ggplot(., aes(x=Sample_date, y=Were.belugas.observed.during.the.monitoring.session., colour=Were.belugas.observed.during.the.monitoring.session.)) + geom_point(shape = "|", size = 7) + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("Beluga Observed by AKBMP") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_grid(Site.Name~., scales = "free") + theme(legend.position="none")
+  
+```

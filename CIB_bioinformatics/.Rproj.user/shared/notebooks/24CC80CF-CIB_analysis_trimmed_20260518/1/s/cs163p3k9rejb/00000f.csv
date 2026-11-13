@@ -1,0 +1,13 @@
+"0","  coho_anchor_20m %>% 
+  ggplot(aes(x = Sample_date, fill = species, colour = species, y = log10(meandnaconc_coho))) +
+  geom_point() +
+  geom_smooth() +
+  #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))  +
+  facet_grid(~species, scales = ""free_y"") +
+  labs(x=""Date"", y=""Log10(Estimated DNA/L)"") +
+  theme_bw() + annotate(""rect"", xmin = as.Date(""2021-08-24""), xmax = as.Date(""2021-10-21""), ymin = 0, ymax = 6, alpha = .2,fill =""darkred"") +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = ""none"",
+strip.text = element_text(size=10), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = ""grey50""),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18)) + scale_color_manual(values = c(""#efb28c"",""#958f73"",""grey50"",""#fa8775"",""#acc4ac"",""#a2d2df"")) +scale_fill_manual(values = c(""#efb28c"",""#958f73"",""grey50"",""#fa8775"",""#acc4ac"",""#a2d2df""))
+"
+"1","[38;5;232m`geom_smooth()` using method = 'loess' and formula = 'y ~ x'[39m
+"

@@ -1,0 +1,4 @@
+"0","combined_data_long_reads_c %>% "
+"0","  filter(., River %in% c(""Kenai"",""Twentymile"")) %>%"
+"0","    filter(., Class!=""Insecta"") %>% "
+"0","  filter(., nReads >0) -> short_edna"

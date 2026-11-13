@@ -1,0 +1,12 @@
+"0","Sum %>% 
+    left_join(overlap) %>% 
+  dplyr::select(Period=time_chunk, Species=species, n, Median, `LCI-0.95` = Bca.lower, `UCI-0.95`=Bca.upper, `Confidence Interval`=Overlap) %>% 
+  left_join(Sum_99) %>% 
+  dplyr::select(-time_chunk,-species,-Conf.level) %>% 
+  dplyr::rename(`LCI-0.99` = Bca.lower, `UCI-0.99`=Bca.upper) %>% 
+  arrange(Species) %>% 
+  mutate(., ) %>% 
+  kable()
+"
+"2","Joining with `by = join_by(species)`"
+"2","Joining with `by = join_by(n, Median)`"

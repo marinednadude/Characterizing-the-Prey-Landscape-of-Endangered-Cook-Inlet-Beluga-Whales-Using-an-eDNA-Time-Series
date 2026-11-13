@@ -1,0 +1,19 @@
+"0","combined_data_long_reads_c %>% 
+    mutate(., Sample_date = as.Date(Sample_date,""%m/%d/%y"")) %>% 
+  mutate(., index_scores = replace_na(index_scores,0)) %>% 
+  filter(., River ==""Twentymile"") %>% 
+   left_join(Twentymile_detections) %>% 
+ # filter(., n >3) %>% 
+  filter(., ID_mifish %in% species_to_use$ID_mifish) %>% 
+ggplot(aes(x=Sample_date, y=index_scores,color=ID_mifish)) + geom_point()+ geom_smooth()+ facet_wrap(ID_mifish~Family) +theme_bw() +theme(legend.position = ""none"")+ggtitle(""Kenai"")
+"
+"2","Joining, by = ""ID_mifish"""
+"1","[1m[33mError[39m in `filter()`:[22m
+[38;5;232m[33m![38;5;232m Problem while computing `..1 = ID_mifish %in%
+  species_to_use$ID_mifish`.[39m
+[1mCaused by error in `ID_mifish %in% species_to_use$ID_mifish`:[22m
+[33m![39m object 'species_to_use' not found
+Backtrace:
+[90m 1. [39m... %>% ...
+[90m 9. [39mID_mifish %in% species_to_use$ID_mifish
+"

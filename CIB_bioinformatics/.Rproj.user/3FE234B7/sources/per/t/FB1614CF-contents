@@ -1,0 +1,18 @@
+---
+title: "Compare Poseidon Transfers"
+author: "Zack Gold & Han Weinrich"
+date: "2025-04-17"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+zack <- read.delim("/Users/zgold/Documents/filename1", header=F)
+tail(zack)
+poseidon <- read.delim("/Users/zgold/Downloads/filename1", header=F)
+tail(poseidon)
+
+setdiff(zack$V1,poseidon$V1) -> diff
+setdiff(poseidon$V1,zack$V1)
+diff
+```

@@ -1,0 +1,13 @@
+"0",""
+"0","qPCR_beluga_kenai_1a %>% "
+"0","  mutate(., Quantity= str_remove_all(Quantity,"","")) %>% "
+"0","  filter(., `Target Name`==""cetacea"") %>% "
+"0","  left_join(qPCR_names_combo) %>% "
+"0","  filter(., Sample.Name %in% samples_w_issues$`Sample.Name`) %>% "
+"0","  mutate(., Plate_Name = as.character(Plate_Name)) "
+"1","[1m[33mError[39m in `filter()`:[22m
+[38;5;232m[36mℹ[38;5;232m In argument: `Sample.Name %in% samples_w_issues$Sample.Name`.[39m
+[1mCaused by error:[22m
+[33m![39m object 'samples_w_issues' not found
+[90mRun `]8;;x-r-run:rlang::last_trace()rlang::last_trace()]8;;` to see where the error occurred.[39m
+"

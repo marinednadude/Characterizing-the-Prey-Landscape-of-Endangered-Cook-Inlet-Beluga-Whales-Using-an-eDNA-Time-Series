@@ -1,0 +1,8 @@
+"0","dropout_prop_all_pre %>% "
+"0","  left_join(q_mean) %>% "
+"0","     filter(., !is.na(`Target Name`)) %>% "
+"0","    mutate(., drop_out= if_else(New_name_no_tech %in% sample_w_problems_tib$New_name_no_tech,New_name_no_tech,"""")) %>% "
+"0","  group_by(`Target Name`) %>% "
+"0","  filter(., Drop_outs >0) %>% "
+"0","  filter(., mean_mean_dnacopy_L >0) %>% "
+"0","  dplyr::summarise(n_distinct(New_name_no_tech), max(max_reads), mean(mean_reads), max(mean_mean_dnacopy_L), mean(mean_mean_dnacopy_L))"

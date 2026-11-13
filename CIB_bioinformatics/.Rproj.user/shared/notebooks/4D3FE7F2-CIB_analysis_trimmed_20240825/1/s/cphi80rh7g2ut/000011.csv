@@ -1,0 +1,48 @@
+"0","library(tidyverse)"
+"0","library(here)"
+"0","library(phyloseq)"
+"0","library(ranacapa)"
+"0","library(patchwork)"
+"0","library(PNWColors)"
+"0","library(vegan)"
+"0","library(broom)"
+"0","library(scales)"
+"2","
+Attaching package: ‘scales’
+
+"
+"2","The following object is masked from ‘package:purrr’:
+
+    discard
+
+"
+"2","The following object is masked from ‘package:readr’:
+
+    col_factor
+
+"
+"0","library(janitor)"
+"2","
+Attaching package: ‘janitor’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    chisq.test, fisher.test
+
+"
+"0","library(parzer)"
+"0","library(ggrepel)"
+"0","library(leaflet)"
+"2","Registered S3 method overwritten by 'htmlwidgets':
+  method           from         
+  print.htmlwidget tools:rstudio
+"
+"0","library(scales)"
+"0","library(ggmap)"
+"1","[32mℹ[39m Google's Terms of Service: [34m[3m]8;;https://mapsplatform.google.com<https://mapsplatform.google.com>]8;;[23m[39m
+  Stadia Maps' Terms of Service: [34m[3m]8;;https://stadiamaps.com/terms-of-service/<https://stadiamaps.com/terms-of-service/>]8;;[23m[39m
+  OpenStreetMap's Tile Usage Policy: [34m[3m]8;;https://operations.osmfoundation.org/policies/tiles/<https://operations.osmfoundation.org/policies/tiles/>]8;;[23m[39m
+[32mℹ[39m Please cite [34mggmap[39m if you use it! Use `citation(""ggmap"")` for details.
+"
+"0","library(ggsignif)"

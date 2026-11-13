@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:systemMetadata xmlns:ns2="http://ns.dataone.org/service/types/v1" xmlns:ns3="http://ns.dataone.org/service/types/v2.0">
+    <serialVersion>0</serialVersion>
+    <identifier>resource_map_urn:uuid:fa761459-7b69-4ff1-b389-25abf775094e</identifier>
+    <formatId>http://www.openarchives.org/ore/terms</formatId>
+    <size>3202</size>
+    <checksum algorithm="MD5">d9903a984e9da9a7b616fe9ee2bd687d</checksum>
+    <submitter>http://orcid.org/0000-0003-4703-1974</submitter>
+    <rightsHolder>http://orcid.org/0000-0003-4703-1974</rightsHolder>
+    <accessPolicy>
+        <allow>
+            <subject>public</subject>
+            <permission>read</permission>
+        </allow>
+        <allow>
+            <subject>CN=knb-data-admins,DC=dataone,DC=org</subject>
+            <permission>read</permission>
+            <permission>write</permission>
+            <permission>changePermission</permission>
+        </allow>
+    </accessPolicy>
+    <replicationPolicy replicationAllowed="false"/>
+    <archived>false</archived>
+    <dateUploaded>2019-10-23T23:33:45.109+00:00</dateUploaded>
+    <dateSysMetadataModified>2019-10-23T23:33:45.109+00:00</dateSysMetadataModified>
+    <originMemberNode>urn:node:mnTestKNB</originMemberNode>
+    <authoritativeMemberNode>urn:node:mnTestKNB</authoritativeMemberNode>
+    <fileName>resource_map_urn_uuid_fa761459_7b69_4ff1_b389_25abf775094e.rdf.xml</fileName>
+</ns3:systemMetadata>

@@ -1,0 +1,8 @@
+"0",""
+"0",""
+"0"," ggsave(file = here::here(""analysis"", ""figures"", ""Figure_5_Kenai_beluga_observations.png""),"
+"0","  width = 8,"
+"0","  height = 10"
+"0","  )"
+"0",""
+"0",""

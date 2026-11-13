@@ -1,0 +1,6 @@
+"0","input_dna <- read.csv(file =here(""data"",""Mock_community_data"",""data"",""input_dna_conc_communities_20210103.csv""), sep="","", header=TRUE)"
+"0",""
+"0","hash.key_updated <- readRDS(file=here(""data"",""Mock_community_data"",""data"",""mock_sequences"",""hash.key_updated.RDS""))"
+"0",""
+"0",""
+"0","ASV_C60 <- read.table(file=here(""data"",""Mock_community_data"",""data"",""mock_sequences"",""Anacapa_output_updated_20230106"",""12S_fishcard_taxonomy_tables"",""Summary_by_percent_confidence"",""60"",""12S_fishcard_ASV_raw_taxonomy_60.txt""), sep = ""\t"", header=TRUE)"

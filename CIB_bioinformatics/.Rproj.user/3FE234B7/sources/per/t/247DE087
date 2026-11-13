@@ -1,0 +1,28 @@
+{
+    "id": "247DE087",
+    "path": "~/Documents/GitHub/CIB_2021/CIB_bioinformatics/analysis/scripts/qPCR_qm_merge_attempt_20231213.R",
+    "project_path": "analysis/scripts/qPCR_qm_merge_attempt_20231213.R",
+    "type": "r_source",
+    "hash": "1254673966",
+    "contents": "",
+    "dirty": true,
+    "created": 1740444999699.0,
+    "source_on_save": false,
+    "relative_order": 14,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "401,62",
+        "scrollLine": "391",
+        "docOutlineVisible": "1",
+        "docOutlineSize": "121"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1757232108,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1783035803733,
+    "read_only": false,
+    "read_only_alternatives": []
+}

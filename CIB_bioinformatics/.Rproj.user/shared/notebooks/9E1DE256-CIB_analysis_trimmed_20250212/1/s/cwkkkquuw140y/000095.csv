@@ -1,0 +1,12 @@
+"0","coho_anchor_20m %>% 
+  left_join(meta_c_analysis) %>% 
+  group_by(bottle, drop_out_concerns, Beluga) %>% 
+  dplyr::summarise(est_tot_dna = mean(meantotdna_coho)) %>% 
+  arrange(est_tot_dna) %>% 
+  ggplot(., aes(y=est_tot_dna, x=drop_out_concerns, fill= drop_out_concerns)) + stat_slab(aes(thickness = after_stat(pdf*n)), scale = 0.7) +
+  stat_dotsinterval(side = ""bottom"", scale = 0.7, slab_linewidth = NA)  + ylab(""Estimated Total DNA per L"") + xlab(""Metabarcoding Non-Detection"") +theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = ""grey50""))
+"
+"2","Joining with `by = join_by(bottle, creek, Sample_date)`"
+"2","Warning: Detected an unexpected many-to-many relationship between `x` and `y`."
+"2","`summarise()` has grouped output by 'bottle', 'drop_out_concerns'. You can override using the `.groups` argument."

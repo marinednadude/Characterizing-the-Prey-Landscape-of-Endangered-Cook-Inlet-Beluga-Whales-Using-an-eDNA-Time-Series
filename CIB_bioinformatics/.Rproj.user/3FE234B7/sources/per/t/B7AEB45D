@@ -1,0 +1,31 @@
+{
+    "id": "B7AEB45D",
+    "path": "~/Documents/GitHub/CIB_2021/CIB_bioinformatics/analysis/scripts/20230117_CIB21_analysis.Rmd",
+    "project_path": "analysis/scripts/20230117_CIB21_analysis.Rmd",
+    "type": "r_markdown",
+    "hash": "3652893791",
+    "contents": "",
+    "dirty": false,
+    "created": 1757114547381.0,
+    "source_on_save": false,
+    "relative_order": 19,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "854,13",
+        "scrollLine": "0",
+        "docOutlineVisible": "1",
+        "docOutlineSize": "137",
+        "rmdVisualMode": "false",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "2:0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1725045987,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1725045987,
+    "read_only": false,
+    "read_only_alternatives": []
+}

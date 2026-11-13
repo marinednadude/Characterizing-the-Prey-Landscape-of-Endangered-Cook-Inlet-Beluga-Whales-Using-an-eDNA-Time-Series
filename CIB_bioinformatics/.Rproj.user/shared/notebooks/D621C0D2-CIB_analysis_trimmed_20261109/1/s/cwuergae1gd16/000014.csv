@@ -1,0 +1,7 @@
+"0",""
+"0",""
+"0","beluga_plot_20m_bird/visual_beluga_plot_20m/qPCR_beluga_plot_20m/index_beluga_plot_20m  +plot_layout(guides = ""collect"") & "
+"0","  theme("
+"0","    axis.title = element_text(face = ""bold""),"
+"0","    plot.title = element_text(face = ""bold"")"
+"0","  )"

@@ -1,0 +1,6 @@
+"0","library(
+natparks.pals)
+"
+"2","Error in library(natparks.pals) : 
+  there is no package called ‘natparks.pals’
+"

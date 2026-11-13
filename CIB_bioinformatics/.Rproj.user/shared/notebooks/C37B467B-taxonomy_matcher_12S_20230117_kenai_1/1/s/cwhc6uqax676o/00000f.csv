@@ -1,0 +1,46 @@
+"0",""
+"0","clusters %>% "
+"0","  add_rownames(., var = ""Name"") %>% "
+"0","  separate(Name, into=c(""ASV"",""Reference""), sep = "":"") %>% "
+"0","  arrange(cluster) %>% "
+"0","  dplyr::select(cluster,Reference) %>% "
+"0","  distinct() -> cluster_IDS"
+"2","Warning:"
+"2"," [38;5;232m`add_rownames()` was deprecated in dplyr 1.0.0.
+[36mℹ[38;5;232m Please use `tibble::rownames_to_column()` instead.
+[90mCall `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.[38;5;232m[39m
+"
+"2","Warning:"
+"2"," [38;5;232mExpected 2 pieces. Missing pieces filled with `NA` in 141 rows [1, 2, 3, 4, 5, 6, 7, 8,
+9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].[39m
+"
+"0","cluster_IDS %>% "
+"0","   filter(., !is.na(Reference)) %>% "
+"0","  group_by(cluster) %>% summarise(n=sum(n())) %>% filter(n>1) -> duplicate_reference_cluster"
+"0",""
+"0","cluster_IDS %>% "
+"0","   filter(., !is.na(Reference)) %>% "
+"0","  filter(., !cluster %in% duplicate_reference_cluster$cluster) %>% "
+"0","  dplyr::select(cluster, Species = Reference)-> trust_worthy_salmon_IDS"
+"0",""
+"0","clusters %>% "
+"0","  add_rownames(., var = ""Name"") %>% "
+"0","  separate(Name, into=c(""ASV"",""Reference""), sep = "":"") %>% "
+"0","  filter(., is.na(Reference)) %>% "
+"0","  filter( !cluster %in% trust_worthy_salmon_IDS$cluster) -> salmon_asvs_need_ID"
+"2","Warning:"
+"2"," [38;5;232m`add_rownames()` was deprecated in dplyr 1.0.0.
+[36mℹ[38;5;232m Please use `tibble::rownames_to_column()` instead.
+[90mCall `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.[38;5;232m[39m
+"
+"2","Warning:"
+"2"," [38;5;232mExpected 2 pieces. Missing pieces filled with `NA` in 141 rows [1, 2, 3, 4, 5, 6, 7, 8,
+9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].[39m
+"
+"0","salmon_string[salmon_asvs_need_ID$ASV] -> salmon_asvs_need_ID_seqs"
+"0",""
+"0","#low reads for these assignments"
+"0","salmon_asvs_need_ID %>% "
+"0","  left_join(salmon_asvs)"
+"1","[38;5;232mJoining with `by = join_by(ASV)`[39m
+"

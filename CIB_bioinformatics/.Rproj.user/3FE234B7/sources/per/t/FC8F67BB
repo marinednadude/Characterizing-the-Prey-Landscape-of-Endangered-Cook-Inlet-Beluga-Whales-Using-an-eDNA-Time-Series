@@ -1,0 +1,27 @@
+{
+    "id": "FC8F67BB",
+    "path": "~/Documents/GitHub/CIB_2021/CIB_bioinformatics/data/eDNA_data/code/count_fastq.Rmd",
+    "project_path": "data/eDNA_data/code/count_fastq.Rmd",
+    "type": "r_markdown",
+    "hash": "84474213",
+    "contents": "",
+    "dirty": false,
+    "created": 1757480284073.0,
+    "source_on_save": false,
+    "relative_order": 20,
+    "properties": {
+        "tempName": "Untitled2",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "42,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1757481477,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1757481477057,
+    "read_only": false,
+    "read_only_alternatives": []
+}

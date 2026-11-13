@@ -1,0 +1,526 @@
+---
+title: "qPCR Formatting"
+author: "Zack Gold"
+date: "6/24/2022"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(here)
+library(tidyselect)
+library(NatParksPalettes)
+library(ggtext)
+library(ggpubr)
+```
+
+#Load qPCR Results Data
+```{r}
+input_meta_path_20M_1a_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-04-21 120949_20M_1a_qpcr_named_results.csv")
+
+remove_passive <- readRDS(file=here("remove_passive.RDS"))
+qPCR_beluga_20M_1a <- read.table(input_meta_path_20M_1a_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "Beluga",
+         Plate="20m_1a") %>% dplyr::select(order(colnames(.))) %>% 
+    #filter(., !Well %in% c(50, 123,97,99) ) %>% 
+    filter(., !Well %in% remove_passive$Well ) 
+
+
+input_meta_path_20m_1b_ex_k1_3_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-04-21 155934_20m_1b_ex_k1_3_named_results.csv")
+qPCR_beluga_20m_1b_ex_k1_3<- read.table(input_meta_path_20m_1b_ex_k1_3_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>%  
+  mutate(Marker = "Beluga",
+         Plate="20m_1b_ex_k1_3") %>% dplyr::select(order(colnames(.)))
+
+input_meta_path_kenai_2a_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-04-25 122427_kenai_2a_named_results.csv")
+qPCR_beluga_kenai_2a<- read.table(input_meta_path_kenai_2a_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "Beluga",
+         Plate="Kenai_2a")%>% dplyr::select(order(colnames(.)))
+
+input_meta_path_kenai_1a_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-04-26 104734_kenai_1a_named_results.csv")
+qPCR_beluga_kenai_1a<- read.table(input_meta_path_kenai_1a_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "Beluga",
+         Plate="Kenai_1a")%>%dplyr::select(order(colnames(.))) 
+   #filter(., !Well %in% c(121, 122, 123,145,146) ) 
+
+input_meta_path_saleu_20M_1a_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-04-29 100421_saleu_20M_1a_named_results.csv")
+qPCR_saleu_20M_1a<- read.table(input_meta_path_saleu_20M_1a_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "saleu",
+         Plate="20m_1a")%>% dplyr::select(order(colnames(.)))
+
+input_meta_path_saleu_20M_1b_ex_k1_k3_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-05-02 114308_20M_1b_ex_k1_k3_named_results.csv")
+qPCR_saleu_20M_1b_ex_k1_k3<- read.table(input_meta_path_saleu_20M_1b_ex_k1_k3_qpcr,  sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "saleu",
+         Plate="20M_1b_ex_k1_k3")%>% dplyr::select(order(colnames(.)))
+
+input_meta_path_saleu_Kenai_1a_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-05-02 141814_Kenai_1a_named_results.csv")
+qPCR_saleu_Kenai_1a<- read.table(input_meta_path_saleu_Kenai_1a_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "saleu",
+         Plate="Kenai_1a")%>% dplyr::select(order(colnames(.))) 
+
+input_meta_path_saleu_Kenai_2a_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-05-02 164632_kenai_saleu_2a_named_results.csv")
+qPCR_saleu_Kenai_2a<- read.table(input_meta_path_saleu_Kenai_2a_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "saleu",
+         Plate="Kenai_2a")%>% dplyr::select(order(colnames(.)))
+
+
+input_meta_path_saleu_8makeup_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-05-18 142658_8LEFT_SALMON_data_edited_20230224_results.csv")
+qPCR_saleu_8makeup<- read.table(input_meta_path_saleu_8makeup_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "saleu",
+         Plate="8makeup") %>% 
+  mutate(., Omit="",
+         Quencher=""   ,
+         `Ct Mean`=""  ,
+          `Ct SD`=""  ,
+         `Quantity Mean`="",
+         `Quantity SD`="" ,
+          `Automatic Ct Threshold`="",
+         `Automatic Baseline`="",
+         `Comments`="",
+          `AMPNC`="",
+         `HIGHSD`="",
+         `NOAMP`="",
+         `EXPFAIL`= "" ,
+         THOLDFAIL="",
+         PRFDROP=""  ) %>% dplyr::select(order(colnames(.)))
+
+input_meta_path_beluga_8makeup_qpcr <- here("data","qPCR_results","data","qPCR_raw","2022-05-18 161806_8makeup_qpcr_named_results.csv")
+qPCR_beluga_8makeup<- read.table(input_meta_path_beluga_8makeup_qpcr, sep = ",", stringsAsFactors = F)[-1:-46, ] %>% 
+    row_to_names(row_number = 1) %>% 
+  mutate(Marker = "Beluga",
+         Plate="8makeup")%>% dplyr::select(order(colnames(.)))
+
+rbind(qPCR_beluga_20M_1a,qPCR_beluga_20m_1b_ex_k1_3,qPCR_beluga_kenai_2a,qPCR_beluga_kenai_1a,qPCR_beluga_8makeup) -> beluga_qPCR_data_combo
+
+rbind(qPCR_saleu_20M_1a,qPCR_saleu_20M_1b_ex_k1_k3,qPCR_saleu_Kenai_1a,qPCR_saleu_Kenai_2a,qPCR_saleu_8makeup) -> saleu_qPCR_data_combo
+
+setdiff(colnames(saleu_qPCR_data_combo)
+,colnames(beluga_qPCR_data_combo)) -> cols_to_drop
+
+setdiff(colnames(beluga_qPCR_data_combo)
+,colnames(saleu_qPCR_data_combo))
+
+saleu_qPCR_data_combo %>% 
+  dplyr::select(-c(cols_to_drop)) ->saleu_qPCR_data_combo_trimmed
+
+
+rbind(saleu_qPCR_data_combo_trimmed,beluga_qPCR_data_combo) -> qPCR_data_combo
+
+
+```
+```{r}
+
+qPCR_beluga_20M_1a %>% 
+  mutate(., Quantity= str_remove_all(Quantity,",")) %>% 
+  filter(., `Target Name`=="cetacea") %>% 
+    filter(., `Task`=="STANDARD") -> standards
+
+standards %>% 
+  mutate(., Quantity=as.numeric(Quantity)) %>% 
+  mutate(., CT=as.numeric(CT)) %>% 
+  #filter(., !Well %in% c(50, 123,97,99) ) %>% 
+  ggplot(aes(x=CT, y=log10(Quantity), color=Well)) +geom_point()
+
+qPCR_beluga_20M_1a %>% 
+  mutate(., Quantity= str_remove_all(Quantity,",")) %>% 
+  filter(., `Target Name`=="Moa IPC") %>% 
+    filter(., `Well`%in%standards$Well) %>% 
+  mutate(., Quantity=as.numeric(Quantity)) %>% 
+  mutate(., CT=as.numeric(CT)) %>% 
+  ggplot(aes(x=CT,y=Well)) +geom_point()
+
+
+#   qPCR_AK_data %>% 
+#   filter(., Plate=="20m_1a") %>% 
+#  filter(., Project == "Passive")  %>% 
+#   dplyr::select(Well) %>%  distinct() -> remove_passive
+# 
+# saveRDS(remove_passive, file=here("remove_passive.RDS"))
+```
+
+
+
+```{r}
+qPCR_data_combo %>% 
+  filter(., Marker=="Beluga") %>% 
+  mutate(., Quantity2 =str_remove(Quantity,","),
+         Quantity2=as.numeric(Quantity2)) %>% 
+    filter(., Quantity2>99999) %>%
+  filter(., `Target Name`== "cetacea") %>% 
+  mutate(., CT=as.numeric(CT)) %>% 
+  dplyr::summarise(., min(CT), max(CT), mean(CT))
+```
+
+```{r}
+qPCR_data_combo %>% 
+  filter(., Marker=="saleu") %>% 
+    mutate(., Quantity2 =str_remove(Quantity,","),
+         Quantity2=as.numeric(Quantity2)) %>% 
+  filter(., Quantity2>9999) %>%
+    mutate(., CT=as.numeric(CT)) %>% 
+  dplyr::summarise(., min(CT), max(CT), mean(CT))
+
+qPCR_data_combo  %>% 
+  filter(., `Target Name`=="Eulachon") %>% 
+  mutate(., Quantity2 =str_remove(Quantity,","),
+         Quantity2=as.numeric(Quantity2)) %>% 
+  filter(., Quantity2>999)  %>%
+    mutate(., CT=as.numeric(CT)) %>% 
+  dplyr::summarise(., min(CT), max(CT), mean(CT))
+  
+
+
+```
+
+#Load qPCR Names Data
+```{r}
+
+input_meta_path_beluga_20M_1a_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-04-21 120949_20M_1a_qpcr_names.csv")
+
+qPCR_beluga_20M_1a_names <- read.table(input_meta_path_beluga_20M_1a_qpcr_names, header = 1, sep = ",", stringsAsFactors = F) %>% 
+  mutate(Marker = "Beluga",
+         Plate="20m_1a") %>% 
+    #filter(., !Well %in% c(50, 123,97,99) ) %>% 
+    filter(., !Well %in% remove_passive$Well ) 
+
+input_meta_path_beluga_20m_1b_ex_k1_3_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-04-21 155934_20m_1b_ex_k1_3_names.csv")
+qPCR_beluga_20m_1b_ex_k1_3_names <- read.table(input_meta_path_beluga_20m_1b_ex_k1_3_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "Beluga",
+         Plate="20m_1b_ex_k1_3")
+
+input_meta_path_beluga_kenai_2a_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-04-25 122427_kenai_2a_names.csv")
+qPCR_beluga_kenai_2a_names <- read.table(input_meta_path_beluga_kenai_2a_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "Beluga",
+         Plate="Kenai_2a")
+
+input_meta_path_beluga_kenai_1a_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-04-26 104734_kenai_1a_names.csv")
+qPCR_beluga_kenai_1a_names <- read.table(input_meta_path_beluga_kenai_1a_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "Beluga",
+         Plate="Kenai_1a")  
+
+
+input_meta_path_saleu_20M_1a_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-04-29 100421_saleu_20M_1a_names.csv")
+qPCR_saleu_20M_1a_names <- read.table(input_meta_path_saleu_20M_1a_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "saleu",
+         Plate="20m_1a")
+
+input_meta_path_saleu_20M_1b_ex_k1_k3_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-05-02 114308_20M_1b_ex_k1_k3_names.csv")
+qPCR_saleu_20M_1b_ex_k1_k3_names <- read.table(input_meta_path_saleu_20M_1b_ex_k1_k3_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "saleu",
+         Plate="20M_1b_ex_k1_k3")
+
+input_meta_path_saleu_Kenai_1a_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-05-02 141814_Kenai_1a_names.csv")
+
+qPCR_saleu_Kenai_1a_names <- read.table(input_meta_path_saleu_Kenai_1a_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "saleu",
+         Plate="Kenai_1a")
+
+input_meta_path_saleu_Kenai_2a_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-05-02 164632_kenai_saleu_2a_names.csv")
+qPCR_saleu_Kenai_2a_names <- read.table(input_meta_path_saleu_Kenai_2a_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "saleu",
+         Plate="Kenai_2a")
+
+
+input_meta_path_saleu_8makeup_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-05-18 142658_8LEFT_SALMON_data_names.csv")
+
+qPCR_saleu_8makeup_names <- read.table(input_meta_path_saleu_8makeup_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "saleu",
+         Plate="8makeup")
+
+input_meta_path_beluga_8makeup_qpcr_names <- here("data","qPCR_results","data","sample_metadata","2022-05-18 161806_8makeup_qpcr_names.csv")
+qPCR_beluga_8makeup_names <- read.table(input_meta_path_beluga_8makeup_qpcr_names, header = 1, sep = ",", stringsAsFactors = F)%>% 
+  mutate(Marker = "Beluga",
+         Plate="8makeup")
+
+rbind(qPCR_beluga_20M_1a_names,qPCR_beluga_20m_1b_ex_k1_3_names,qPCR_beluga_kenai_2a_names,qPCR_beluga_kenai_1a_names,qPCR_saleu_20M_1a_names,qPCR_saleu_20M_1b_ex_k1_k3_names,qPCR_saleu_Kenai_1a_names,qPCR_saleu_Kenai_2a_names,qPCR_saleu_8makeup_names,qPCR_beluga_8makeup_names) -> qPCR_names_combo
+
+qPCR_names_combo$Well <- as.character(qPCR_names_combo$Well)
+```
+
+```{r}
+qPCR_beluga_kenai_2a %>% 
+  mutate(., Quantity= str_remove_all(Quantity,",")) %>% 
+  filter(., `Target Name`=="cetacea") %>% 
+    filter(., `Task`=="STANDARD") -> standards
+
+standards %>% 
+  mutate(., Quantity=as.numeric(Quantity)) %>% 
+  mutate(., CT=as.numeric(CT)) %>% 
+ #filter(., !Well %in% c(121, 122, 123,145, 146) ) %>% 
+  ggplot(aes(x=CT, y=log10(Quantity), color=Well)) +geom_point()
+
+qPCR_beluga_kenai_1a %>% 
+  mutate(., Quantity= str_remove_all(Quantity,",")) %>% 
+  filter(., `Target Name`=="Moa IPC") %>% 
+    filter(., `Well`%in%standards$Well) %>% 
+  mutate(., Quantity=as.numeric(Quantity)) %>% 
+  mutate(., CT=as.numeric(CT)) %>% 
+  ggplot(aes(x=CT,y=Well)) +geom_point()
+
+
+
+```
+
+#Load Metadata
+```{r}
+input_meta_path_dna_plate_list <- here("data","Metadata","dna_plate_list.csv")
+dna_plate_list <- read.table(input_meta_path_dna_plate_list, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path_seqrun2 <- here("data","Metadata","metadata_seqrun2_20220309.csv")
+metadata_seqrun2 <- read.table(input_meta_path_seqrun2, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path_kenai3 <- here("data","Metadata","metadata_kenai_run_3_20220518.csv")
+metadata_kenai3 <- read.table(input_meta_path_kenai3, header = 1, sep = ",", stringsAsFactors = F)
+metadata_kenai3$Site_code <- as.character(metadata_kenai3$Site_code)
+
+input_meta_path_kenai1 <- here("data","Metadata","metadata_kenai1_20220401.csv")
+metadata_kenai1 <- read.table(input_meta_path_kenai1, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path_kenai2 <- here("data","Metadata","metadata_kenai2_20220412.csv")
+metadata_kenai2 <- read.table(input_meta_path_kenai2, header = 1, sep = ",", stringsAsFactors = F)
+metadata_kenai2$Site_code <- as.character(metadata_kenai2$Site_code)
+
+input_meta_path_seqrun1 <- here("data","Metadata","metadata_seqrun1_20211225.csv")
+metadata_seqrun1 <- read.table(input_meta_path_seqrun1, header = 1, sep = ",", stringsAsFactors = F)
+
+rbind(metadata_kenai1,metadata_kenai2,metadata_kenai3) -> kenai_metadata_combo
+
+kenai_metadata_combo %>% 
+dplyr::select(-Seq_number,-Sample_ID,-New_name,-Tech_rep,-Temp..Field.Bottle.ID,-Depth_code,-Site_code) %>% distinct() %>% 
+  mutate(.,Location =NA)-> kenai_metadata_combo
+
+
+rbind(metadata_seqrun1,metadata_seqrun2) -> metadata_combo_20M
+
+metadata_combo_20M %>% 
+dplyr::select(-Seq_number,-New_name,-Tech_rep,-Extraction_set) %>% distinct() %>% 
+  mutate(.,Month =NA)-> metadata_combo_20M
+
+metadata_combo_20M
+
+kenai_metadata_combo %>% dplyr::select(sort(peek_vars())) -> kenai_metadata_combo
+metadata_combo_20M %>% dplyr::select(sort(peek_vars())) -> metadata_combo_20M
+
+rbind(kenai_metadata_combo,metadata_combo_20M) %>% distinct()-> meta_combo
+
+dna_plate_list %>% 
+  left_join(meta_combo)-> qPCR_meta_combo
+
+qPCR_meta_combo[duplicated(qPCR_meta_combo$LabID),] %>% 
+  arrange(LabID) -> duplicates
+
+qPCR_meta_combo %>% 
+  filter(., LabID %in% duplicates$LabID) %>% 
+  arrange(LabID)  
+  
+  qPCR_meta_combo %>% 
+  filter(., LabID=="52385_76")
+
+```
+
+
+```{r}
+qPCR_data_combo %>% 
+  left_join(qPCR_names_combo) -> qPCR_combo
+
+
+
+qPCR_combo %>% 
+  mutate(., Plate.Name = case_when(str_detect(Sample.Name, "Kenai_1a") ~"Kenai_Plate_1a",
+                                 str_detect(Sample.Name, "Kenai1a") ~"Kenai_Plate_1a",  
+                             str_detect(Sample.Name , "Kenai1b_") ~ "Kenai_Plate_1b" ,
+                             str_detect(Sample.Name , "Kenai2") ~"Kenai_Plate_2"  ,
+                             str_detect(Sample.Name , "Kenai3a_") ~"Kenai_Plate_3"  ,
+                             str_detect(Sample.Name , "20M_plate_1a") ~"TwentyMile_1A"  ,
+                             str_detect(Sample.Name , "8makeup") ~"8makeup" ,
+                             str_detect(Sample.Name , "20m1b_") ~"TwentyMile_1B" ,
+                             str_detect(Sample.Name , "extra_tube_1") ~"Extra_tube_1"  ,
+                             str_detect(Sample.Name , "extra_tube_2") ~"Extra_tube_2"  ,
+                             str_detect(Sample.Name , "extra_tube_3") ~"Extra_tube_3"  ,
+                             str_detect(Sample.Name, "extra_tube_4") ~"Extra_tube_4"  ,
+                             str_detect(Sample.Name , "extra_tube_5") ~"Extra_tube_5"  ,
+                             str_detect(Sample.Name , "extra_tube_6") ~"Extra_tube_6"   ,
+                            str_detect(Sample.Name , "extra_tube_7") ~"Extra_tube_7" ,
+                            TRUE ~"Other"),
+         Plate.Number=Plate_Name) -> qPCR_combo
+
+qPCR_combo$Plate.Number <- as.character(qPCR_combo$Plate.Number)
+
+qPCR_meta_combo %>% 
+  mutate(., Plate.Number=case_when(Plate.Name=="Extra_tube_1"~"1",
+                                   Plate.Name=="Extra_tube_2"~"2",
+                                   Plate.Name=="Extra_tube_3"~"3",
+                                   Plate.Name=="Extra_tube_4"~"4",
+                                   Plate.Name=="Extra_tube_5"~"5",
+                                   Plate.Name=="Extra_tube_6"~"6",
+                                   Plate.Name=="Extra_tube_7"~"7",
+                                   TRUE ~ Plate.Number))->qPCR_meta_combo
+
+
+
+qPCR_combo %>% 
+left_join(qPCR_meta_combo, by = c("Plate.Name", "Plate.Number")) -> qPCR_AK_data
+
+
+qPCR_AK_data %>% 
+  mutate(., Quantity=str_replace_all(Quantity,",","")) -> qPCR_AK_data
+
+# Quantity is 2uL of input DNA in 10 µL
+
+qPCR_AK_data %>% 
+  filter(., is.na(New_name_no_tech) | str_detect(New_name_no_tech,"Diet", negate = TRUE)) -> qPCR_AK_data
+
+saveRDS(qPCR_AK_data, file=here("data","qPCR_results","data","qPCR_results","qPCR_AK_data.RDS"))
+
+```
+
+
+```{r}
+
+qPCR_AK_data$Task %>% unique()
+
+qPCR_AK_data %>% 
+  filter(., LabID=="52385_76")
+
+qPCR_AK_data$Task %>% unique()
+
+
+
+qPCR_AK_data$Quantity <- as.numeric(qPCR_AK_data$Quantity)
+qPCR_AK_data$Task %>% unique()
+
+
+qPCR_AK_data %>% 
+  filter(., str_detect(Task,"STANDARD") &
+         str_detect(Plate,"8makeup"))
+
+qPCR_AK_data %>% 
+  filter(., str_detect(Plate,"20m_1a")) %>% 
+  filter(., `Target Name`=="cetacea")
+
+qPCR_AK_data %>% 
+  filter(., `Target Name`=="cetacea") %>% 
+filter(., Task == "STANDARD") %>% 
+  ggplot(., aes(y=CT, x=log10(Quantity))) + geom_point() +facet_wrap(Plate~.)
+```
+
+
+
+
+
+
+
+
+
+```{r}
+qPCR_AK_data %>% 
+  mutate(., Quantity=as.numeric(Quantity)) %>% 
+  filter(., `Target Name`=="Coho") %>% 
+  arrange(desc(Quantity))
+```
+
+
+
+
+
+```{r}
+
+
+
+qPCR_AK_data %>% 
+  filter(., `Target Name`=="Eulachon") %>% 
+  filter(., LabID %in% c("52386_107-213","52386_108-214","52386_110-199"))
+
+qPCR_AK_data %>% 
+  filter(., `Target Name`=="Eulachon") %>% 
+  mutate(., Quantity2 =str_remove(Quantity,","),
+         Quantity2=as.numeric(Quantity2)) %>% 
+  filter(., is.na(CT))
+
+qPCR_AK_data %>% 
+   filter(., `Target Name`=="Eulachon") %>% 
+  filter(., is.na(Quantity)) %>% 
+  filter(., CT != "Undetermined")
+```
+
+
+
+```{r}
+qPCR_AK_data %>% 
+   filter(., Quantity > 0) %>% 
+  filter(., Sample_Control =="Control") %>% 
+     filter(., Project =="Passive") %>% 
+  mutate(., Quantity = as.numeric(Quantity)) %>% 
+  filter(., `Target Name` %in% c("cetacea","Chinook","Coho","Eulachon")) %>% 
+  ggplot(., aes(x=LabID, y= Quantity, colour=`Target Name`)) +geom_point()+ facet_grid(. ~ `Target Name`, scales="free") +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=8), axis.title = element_text(size=18), strip.text = element_text(size=16)) + ggtitle("Passive Filter")
+
+
+ ggsave(file = here::here("analysis", "figures", "passive_filters.png"),
+  width = 30,
+  height = 8
+  )
+```
+
+```{r}
+ qPCR_AK_data %>% 
+   filter(., Quantity > 0) %>% 
+  filter(., Sample_Control =="Control") %>% 
+  mutate(., Quantity = as.numeric(Quantity)) %>% 
+  filter(., `Target Name` %in% c("cetacea","Chinook","Coho","Eulachon")) %>% 
+   filter(., is.na(Project)) %>% 
+  ggplot(., aes(x=LabID, y= Quantity, colour=`Target Name`)) +geom_point()+ facet_grid(. ~ `Target Name`, scales = "free") +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=8), axis.title = element_text(size=18), strip.text = element_text(size=16)) + ggtitle("Controls")
+
+
+ ggsave(file = here::here("analysis", "figures", "positive_qPCR_from_controls_all_passive_or_fish.png"),
+  width = 30,
+  height = 8
+  )
+```
+
+
+```{r}
+
+
+qPCR_AK_data %>% 
+  filter(., `Sample Name`!="" & Sample.Name !="") %>% 
+  dplyr::filter(Marker =="Beluga") %>% 
+  filter(., `Target Name` =="cetacea") %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity)) %>% 
+  filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., !is.na(River)) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+ ggplot(aes(x=Sample_date, y=Quantity)) + geom_point()+ facet_wrap(River ~ ., scale="free_x")+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + scale_y_sqrt(breaks=c(0,10,50,100,200,400)) +ggtitle("Beluga qPCR Detections")
+
+
+
+ ggsave(file = here::here("analysis", "figures", "beluga_qPCR_detections.png"),
+  width = 30,
+  height = 8
+  )
+```
+
+
+
+
+
+
+
+
+

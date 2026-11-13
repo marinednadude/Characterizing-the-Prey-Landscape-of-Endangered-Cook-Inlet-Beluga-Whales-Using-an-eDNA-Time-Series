@@ -1,0 +1,12 @@
+"0","    mutate(., Detection_qPCR= if_else(avg_Detection_qPCR>0,1,0)) %>% 
+  mutate(time_chunk = case_when(Sample_date < '2021-06-01' ~""Exclude"",
+    Sample_date < ""2021-09-01"" ~""Before"",
+    TRUE ~""During"")) %>% 
+  filter(., time_chunk != ""Exclude"") %>%
+  group_by(time_chunk) %>% 
+  mutate(., n_distinct(Sample_date)) %>% 
+  dplyr::summarise(prob_detection=sum(Detection_qPCR)/n_distinct(Sample_date)) %>% 
+  mutate(., Method =""qPCR"") -> kenai_summer_fall_qPCR
+"
+"2","Error: object '.' not found
+"

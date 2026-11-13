@@ -1,0 +1,5 @@
+"0","#low reads for these assignments
+salmon_asvs_need_ID %>% 
+  left_join(salmon_asvs)
+"
+"2","Joining with `by = join_by(ASV)`"

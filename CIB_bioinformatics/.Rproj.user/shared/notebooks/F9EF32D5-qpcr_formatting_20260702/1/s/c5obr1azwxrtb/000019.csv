@@ -1,0 +1,8 @@
+"0",""
+"0","qPCR_beluga_20M_1a %>% "
+"0","  mutate(., Quantity= str_remove_all(Quantity,"","")) %>% "
+"0","  filter(., `Target Name`==""Moa IPC"") %>% "
+"0","    filter(., `Well`%in%standards$Well) %>% "
+"0","  mutate(., Quantity=as.numeric(Quantity)) %>% "
+"0","  mutate(., CT=as.numeric(CT)) %>% "
+"0","  ggplot(aes(x=CT,y=Well)) +geom_point()"

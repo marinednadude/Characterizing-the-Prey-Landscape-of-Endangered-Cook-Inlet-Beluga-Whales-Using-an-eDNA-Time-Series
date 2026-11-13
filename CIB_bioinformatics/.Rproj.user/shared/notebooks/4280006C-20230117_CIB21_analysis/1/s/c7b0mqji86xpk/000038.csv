@@ -1,0 +1,18 @@
+"0","combo_4_species %>% 
+  filter(., `Target Name`==""Beluga"") %>% 
+  dplyr::select(Sample_date, Site.Name=River, Quantity, index_scores, nReads) %>% 
+filter(., Site.Name %in% c(""Kenai"", ""Twentymile"")) %>% 
+mutate(., Site.Name=case_when(Site.Name==""Kenai"" ~""Kenai River"",
+                             Site.Name==""Twentymile"" ~""Twentymile River"" )) %>% 
+  mutate(eDNA_detection = case_when(Quantity | index_scores | nReads >0 ~""Yes"",TRUE ~""No"")) %>% left_join(beluga_visual_3) %>% 
+  filter(., !is.na(Were.belugas.observed.during.the.monitoring.session.)) %>% 
+  mutate(., Detection = case_when(eDNA_detection ==""Yes"" & Were.belugas.observed.during.the.monitoring.session. ==""Yes"" ~""Both Detected"",
+                                  eDNA_detection ==""Yes"" & Were.belugas.observed.during.the.monitoring.session. ==""No"" ~""eDNA Only"",
+                                  eDNA_detection ==""No"" & Were.belugas.observed.during.the.monitoring.session. ==""Yes"" ~""Visual Only"",
+                                   eDNA_detection ==""No"" & Were.belugas.observed.during.the.monitoring.session. ==""No"" ~""Both Absent""
+)) %>% 
+  count(Detection) %>% 
+  ggplot(., aes(x=Detection, y=n, fill=Detection)) +geom_bar(stat=""identity"")  +theme(axis.text.x = element_text(angle=30, hjust = 1)) +ylab(""Count"") + xlab(""Detection Type"") +theme_pubr()+theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=16), axis.title = element_text(size=24), strip.text = element_text(size=16), axis.line = element_line(colour = ""grey50""))  
+"
+"2","Joining with `by = join_by(Sample_date, Site.Name)`"

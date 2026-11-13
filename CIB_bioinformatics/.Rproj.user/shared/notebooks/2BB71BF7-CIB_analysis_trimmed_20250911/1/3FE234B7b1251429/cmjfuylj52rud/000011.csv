@@ -1,0 +1,6 @@
+"0",""
+"0",""
+"0"," ggsave(file = here::here(""analysis"", ""figures"", ""Figure_6_PCA_aichison.png""),"
+"0","  width = 12.5,"
+"0","  height = 10"
+"0","  )"

@@ -1,0 +1,7 @@
+"0",""
+"0","qPCR_AK_data %>% "
+"0","  filter(., !str_detect(Sample.Name,""standard"")) %>% "
+"0","  filter(., !is.na(New_name_no_tech)) %>% "
+"0","  filter(., Project!=""Passive"") %>% "
+"0","  filter(., !str_detect(New_name_no_tech,""Diet"")) %>% "
+"0","  filter(., `Target Name` %in% c(""Chinook"",""Coho"",""Eulachon"",""cetacea""))"

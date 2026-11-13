@@ -1,0 +1,8 @@
+722a94ed0415aa452d8f02c90d004ff3 bag-info.txt
+243c4c8a142a59dc476112e8da1dbffe metadata/sysmeta/sysmeta-urn_uuid_6f07cb25-a4a1-48e8-95cb-74f532f3ce2d.xml
+fe3cf5625e0821e8a2a0afc0bf8aea84 manifest-md5.txt
+dd7474186ef391c22e05feb082d61dda metadata/sysmeta/sysmeta-resource_map_urn_uuid_fa761459-7b69-4ff1-b389-25abf775094e.xml
+eaa2c609ff6371712f623f5531945b44 bagit.txt
+4531daa715b63394f399c0ab7dd7f2ed metadata/science-metadata.xml
+c32416b3cb7c395a5c38c057cf3ba219 metadata/sysmeta/sysmeta-urn_uuid_aceaecb2-1ce0-4d41-a839-d3607d32bb58.xml
+e53626de0af6b51730fc3d84dadf4571 metadata/oai-ore.xml

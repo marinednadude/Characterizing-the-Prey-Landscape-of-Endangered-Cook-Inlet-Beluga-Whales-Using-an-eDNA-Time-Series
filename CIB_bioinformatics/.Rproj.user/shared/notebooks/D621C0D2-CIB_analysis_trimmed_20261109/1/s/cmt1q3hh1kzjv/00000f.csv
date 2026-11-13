@@ -1,0 +1,5 @@
+"0",""
+"0","(coho_high_qPCR_no_meta_detection_a +  coho_high_qPCR_no_meta_detection_b) /"
+"0","  (eul_high_qPCR_no_meta_detection_a+eul_high_qPCR_no_meta_detection_b) +plot_annotation("
+"0","  title = 'Unexpected Beluga & Coho Non-Detections Occur in Metabarcoding When Other Species Swamp Sample'"
+"0",")"

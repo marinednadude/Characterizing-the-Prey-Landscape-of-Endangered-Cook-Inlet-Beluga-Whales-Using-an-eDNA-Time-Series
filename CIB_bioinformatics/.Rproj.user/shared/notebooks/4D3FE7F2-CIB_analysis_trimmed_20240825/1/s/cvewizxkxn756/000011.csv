@@ -1,0 +1,11 @@
+"0","eDNA_index_kenai_plotting %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=ID_mifish, fill= ID_mifish)) +
+  geom_point() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = ""none"",panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = ""grey50""),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18)) + facet_wrap(ID_mifish ~.)+
+  geom_smooth() +
+  annotate(""rect"", xmin = as.Date(""2021-03-25""), xmax = as.Date(""2021-05-01""), ymin = 0, ymax = 1, alpha = .2,fill =""darkred"") +  labs(x=""Date"", y=""eDNA Index Score"") 
+"
+"1","[38;5;232m`geom_smooth()` using method = 'loess' and formula = 'y ~ x'[39m
+"

@@ -1,0 +1,6 @@
+"0","rbind(turnagain_viz, twentymile_qPCR,twentymile_metabar) %>%"
+"0","  mutate(Method = recode(Method, `Metabarcoding` = ""MetaBar"")) %>% "
+"0","  dplyr::select(Method, `Units Abundance`= Units, `Beluga Occurrence`= time_chunk, `Mean Abundance`=mean, `SD Abundance`=sd,`Detection Rate`=prob_detection ) %>% "
+"0","  mutate(., `Mean Abundance` = round(`Mean Abundance`,3),"
+"0","         `SD Abundance` = round(`SD Abundance`,3),"
+"0","         `Detection Rate` = round(`Detection Rate`,3)) %>% knitr::kable()"

@@ -1,0 +1,13 @@
+"0","plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+        filter(., mean_reads >0) %>% 
+   ggplot(., aes(x=mean_Quantity+0.01, y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5) +facet_wrap(`Target Name`~., scale=""free"") +ylab(""Metabarcoding Non Detection"") +xlab(""qPCR DNA Concentration [copies/µL]"") +ggtitle(""Non-detections in metabarcoding w/ out 3x zeros if qPCR >0"") +theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=18), axis.title = element_text(size=24), strip.text = element_text(size=20), axis.line = element_line(colour = ""grey50""))
+"
+"1","[38;5;232mJoining with `by = join_by(LabID, `Target Name`)`[39m
+"
+"2","Warning:"
+"2"," [38;5;232mRemoved 134 rows containing non-finite outside the scale range
+(`stat_sum()`).[39m
+"

@@ -1,0 +1,4 @@
+"0","short_edna %>% filter(.,nReads >0) %>% group_by(River,Species) %>% "
+"0","  filter(., Species !="""") %>% "
+"0","  count() %>% arrange(desc(n)) -> tot_detections"
+"0",""

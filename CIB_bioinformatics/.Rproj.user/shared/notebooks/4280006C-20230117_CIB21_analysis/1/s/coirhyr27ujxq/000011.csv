@@ -1,0 +1,5 @@
+"0","combined_data_long_reads_c %>% "
+"0","  filter(., River %in% c(""Kenai"")) %>% "
+"0","  filter(., !is.na(Tech_rep)) %>% "
+"0","  dplyr::select(New_name_no_tech,Station,Site,Bio_rep,Tech_rep) %>% "
+"0","  distinct()"

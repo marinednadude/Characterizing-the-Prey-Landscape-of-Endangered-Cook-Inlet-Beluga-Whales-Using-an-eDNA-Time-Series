@@ -1,0 +1,16 @@
+"0","Sum %>% 
+    left_join(overlap) %>% 
+  dplyr::select(Period=time_chunk, Taxa=ID_mifish, n, Median, `LCI-0.95` = Bca.lower, `UCI-0.95`=Bca.upper, `Confidence Interval`=Overlap) %>% 
+  left_join(Sum_99) %>% 
+  dplyr::select(-time_chunk,-ID_mifish,-Conf.level) %>% 
+  dplyr::rename(`LCI-0.99` = Bca.lower, `UCI-0.99`=Bca.upper) %>% 
+  arrange(Taxa) %>% 
+  mutate(., ) %>% 
+  kable()
+"
+"2","Joining with `by = join_by(species)`"
+"1","[1m[33mError[39m in `dplyr::select()`:[22m
+[33m![39m Can't select columns that don't exist.
+[31m✖[39m Column `ID_mifish` doesn't exist.
+[90mRun `]8;;x-r-run:rlang::last_trace()rlang::last_trace()]8;;` to see where the error occurred.[39m
+"

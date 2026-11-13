@@ -1,0 +1,446 @@
+Plate Name,LabID,Plate Number,Row,Column
+Kenai_Plate_1a,52386_08-09,1,A,1
+Kenai_Plate_1a,52386_107-213,2,B,1
+Kenai_Plate_1a,52386_108-214,3,C,1
+Kenai_Plate_1a,52386_110-199,4,D,1
+Kenai_Plate_1a,52386_12-128,5,E,1
+Kenai_Plate_1a,52386_136-200,6,F,1
+Kenai_Plate_1a,52386_137-201,7,G,1
+Kenai_Plate_1a,52386_138-215,8,H,1
+Kenai_Plate_1a,52386_150-216,9,A,2
+Kenai_Plate_1a,52386_151-217,10,B,2
+Kenai_Plate_1a,52386_152-218,11,C,2
+Kenai_Plate_1a,52386_153-219,12,D,2
+Kenai_Plate_1a,52386_154-195,13,E,2
+Kenai_Plate_1a,52386_155-196,14,F,2
+Kenai_Plate_1a,52386_47-142,15,G,2
+Kenai_Plate_1a,52386_48-202,16,H,2
+Kenai_Plate_1a,52386_65-203,17,A,3
+Kenai_Plate_1a,52386_66-204,18,B,3
+Kenai_Plate_1a,52386_89-205,19,C,3
+Kenai_Plate_1a,52386_90-206,20,D,3
+Kenai_Plate_1a,52386_96-207-8-9,21,E,3
+Kenai_Plate_1a,52386_98-212,22,F,3
+Kenai_Plate_1a,52386_99-210-11,23,G,3
+Kenai_Plate_1a,52386_002,24,H,3
+Kenai_Plate_1a,52386_003,25,A,4
+Kenai_Plate_1a,52386_004,26,B,4
+Kenai_Plate_1a,52386_005,27,C,4
+Kenai_Plate_1a,52386_006,28,D,4
+Kenai_Plate_1a,52386_007,29,E,4
+Kenai_Plate_1a,52386_010,30,F,4
+Kenai_Plate_1a,52386_011,31,G,4
+Kenai_Plate_1a,52386_014,32,H,4
+Kenai_Plate_1a,52386_016,33,A,5
+Kenai_Plate_1a,52386_017,34,B,5
+Kenai_Plate_1a,52386_018,35,C,5
+Kenai_Plate_1a,52386_019,36,D,5
+Kenai_Plate_1a,52386_020,37,E,5
+Kenai_Plate_1a,52386_021,38,F,5
+Kenai_Plate_1a,52386_022,39,G,5
+Kenai_Plate_1a,52386_023,40,H,5
+Kenai_Plate_1a,52386_024,41,A,6
+Kenai_Plate_1a,52386_026,42,B,6
+Kenai_Plate_1a,52386_027,43,C,6
+Kenai_Plate_1a,52386_028,44,D,6
+Kenai_Plate_1a,52386_030,45,E,6
+Kenai_Plate_1a,52386_031,46,F,6
+Kenai_Plate_1a,52386_032,47,G,6
+Kenai_Plate_1a,52386_033,48,H,6
+Kenai_Plate_1a,52386_034,49,A,7
+Kenai_Plate_1a,52386_035,50,B,7
+Kenai_Plate_1a,52386_036,51,C,7
+Kenai_Plate_1a,52386_038,52,D,7
+Kenai_Plate_1a,52386_039,53,E,7
+Kenai_Plate_1a,52386_040,54,F,7
+Kenai_Plate_1a,52386_041,55,G,7
+Kenai_Plate_1a,52386_042,56,H,7
+Kenai_Plate_1a,52386_044,57,A,8
+Kenai_Plate_1a,52386_045,58,B,8
+Kenai_Plate_1a,52386_046,59,C,8
+Kenai_Plate_1a,52386_050,60,D,8
+Kenai_Plate_1a,52386_051,61,E,8
+Kenai_Plate_1a,52386_052,62,F,8
+Kenai_Plate_1a,52386_053,63,G,8
+Kenai_Plate_1a,52386_054,64,H,8
+Kenai_Plate_1a,52386_055,65,A,9
+Kenai_Plate_1a,52386_056,66,B,9
+Kenai_Plate_1a,52386_058,67,C,9
+Kenai_Plate_1a,52386_059,68,D,9
+Kenai_Plate_1a,52386_060,69,E,9
+Kenai_Plate_1a,52386_062,70,F,9
+Kenai_Plate_1a,52386_063,71,G,9
+Kenai_Plate_1a,52386_064,72,H,9
+Kenai_Plate_1a,52386_067,73,A,10
+Kenai_Plate_1a,52386_068,74,B,10
+Kenai_Plate_1a,52386_069,75,C,10
+Kenai_Plate_1a,52386_070,76,D,10
+Kenai_Plate_1a,52386_072,77,E,10
+Kenai_Plate_1a,52386_074,78,F,10
+Kenai_Plate_1a,52386_075,79,G,10
+Kenai_Plate_1a,52386_076,80,H,10
+Kenai_Plate_1a,52386_077,81,A,11
+Kenai_Plate_1a,52386_078,82,B,11
+Kenai_Plate_1a,52386_079,83,C,11
+Kenai_Plate_1a,52386_080,84,D,11
+Kenai_Plate_1a,52386_081,85,E,11
+Kenai_Plate_1a,52385_118,86,F,11
+Kenai_Plate_1a,52385_119,87,G,11
+Kenai_Plate_1a,52385_120,88,H,11
+Kenai_Plate_1a,52385_130,89,A,12
+Kenai_Plate_1a,52385_131,90,B,12
+Kenai_Plate_1a,52385_132,91,C,12
+Kenai_Plate_1a,52385_138,92,D,12
+Kenai_Plate_1a,52385_139,93,E,12
+Kenai_Plate_1a,52385_140,94,F,12
+Kenai_Plate_1a,Tilapia,95,G,12
+Kenai_Plate_1a,Black Tuna,96,H,12
+Kenai_Plate_1b,52386_033,1,A,1
+Kenai_Plate_1b,52386_034,2,B,1
+Kenai_Plate_1b,52386_035,3,C,1
+Kenai_Plate_1b,52386_033,4,D,1
+Kenai_Plate_1b,52386_034,5,E,1
+Kenai_Plate_1b,52386_035,6,F,1
+Kenai_Plate_1b,52386_036,7,G,1
+Kenai_Plate_1b,52386_038,8,H,1
+Kenai_Plate_1b,52386_039,9,A,2
+Kenai_Plate_1b,52386_040,10,B,2
+Kenai_Plate_1b,52386_041,11,C,2
+Kenai_Plate_1b,52386_042,12,D,2
+Kenai_Plate_1b,52386_036,13,E,2
+Kenai_Plate_1b,52386_038,14,F,2
+Kenai_Plate_1b,52386_039,15,G,2
+Kenai_Plate_1b,52386_040,16,H,2
+Kenai_Plate_1b,52386_041,17,A,3
+Kenai_Plate_1b,52386_042,18,B,3
+Kenai_Plate_1c,Coastal_Even_e5_01,1,A,1
+Kenai_Plate_1c,Coastal_Even_e5_02,2,B,1
+Kenai_Plate_1c,Coastal_Even_e5_03,3,C,1
+Kenai_Plate_1c,Coastal_Even_e4_01,4,D,1
+Kenai_Plate_1c,Coastal_Even_e4_02,5,E,1
+Kenai_Plate_1c,Coastal_Even_e4_03,6,F,1
+Kenai_Plate_2,52386_082,1,A,1
+Kenai_Plate_2,52386_083,2,B,1
+Kenai_Plate_2,52386_084,3,C,1
+Kenai_Plate_2,52386_087,4,D,1
+Kenai_Plate_2,52386_088,5,E,1
+Kenai_Plate_2,52386_091,6,F,1
+Kenai_Plate_2,52386_092,7,G,1
+Kenai_Plate_2,52386_093,8,H,1
+Kenai_Plate_2,52386_094,9,A,2
+Kenai_Plate_2,52386_095,10,B,2
+Kenai_Plate_2,52386_101,11,C,2
+Kenai_Plate_2,52386_102,12,D,2
+Kenai_Plate_2,52386_103,13,E,2
+Kenai_Plate_2,52386_104,14,F,2
+Kenai_Plate_2,52386_105,15,G,2
+Kenai_Plate_2,52386_106,16,H,2
+Kenai_Plate_2,52386_111,17,A,3
+Kenai_Plate_2,52386_112,18,B,3
+Kenai_Plate_2,52386_113,19,C,3
+Kenai_Plate_2,52386_114,20,D,3
+Kenai_Plate_2,52386_115,21,E,3
+Kenai_Plate_2,52386_116,22,F,3
+Kenai_Plate_2,52386_117,23,G,3
+Kenai_Plate_2,52386_118,24,H,3
+Kenai_Plate_2,52386_119,25,A,4
+Kenai_Plate_2,52386_120,26,B,4
+Kenai_Plate_2,52386_122,27,C,4
+Kenai_Plate_2,52386_123,28,D,4
+Kenai_Plate_2,52386_124,29,E,4
+Kenai_Plate_2,52386_125,30,F,4
+Kenai_Plate_2,52386_126,31,G,4
+Kenai_Plate_2,52386_127,32,H,4
+Kenai_Plate_2,52386_129,33,A,5
+Kenai_Plate_2,52386_130,34,B,5
+Kenai_Plate_2,52386_131,35,C,5
+Kenai_Plate_2,52386_132,36,D,5
+Kenai_Plate_2,52386_134,37,E,5
+Kenai_Plate_2,52386_135,38,F,5
+Kenai_Plate_2,52386_139,39,G,5
+Kenai_Plate_2,52386_140,40,H,5
+Kenai_Plate_2,52386_141,41,A,6
+Kenai_Plate_2,52386_143,42,B,6
+Kenai_Plate_2,52386_144,43,C,6
+Kenai_Plate_2,52386_146,44,D,6
+Kenai_Plate_2,52386_147,45,E,6
+Kenai_Plate_2,52386_148,46,F,6
+Kenai_Plate_2,52386_149,47,G,6
+Kenai_Plate_2,52386_182,48,H,6
+Kenai_Plate_2,52386_183,49,A,7
+Kenai_Plate_2,52386_184,50,B,7
+Kenai_Plate_2,52386_185,51,C,7
+Kenai_Plate_2,52386_186,52,D,7
+Kenai_Plate_2,52386_187,53,E,7
+Kenai_Plate_2,52386_188,54,F,7
+Kenai_Plate_2,52386_189,55,G,7
+Kenai_Plate_2,52386_190,56,H,7
+Kenai_Plate_2,52386_191,57,A,8
+Kenai_Plate_2,52386_192,58,B,8
+Kenai_Plate_2,52386_198,59,C,8
+Kenai_Plate_2,52386_143,60,D,8
+Kenai_Plate_2,52386_144,61,E,8
+Kenai_Plate_2,52386_117,62,F,8
+Kenai_Plate_2,52386_101,63,G,8
+Kenai_Plate_2,52386_102,64,H,8
+Kenai_Plate_2,52386_103,65,A,9
+Kenai_Plate_2,52386_101,66,B,9
+Kenai_Plate_2,52386_102,67,C,9
+Kenai_Plate_2,52386_103,68,D,9
+Kenai_Plate_2,52386_129,69,E,9
+Kenai_Plate_2,52386_130,70,F,9
+Kenai_Plate_2,52386_131,71,G,9
+Kenai_Plate_2,52386_129,72,H,9
+Kenai_Plate_2,52386_130,73,A,10
+Kenai_Plate_2,52386_131,74,B,10
+Kenai_Plate_2,52344 -02,75,C,10
+Kenai_Plate_2,52344 -03,76,D,10
+Kenai_Plate_2,52344 -04,77,E,10
+Kenai_Plate_2,52344 -05,78,F,10
+Kenai_Plate_2,52344 -06,79,G,10
+Kenai_Plate_2,52344 -07,80,H,10
+Kenai_Plate_2,52344 -08,81,A,11
+Kenai_Plate_2,52344 -09,82,B,11
+Kenai_Plate_2,52344 -10,83,C,11
+Kenai_Plate_2,52344 -11,84,D,11
+Kenai_Plate_2,52344 -12,85,E,11
+Kenai_Blanks,52386_01,1,A,1
+Kenai_Blanks,52386_013,2,B,1
+Kenai_Blanks,52386_015,3,C,1
+Kenai_Blanks,52386_025,4,D,1
+Kenai_Blanks,52386_029,5,E,1
+Kenai_Blanks,52386_037,6,F,1
+Kenai_Blanks,52386_043,7,G,1
+Kenai_Blanks,52386_049,8,H,1
+Kenai_Blanks,52386_057,9,A,2
+Kenai_Blanks,52386_061,10,B,2
+Kenai_Blanks,52386_071,11,C,2
+Kenai_Blanks,52386_073,12,D,2
+Kenai_Blanks,52386_085,13,E,2
+Kenai_Blanks,52386_086,14,F,2
+Kenai_Blanks,52386_097,15,G,2
+Kenai_Blanks,52386_100,16,H,2
+Kenai_Blanks,52386_109,17,A,3
+Kenai_Blanks,52386_121,18,B,3
+Kenai_Blanks,52386_133,19,C,3
+Kenai_Blanks,52386_145,20,D,3
+Kenai_Blanks,52386_156,21,E,3
+Kenai_Blanks,52386_181,22,F,3
+Kenai_Blanks,52386_193,23,G,3
+Kenai_Blanks,52386_194,24,H,3
+Kenai_Blanks,52386_197,25,A,4
+Kenai_Plate_3,52386_158,1,A,1
+Kenai_Plate_3,52386_159,2,B,1
+Kenai_Plate_3,52386_160,3,C,1
+Kenai_Plate_3,52386_161,4,D,1
+Kenai_Plate_3,52386_162,5,E,1
+Kenai_Plate_3,52386_163,6,F,1
+Kenai_Plate_3,52386_164,7,G,1
+Kenai_Plate_3,52386_165,8,H,1
+Kenai_Plate_3,52386_166,9,A,2
+Kenai_Plate_3,52386_167,10,B,2
+Kenai_Plate_3,52386_168,11,C,2
+Kenai_Plate_3,52386_170,12,D,2
+Kenai_Plate_3,52386_172,13,E,2
+Kenai_Plate_3,52386_173,14,F,2
+Kenai_Plate_3,52386_174,15,G,2
+Kenai_Plate_3,52386_175,16,H,2
+Kenai_Plate_3,52386_176,17,A,3
+Kenai_Plate_3,52386_177,18,B,3
+Kenai_Plate_3,52386_178-224,19,C,3
+Kenai_Plate_3,52386_179-225,20,D,3
+Kenai_Plate_3,52386_180-226,21,E,3
+Kenai_Plate_3,52386_221,22,F,3
+Kenai_Plate_3,52386_222,23,G,3
+Kenai_Plate_3,52386_223,24,H,3
+Kenai_Plate_3,52386_158,25,A,4
+Kenai_Plate_3,52386_159,26,B,4
+Kenai_Plate_3,52386_160,27,C,4
+Kenai_Plate_3,52386_161,28,D,4
+Kenai_Plate_3,52386_162,29,E,4
+Kenai_Plate_3,52386_163,30,F,4
+Kenai_Plate_3,52386_158,31,G,4
+Kenai_Plate_3,52386_159,32,H,4
+Kenai_Plate_3,52386_160,33,A,5
+Kenai_Plate_3,52386_161,34,B,5
+Kenai_Plate_3,52386_162,35,C,5
+Kenai_Plate_3,52386_163,36,D,5
+TwentyMile_1A,52385_01,1,A,1
+TwentyMile_1A,52385_02,2,B,1
+TwentyMile_1A,52385_03,3,C,1
+TwentyMile_1A,52385_04,4,D,1
+TwentyMile_1A,52385_05,5,E,1
+TwentyMile_1A,52385_06,6,F,1
+TwentyMile_1A,52385_07,7,G,1
+TwentyMile_1A,52385_08,8,H,1
+TwentyMile_1A,52385_09,9,A,2
+TwentyMile_1A,52385_10,10,B,2
+TwentyMile_1A,52385_11,11,C,2
+TwentyMile_1A,52385_12,12,D,2
+TwentyMile_1A,52385_13,13,E,2
+TwentyMile_1A,52385_14,14,F,2
+TwentyMile_1A,52385_15,15,G,2
+TwentyMile_1A,52385_16,16,H,2
+TwentyMile_1A,52385_17,17,A,3
+TwentyMile_1A,52385_18,18,B,3
+TwentyMile_1A,52385_19,19,C,3
+TwentyMile_1A,52385_20,20,D,3
+TwentyMile_1A,52385_21,21,E,3
+TwentyMile_1A,52385_22,22,F,3
+TwentyMile_1A,52385_23,23,G,3
+TwentyMile_1A,52385_24,24,H,3
+TwentyMile_1A,52385_25,25,A,4
+TwentyMile_1A,52385_26,26,B,4
+TwentyMile_1A,52385_27,27,C,4
+TwentyMile_1A,52385_28,28,D,4
+TwentyMile_1A,52385_29,29,E,4
+TwentyMile_1A,52385_30,30,F,4
+TwentyMile_1A,52385_31,31,G,4
+TwentyMile_1A,52385_32,32,H,4
+TwentyMile_1A,52385_33,33,A,5
+TwentyMile_1A,52385_34,34,B,5
+TwentyMile_1A,52385_35,35,C,5
+TwentyMile_1A,52385_36,36,D,5
+TwentyMile_1A,52385_37,37,E,5
+TwentyMile_1A,52385_38,38,F,5
+TwentyMile_1A,52385_39,39,G,5
+TwentyMile_1A,52385_40,40,H,5
+TwentyMile_1A,52385_41,41,A,6
+TwentyMile_1A,52385_42,42,B,6
+TwentyMile_1A,52385_43,43,C,6
+TwentyMile_1A,52385_44,44,D,6
+TwentyMile_1A,52385_45,45,E,6
+TwentyMile_1A,52385_46,46,F,6
+TwentyMile_1A,52385_47,47,G,6
+TwentyMile_1A,52385_48,48,H,6
+TwentyMile_1A,52385_49,49,A,7
+TwentyMile_1A,52385_50,50,B,7
+TwentyMile_1A,52385_51,51,C,7
+TwentyMile_1A,52385_52,52,D,7
+TwentyMile_1A,52385_53,53,E,7
+TwentyMile_1A,52385_54,54,F,7
+TwentyMile_1A,52385_55,55,G,7
+TwentyMile_1A,52385_56,56,H,7
+TwentyMile_1A,52385_57,57,A,8
+TwentyMile_1A,52385_58,58,B,8
+TwentyMile_1A,52385_59,59,C,8
+TwentyMile_1A,52385_60,60,D,8
+TwentyMile_1A,52385_61,61,E,8
+TwentyMile_1A,52385_62,62,F,8
+TwentyMile_1A,52385_63,63,G,8
+TwentyMile_1A,52385_64,64,H,8
+TwentyMile_1A,52385_65,65,A,9
+TwentyMile_1A,52385_66,66,B,9
+TwentyMile_1A,52385_67,67,C,9
+TwentyMile_1A,52385_68,68,D,9
+TwentyMile_1A,52385_69,69,E,9
+TwentyMile_1A,52385_70,70,F,9
+TwentyMile_1A,52385_71,71,G,9
+TwentyMile_1A,52385_72,72,H,9
+TwentyMile_1A,52385_73,73,A,10
+TwentyMile_1A,52385_74,74,B,10
+TwentyMile_1A,52385_75,75,C,10
+TwentyMile_1A,52385_76,76,D,10
+TwentyMile_1A,52385_77,77,E,10
+TwentyMile_1A,52385_78,78,F,10
+TwentyMile_1A,52385_79,79,G,10
+TwentyMile_1A,52385_80,80,H,10
+TwentyMile_1A,52385_81,81,A,11
+TwentyMile_1A,52385_82,82,B,11
+TwentyMile_1A,52385_83,83,C,11
+TwentyMile_1A,52385_84,84,D,11
+TwentyMile_1A,52385_85,85,E,11
+TwentyMile_1A,52385_86,86,F,11
+TwentyMile_1A,52385_87,87,G,11
+TwentyMile_1A,52385_88,88,H,11
+TwentyMile_1A,52385_89,89,A,12
+TwentyMile_1A,52385_90,90,B,12
+TwentyMile_1A,52385_91,91,C,12
+TwentyMile_1A,52385_92,92,D,12
+TwentyMile_1A,52385_93,93,E,12
+TwentyMile_1A,52385_Pos_1,94,F,12
+TwentyMile_1A,52385_Pos_2,95,G,12
+TwentyMile_1A,52385_PCR_neg_1,96,H,12
+TwentyMile_1B,52385_94,1,A,1
+TwentyMile_1B,52385_95,2,B,1
+TwentyMile_1B,52385_96,3,C,1
+TwentyMile_1B,52385_97,4,D,1
+TwentyMile_1B,52385_98,5,E,1
+TwentyMile_1B,52385_99,6,F,1
+TwentyMile_1B,52385_100,7,G,1
+TwentyMile_1B,52385_101,8,H,1
+TwentyMile_1B,52385_102,9,A,2
+TwentyMile_1B,52385_103,10,B,2
+TwentyMile_1B,52385_104,11,C,2
+TwentyMile_1B,52385_105,12,D,2
+TwentyMile_1B,52385_106,13,E,2
+TwentyMile_1B,52385_107,14,F,2
+TwentyMile_1B,52385_108,15,G,2
+TwentyMile_1B,52385_109,16,H,2
+TwentyMile_1B,52385_110,17,A,3
+TwentyMile_1B,52385_111,18,B,3
+TwentyMile_1B,52385_112,19,C,3
+TwentyMile_1B,52385_113,20,D,3
+TwentyMile_1B,52385_114,21,E,3
+TwentyMile_1B,52385_115,22,F,3
+TwentyMile_1B,52385_116,23,G,3
+TwentyMile_1B,52385_117,24,H,3
+TwentyMile_1B,Tuna,25,A,4
+TwentyMile_1B,Tilapia,26,B,4
+TwentyMile_1B,Neg,27,C,4
+Extra_tube_1,52385_136,Tube,,
+Extra_tube_2,52385_142,Tube,,
+Extra_tube_3,52385_143,Tube,,
+Extra_tube_4,52385_144,Tube,,
+Extra_tube_5,52385_146,Tube,,
+Extra_tube_6,52385_147,Tube,,
+Extra_tube_7,52385_148,Tube,,
+Ana Plate,52385_64,1,A,1
+Ana Plate,52385_65,2,B,1
+Ana Plate,52385_66,3,C,1
+Ana Plate,52385_73,4,D,1
+Ana Plate,52385_74,5,E,1
+Ana Plate,52385_75,6,F,1
+Ana Plate,52385_76,7,G,1
+Ana Plate,52385_77,8,H,1
+Ana Plate,52385_78,9,A,2
+Ana Plate,52385_79,10,B,2
+Ana Plate,52385_80,11,C,2
+Ana Plate,52385_87,12,D,2
+Ana Plate,52385_88,13,E,2
+Ana Plate,52385_89,14,F,2
+Ana Plate,52385_90,15,G,2
+Ana Plate,52385_92,16,H,2
+Ana Plate,52385_93,17,A,3
+Ana Plate,52385_94,18,B,3
+Ana Plate,52385_95,19,C,3
+Ana Plate,52385_96,20,D,3
+Ana Plate,52385_97,21,E,3
+Ana Plate,52385_98,22,F,3
+Ana Plate,52385_99,23,G,3
+Ana Plate,52385_100,24,H,3
+Ana Plate,52385_101,25,A,4
+Ana Plate,52385_102,26,B,4
+Ana Plate,52385_103,27,C,4
+Ana Plate,52385_104,28,D,4
+Ana Plate,52385_105,29,E,4
+Ana Plate,52385_106,30,F,4
+Ana Plate,52385_107,31,G,4
+Ana Plate,52385_108,32,H,4
+Ana Plate,52385_109,33,A,5
+Ana Plate,52385_110,34,B,5
+Ana Plate,52385_111,35,C,5
+Ana Plate,52385_112,36,D,5
+Ana Plate,52385_113,37,E,5
+Ana Plate,52385_114,38,F,5
+Ana Plate,52385_115,39,G,5
+Ana Plate,52385_116,40,H,5
+Ana Plate,52385_117,41,A,6
+8makeup,52385_122,1,A,4
+8makeup,52385_123,2,B,4
+8makeup,52385_124,3,C,4
+8makeup,52385_126,4,D,4
+8makeup,52385_127,5,E,4
+8makeup,52385_128,6,F,4
+8makeup,52385_134,7,G,4
+8makeup,52385_135,8,H,4

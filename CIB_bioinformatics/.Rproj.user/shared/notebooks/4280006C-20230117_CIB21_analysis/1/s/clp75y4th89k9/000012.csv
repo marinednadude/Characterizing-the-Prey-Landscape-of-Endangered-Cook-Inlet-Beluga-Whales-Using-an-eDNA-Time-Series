@@ -1,0 +1,24 @@
+"0","beluga_long %>% 
+  mutate(., Sample_date = as.Date(Sample_date,""%m/%d/%y"")) %>% 
+  mutate(., Tide_height = as.numeric(Tide_height)) %>% 
+    mutate(., `Target Name`=case_when(Species==""Delphinapterus leucas""~ ""cetacea"" ,
+                                     Species==""Thaleichthys pacificus"" ~ ""Eulachon"",
+                                     Species==""Oncorhynchus tshawytscha""~ ""Chinook"",
+                                     Species==""Oncorhynchus kisutch"" ~ ""Coho"")) %>% 
+  left_join(qPCR_4_species) -> four_species_combo
+"
+"1","[38;5;232mJoining with `by = join_by(New_name_no_tech, LabID, Site, Bio_rep,
+Sample_date, Sample_Control, Control_Type, High_Tide_.Time,
+Tide_height, Time_of_Collection, Beluga_Observed, Beluga,
+Date_Sampled, River, Depth, Volume, `Target Name`)`[39m
+"
+"2","Warning in left_join(., qPCR_4_species) :"
+"2","
+ "
+"2"," [38;5;232mDetected an unexpected many-to-many relationship between `x` and
+`y`.
+[36mℹ[38;5;232m Row 1 of `x` matches multiple rows in `y`.
+[36mℹ[38;5;232m Row 381 of `y` matches multiple rows in `x`.
+[36mℹ[38;5;232m If a many-to-many relationship is expected, set `relationship =
+  ""many-to-many""` to silence this warning.[39m
+"

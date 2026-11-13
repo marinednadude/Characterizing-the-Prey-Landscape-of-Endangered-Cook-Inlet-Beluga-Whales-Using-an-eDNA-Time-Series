@@ -1,0 +1,8 @@
+"0","ASV_C60 %>% 
+  mutate(Tot_reads = rowSums(select(., contains(""c19_fishcard_"")))) %>% 
+  dplyr::select(ASV = fishcard_seq_number,Tot_reads, sum.taxonomy) %>% 
+  tidyr::separate(sum.taxonomy, into = c(""Domain"",""Phylum"",""Class"",""Order"",""Family"",""Genus"",""Species""), remove =F, sep="";"") %>% 
+  filter(., str_detect(ASV,""merged"")) %>% 
+  filter(., !str_detect(ASV,""unmerged""))  -> ASVs_unidentified
+"
+"2","Warning: Expected 7 pieces. Missing pieces filled with `NA` in 10594 rows [3, 9, 10, 12, 14, 19, 20, 21, 23, 26, 27, 28, 30, 31, 32, 33, 34, 36, 38, 40, ...]."

@@ -1,0 +1,33 @@
+"0",""
+"0","combo_4_species %>% "
+"0","  filter(., River %in% c(""Kenai"")) %>%  "
+"0","  filter(., `Target Name`==""Beluga"") %>% "
+"0","ggplot(aes(x=Sample_date, y=log(Quantity+0.01))) + geom_count() + "
+"0","  ggtitle('qPCR')+ theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),"
+"0","panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))   +xlab(""Date"")+scale_x_date(limits = as.Date(c(""2020-10-01"",""2021-12-01""))) -> qPCR_beluga_plot"
+"0",""
+"0",""
+"0","combo_4_species %>% "
+"0","  filter(., River %in% c(""Kenai"")) %>% "
+"0","  filter(., `Target Name`==""Beluga"") %>% "
+"0","  ggplot(aes(x=Sample_date, y=index_scores)) + geom_count() + "
+"0","  ggtitle('nReads') +theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),"
+"0","panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))   +xlab(""Date"")+scale_x_date(limits = as.Date(c(""2020-10-01"",""2021-12-01""))) -> index_beluga_plot"
+"0",""
+"0","beluga_visual_3 %>% "
+"0","  mutate(Sample_date=as.Date(Session.Date, ""%m/%d/%y"")) %>% "
+"0","  filter(., Site.Name==""Kenai River"") %>% "
+"0","  ggplot(., aes(x=Sample_date,y=max_group_size, color=Were.belugas.observed.during.the.monitoring.session.)) + geom_point() + "
+"0","  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab(""Beluga Observed by AKBMP"") + xlab(""Date"") +guides(color=guide_legend(title=""Beluga Observed"")) +scale_color_manual(values = c(pnw_palette(""Mushroom"",2)[1],pnw_palette(""Lake"",8)[3]"
+"0",")) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),"
+"0","panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) +scale_x_date(limits = as.Date(c(""2020-10-01"",""2021-12-01""))) -> visual_beluga_plot"
+"1","[1m[33mError[39m in `mutate()`:[22m
+[38;5;232m[36mℹ[38;5;232m In argument: `Sample_date =
+  as.Date(Session.Date, ""%m/%d/%y"")`.
+[36mℹ[38;5;232m In group 1: `Sample_date = 2020-08-15`.[39m
+[1mCaused by error in `as.Date()`:[22m
+[33m![39m object 'Session.Date' not found
+Backtrace:
+[90m  1. [39m... %>% ...
+[90m 11. [39m[1mbase[22m::as.Date(Session.Date, ""%m/%d/%y"")
+"

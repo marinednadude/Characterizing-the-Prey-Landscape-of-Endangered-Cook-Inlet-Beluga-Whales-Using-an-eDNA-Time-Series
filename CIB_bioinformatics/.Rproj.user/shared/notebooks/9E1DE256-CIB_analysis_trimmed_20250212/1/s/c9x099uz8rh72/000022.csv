@@ -1,0 +1,2 @@
+"0","rbind(kenai_summer_fall_viz, kenai_summer_fall_qPCR,kenai_summer_fall_metabar) %>% "
+"0","  dplyr::select(Method, Units, `Beluga Occurrence`= time_chunk, `Mean Abundance`=mean, `SD Abundance`=sd, ,`Detection Rate`=prob_detection ) %>% knitr::kable()"

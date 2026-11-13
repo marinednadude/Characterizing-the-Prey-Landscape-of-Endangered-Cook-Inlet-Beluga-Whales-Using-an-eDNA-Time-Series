@@ -1,0 +1,16 @@
+"0","beluga_long %>% 
+  mutate(., Sample_date = as.Date(Sample_date,""%m/%d/%y"")) %>% 
+  mutate(., Tide_height = as.numeric(Tide_height)) %>% 
+  left_join(combined_data_long_reads_c) %>% 
+    mutate(., `Target Name`=case_when(Species==""Delphinapterus leucas""~ ""cetacea"" ,
+                                     Species==""Thaleichthys pacificus"" ~ ""Eulachon"",
+                                     Species==""Oncorhynchus tshawytscha""~ ""Chinook"",
+                                     Species==""Oncorhynchus kisutch"" ~ ""Coho"")) %>% 
+  left_join(qPCR_4_species) %>% 
+    mutate(., `Target Name`=if_else(`Target Name`==""cetacea"",""Beluga"",`Target Name`)) %>% 
+  ggplot(aes(y=nReads, x=Quantity, color=`Target Name`)) + geom_point()+ facet_wrap(`Target Name`~., scale=""free"") +ylab(""Metabarcoding Read Counts"")+ xlab(""qPCR DNA Concentration [copies/µL] "") +theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = ""grey50""))
+"
+"2","Joining with `by = join_by(sum.taxonomy, Domain, Phylum, Class, Order, Family, Genus, Species, Sample, nReads, New_name, Seq_number, New_name_no_tech, LabID, Station, Site, Bio_rep, Tech_rep, Sample_date, Sample_Control, Control_Type, High_Tide_.Time, Tide_height, Time_of_Collection, Beluga_Observed, Beluga, Date_Sampled, River, Depth, Volume, ID_mifish, total_reads, prop_reads, max_prop, index_scores)`"
+"2","Joining with `by = join_by(New_name_no_tech, LabID, Site, Bio_rep, Sample_date, Sample_Control, Control_Type, High_Tide_.Time, Tide_height, Time_of_Collection, Beluga_Observed, Beluga, Date_Sampled, River, Depth, Volume, `Target Name`)`"
+"2","Warning: Detected an unexpected many-to-many relationship between `x` and `y`."

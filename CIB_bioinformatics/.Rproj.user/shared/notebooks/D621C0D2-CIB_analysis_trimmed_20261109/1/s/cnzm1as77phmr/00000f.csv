@@ -1,0 +1,8 @@
+"0","layout <- c("
+"0","  patchwork::area(1, 1, 8,8),"
+"0","  patchwork::area(1, 9, 8, 16),"
+"0","  patchwork::area(9, 1, 12,8),"
+"0","  patchwork::area(9, 9, 12, 16))"
+"0",""
+"0","# Show the layout to make sure it looks as it should"
+"0","plot(layout)"

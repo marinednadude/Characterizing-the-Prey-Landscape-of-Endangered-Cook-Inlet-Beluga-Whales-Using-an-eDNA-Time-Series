@@ -1,0 +1,9 @@
+"0",""
+"0","qPCR_beluga_kenai_1a %>% "
+"0","  mutate(., Quantity= str_remove_all(Quantity,"","")) %>% "
+"0","  filter(., `Target Name`==""cetacea"") %>% "
+"0","  left_join(qPCR_names_combo) %>% "
+"0","  filter(., Sample.Name %in% samples_w_issues$`Sample.Name`) %>% "
+"0","  mutate(., Plate_Name = as.character(Plate_Name)) "
+"2","Error: object 'qPCR_names_combo' not found
+"

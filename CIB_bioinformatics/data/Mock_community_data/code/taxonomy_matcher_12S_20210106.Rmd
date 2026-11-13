@@ -1,0 +1,333 @@
+---
+title: "MiFish Mock Community"
+author: "Zack Gold"
+date: "1/4/2022"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(here)
+
+library(DECIPHER)
+
+
+```
+
+
+```{r}
+input_dna <- read.csv(file =here("data","Mock_community_data","data","input_dna_conc_communities_20210103.csv"), sep=",", header=TRUE)
+
+mifish_detailed <- read.table(file=here("data","Mock_community_data","data","mock_sequences","Anacapa_output_updated_20230106","12S_fishcard_taxonomy_tables","12S_fishcard_ASV_taxonomy_detailed.txt"), sep = "\t", header=TRUE)
+
+ASV_C60 <- read.table(file=here("data","Mock_community_data","data","mock_sequences","Anacapa_output_updated_20230106","12S_fishcard_taxonomy_tables","Summary_by_percent_confidence","60","12S_fishcard_ASV_raw_taxonomy_60.txt"), sep = "\t", header=TRUE)
+
+
+crux_fasta <- readDNAStringSet(file = here("data","Mock_community_data","data","mock_sequences","CRUX_DB","global_database","Global_.fasta"))
+crux_taxonomy <- read.table(file = here("data","Mock_community_data","data","mock_sequences","CRUX_DB","global_database","Global_taxonomy.txt"), sep="\t")
+
+
+```
+
+
+```{r}
+input_dna %>%  
+  dplyr::select(Species) %>%  unique() -> mc31_species
+
+```
+
+#Pull ASVS
+
+```{r}
+
+ASV_C60 %>% 
+  mutate(Tot_reads = rowSums(select(., contains("X12S_fishcard")))) %>% 
+  dplyr::select(ASV = fishcard_seq_number,Tot_reads, sum.taxonomy) %>% 
+  separate(sum.taxonomy, into = c("Domain","Phylum","Class","Order","Family","Genus","Species"), remove =F, sep=";") %>% 
+  filter(., str_detect(ASV,"merged")) %>% 
+  filter(., !str_detect(ASV,"unmerged"))  -> ASVs_unidentified
+
+
+```
+
+## Create an alignment for Salmon sequences
+```{r, message=FALSE, warning=FALSE}
+
+crux_taxonomy %>% 
+  dplyr::select(Accession=V1, sum.taxonomy=V2) %>% 
+    separate(sum.taxonomy, into = c("Domain","Phylum","Class","Order","Family","Genus","Species"), remove =F, sep=";") %>% 
+filter(., str_detect(Genus,"Oncorhynchus")) %>% 
+  filter(., Species %in% mc31_species$Species) %>% 
+  filter(., Accession!="LC091629.1") %>% #dropping questionable O. keta sequence UW 42256
+  unite("Name",c("Accession","Species"), remove=F, sep=":") %>% 
+ dplyr::select(Name, Accession, Species) -> salmon_crux
+
+
+crux_fasta[salmon_crux$Accession] -> salmon_fasta
+
+names(salmon_fasta) <- salmon_crux$Name
+
+# Oncorhynchus
+ASVs_unidentified %>% 
+   filter(., str_detect(Genus,"Oncorhynchus")) -> salmon_asvs
+  
+mifish_detailed %>% 
+  filter(., fishcard_seq_number %in% salmon_asvs$ASV) %>% 
+  dplyr::select(fishcard_seq_number,sequence) -> salmon_seqs
+
+selected_sequences <- salmon_seqs$sequence
+
+names(selected_sequences) <- salmon_seqs$fishcard_seq_number
+DNAStringSet(selected_sequences) -> salmon_string
+
+c(salmon_string,salmon_fasta) -> all_the_salmon
+#Align the sequences directly without translation
+DNA_salmon <- AlignSeqs(all_the_salmon) 
+
+BrowseSeqs(DNA_salmon,highlight=0)
+
+d <- DistanceMatrix(DNA_salmon, correction="none", verbose=FALSE)
+c <- TreeLine(d, method="UPGMA", cutoff=.014, showPlot=TRUE, myXStringSet=DNA_salmon, verbose=TRUE)
+
+c <- Clusterize(cutoff=.014, myXStringSet=all_the_salmon)
+
+```
+
+
+```{r}
+c %>% 
+  add_rownames(., var = "Name") %>% 
+  separate(Name, into=c("ASV","Reference"), sep = ":") %>% 
+  arrange(cluster) %>% 
+  dplyr::select(cluster,Reference) %>% 
+  distinct() -> cluster_IDS
+
+cluster_IDS %>% 
+   filter(., !is.na(Reference)) %>% 
+  dplyr::select(cluster, Species = Reference)-> trust_worthy_salmon_IDS
+
+c %>% 
+  add_rownames(., var = "Name") %>% 
+  separate(Name, into=c("ASV","Reference"), sep = ":") %>% 
+  filter(., is.na(Reference)) %>% 
+  filter( !cluster %in% trust_worthy_salmon_IDS$cluster) -> salmon_asvs_need_ID
+
+salmon_string[salmon_asvs_need_ID$ASV] -> salmon_asvs_need_ID_seqs
+
+salmon_asvs_need_ID %>% 
+  left_join(salmon_asvs)
+
+
+writeXStringSet(salmon_asvs_need_ID_seqs, file=here("data","Mock_community_data","data","mock_sequences","CRUX_DB","salmon_asvs_need_ID_seqs.fasta"))
+```
+
+
+```{r}
+blast_salmon <- read.csv(file = here("data","Mock_community_data","data","mock_sequences","CRUX_DB","XCZN242X01R-Alignment-HitTable.csv"), header = FALSE)
+
+colnames(blast_salmon) <- c("ASV","Accession", "perc_identity", "alignment_length", "mismatches", "gap_opens", "q.start", "q.end", "s.start", "s.end", "evalue", "bit_score")
+
+crux_taxonomy %>%
+  dplyr::select(Accession=V1, sum.taxonomy=V2) %>% 
+  add_row(Accession = "NC_002980.1", sum.taxonomy = "Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus tshawytscha") %>% 
+  add_row(Accession = "NC_017838.1", sum.taxonomy = "Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus keta") -> crux_taxonomy_2
+
+blast_salmon %>% 
+  left_join(crux_taxonomy_2) %>% 
+  group_by(ASV) %>% 
+  nest() %>% 
+  mutate (slice = purrr::map(data, 
+                                     function(.x){
+                                       .x %>%
+                                         ungroup() %>% 
+                                         head(n=3)
+                                     })) %>% 
+  mutate (ID = purrr::map(slice, 
+                                     function(.x){
+                                       .x %>%
+                                         ungroup() %>% 
+                                         dplyr::select(sum.taxonomy) %>% 
+                                         distinct()
+                                     })) -> lol
+
+
+
+lol %>% 
+  dplyr::select(ASV,ID) %>% 
+  unnest() -> salmon_ids
+
+salmon_ids %>% 
+  group_by(ASV) %>% summarise(n=sum(n())) %>% filter(n>1) -> duplicates
+
+salmon_ids %>% 
+  filter(., !ASV %in% duplicates$ASV) -> ASV_species_matches
+
+lol %>% 
+  dplyr::select(ASV,slice) %>% 
+  unnest() -> salmon_top_3
+
+
+salmon_top_3 %>% 
+  filter(., ASV %in% duplicates$ASV) %>% 
+  filter(., str_detect(sum.taxonomy,"Oncorhynchus keta")) %>% 
+  dplyr::select(ASV, sum.taxonomy) %>% 
+  distinct()-> keta_fix
+
+rbind(ASV_species_matches,keta_fix) -> ASV_species_matches_fix
+
+salmon_asvs_need_ID %>% 
+  left_join(ASV_species_matches_fix) %>% dplyr::select(-Reference) %>% 
+  dplyr::select(cluster, sum.taxonomy) %>%  distinct() -> intermediate1
+  
+intermediate1 %>% 
+  arrange(cluster) %>% 
+  group_by(cluster) %>% summarise(n=sum(n())) %>% filter(n>1) %>% 
+  mutate(., Species ="Oncorhynchus sp.") %>%  dplyr::select(-n) -> Oncorhynchus_genus_ids
+
+intermediate1 %>% 
+  filter(., !cluster %in% Oncorhynchus_genus_ids$cluster) %>% 
+  separate(sum.taxonomy, into = c("Domain","Phylum","Class","Order","Family","Genus","Species"), remove =F, sep=";") %>%  dplyr::select(cluster, Species)-> also_trust_worthy_IDS
+
+
+rbind(trust_worthy_salmon_IDS,also_trust_worthy_IDS,Oncorhynchus_genus_ids) %>% 
+  arrange(cluster) -> cluster_species
+
+
+c %>% 
+  add_rownames(., var = "Name") %>% 
+  separate(Name, into=c("ASV","Reference"), sep = ":") %>% 
+  dplyr::select(-Reference) %>% 
+  left_join(cluster_species) %>% 
+  dplyr::select(ASV,cluster,Species_4=Species) %>% 
+  mutate(., Species_4= if_else(is.na(Species_4), "Oncorhynchus kisutch",Species_4))-> salmon_asvs_matched
+  
+
+
+```
+
+```{r}
+ASVs_unidentified %>% 
+  left_join(salmon_asvs_matched, by=c("ASV")) %>% 
+  mutate(., Species = case_when(Species=="Semicossyphus pulcher" ~"Bodianus pulcher",
+                                Species == "Oxyjulis californica"~"Halichoeres californica",
+                                Species == "Symphurus atricaudus"~ "Symphurus atricauda",
+                                Species == "Vinciguerria nimbaria"~ "Vinciguerria lucetia",
+                                Species == "Nannobrachium regale"~ "Nannobrachium ritteri",
+                                Species == "Pseudobatos productus"~ "Rhinobatos productus",
+                                Species == "Tetronarce californica"~ "Torpedo californicus",
+                                Species == "Cheilotrema saturnum"~ "Roncador stearnsii",
+                                Species == "Chromis alta" ~"Tilapia control",
+                                sum.taxonomy == "Eukaryota;Chordata;Actinopteri;;Sciaenidae;;" ~ "Atractoscion nobilis",
+                                sum.taxonomy == "Eukaryota;Chordata;Actinopteri;;;;" ~ "Hypsypops rubicundus",
+                                sum.taxonomy == "Eukaryota;Chordata;Actinopteri;Pleuronectiformes;Pleuronectidae;;" ~ "Hippoglossus stenolepis",
+                                 sum.taxonomy == "Eukaryota;Chordata;Actinopteri;Stomiiformes;Phosichthyidae;Vinciguerria;" ~ "Vinciguerria lucetia",
+                          	
+                                Genus =="Sebastes" ~"Sebastes paucispinis",
+                                Species =="Lampanyctus tenuiformis" ~"Nannobrachium ritteri",
+                                !is.na(cluster) ~Species_4,
+                                TRUE ~Species)) -> ASVs_fixed
+  
+setdiff(mc31_species$Species,ASVs_fixed$Species)
+setdiff(ASVs_fixed$Species,mc31_species$Species)
+
+ASVs_unidentified %>% 
+  filter(., Species == "Embiotoca jacksoni")
+# Appears to be potential contamination in an extraction... Is especially abundant in coastal skew 2 when
+#Bodianus pulcher, Chromis punctipinnis, Girella nigricans, Stereolepis gigas, Triakis semifasciata were over amplified
+ASVs_unidentified %>% 
+  filter(., Species == "Ichthyococcus irregularis")
+#appears to be potential contamination in an extraction...
+ASVs_unidentified %>% 
+  filter(., Species == "Stomias atriventer")
+#appears to be potential contamination in an extraction...
+ASVs_unidentified %>% 
+  filter(., Species == "Pleuronichthys ritteri")
+#appears to be potential contamination in an extraction... interesting it's only in one replicate
+ASVs_unidentified %>% 
+  filter(., Species == "Photonectes margarita")
+#appears to be potential contamination in an extraction... interesting it's only in one replicate
+ASVs_unidentified %>% 
+  filter(., Species == "Chesnonia verrucosa")
+#appears to be potential contamination in an extraction... interesting it's only in one replicate
+ASVs_unidentified %>% 
+  filter(., Species == "Clinocottus analis")
+#appears to be potential contamination in an extraction... interesting it's only in one replicate
+ASVs_unidentified %>% 
+  filter(., Species == "Genyonemus lineatus")
+#appears to be potential contamination in an extraction... interesting it's only in one replicate for 2 coastal skew samples
+
+ASVs_unidentified %>% 
+  filter(., Species == "Gibbonsia montereyensis")
+#appears to be potential contamination in an extraction... interesting it's only in one replicate for 1 coastal skew sample and 2 replicates for another
+
+ASVs_unidentified %>% 
+  filter(., Species == "Lyopsetta exilis")
+#appears to be potential contamination in an extraction...  in multiple oceanic even pools, low read depth
+
+ASVs_unidentified %>% 
+  filter(., Species == "Alloclinus holderi")
+#appears to be potential contamination in an extraction...  only one rep
+ASVs_unidentified %>% 
+  filter(., Species == "Heterostichus rostratus")
+#appears to be potential contamination in an extraction...  only one rep
+ASVs_unidentified %>% 
+  filter(., Species == "Lutjanus argentiventris")
+#appears to be potential contamination in an extraction...  only one rep
+
+ASVs_unidentified %>% 
+  filter(., Species == "Diaphus theta")
+# appears to be potential contamination, in multiple oceanic even reps
+
+ASVs_unidentified %>% 
+  filter(., Species == "Notoscopelus resplendens")
+#appears to be potential contamination in an extraction...  only one rep
+
+ASVs_unidentified %>% 
+  filter(., Species == "Desmodema lorum")
+#appears to be potential contamination in an extraction...  two of same rep different cycles
+ASVs_unidentified %>% 
+  filter(., Species == "Rhinogobiops nicholsii")
+#appears to be potential contamination in an extraction...  three of same rep different cycles coastal skew 2
+ASVs_unidentified %>% 
+  filter(., Species == "Rhinogobiops nicholsii")
+#appears to be potential contamination in an extraction...  only one rep
+
+ASVs_unidentified %>% 
+  filter(., Species =="")
+
+ASVs_unidentified %>% 
+  filter(., sum.taxonomy =="Eukaryota;Chordata;Actinopteri;Gobiiformes;Gobiidae;;")
+# Clevelandia ios, likely contamination, in a few coastal samples
+
+ASVs_unidentified %>% 
+  filter(., sum.taxonomy =="Eukaryota;Chordata;Actinopteri;Perciformes;Agonidae;;")
+# Xeneretmus latifrons, likely contamination, in a few coastal samples
+
+ASVs_unidentified %>% 
+  filter(., sum.taxonomy =="Eukaryota;Chordata;Actinopteri;Pleuronectiformes;Pleuronectidae;;")
+
+ASVs_unidentified %>% 
+  filter(., sum.taxonomy =="Eukaryota;Chordata;Actinopteri;Perciformes;Zoarcidae;;")
+#Lycodes pacificus, likely contamination, in a few coastal samples
+
+ASVs_unidentified %>% 
+  filter(., sum.taxonomy =="Eukaryota;Chordata;Actinopteri;Perciformes;Zaniolepididae;Zaniolepis;")
+#Zaniolepis latipinnis, likely contamination, in a few coastal samples
+
+
+#53 is garibaldi, unclear why taxonomic assignment failed...
+```
+
+
+```{r}
+
+ASVs_fixed %>% 
+  dplyr::select(-sum.taxonomy) %>% 
+  unite("sum.taxonomy", c("Domain","Phylum","Class","Order","Family","Genus","Species"), remove =F, sep=";") %>% 
+  dplyr::select(ASV,sum.taxonomy) -> hash.key_updated
+
+saveRDS(hash.key_updated, file=here("data","Mock_community_data","data","mock_sequences","hash.key_updated.RDS"))
+```
+
+

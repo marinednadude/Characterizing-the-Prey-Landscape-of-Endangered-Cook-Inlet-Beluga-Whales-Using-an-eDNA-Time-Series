@@ -1,0 +1,4 @@
+"0",""
+"0","ggsave(file=here(""data"",""Mock_community_data"",""data"",""Figure_S4.2_Stacked_bar_plot_salmon.png""),"
+"0","  width = 22,"
+"0","  height = 14)"

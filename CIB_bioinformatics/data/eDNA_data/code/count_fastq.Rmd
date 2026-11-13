@@ -1,0 +1,44 @@
+---
+title: "Count Fastq Reads"
+author: "Zack Gold"
+date: "2025-09-10"
+output: html_document
+---
+
+```{r}
+ if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager")
+    BiocManager::install("ShortRead")
+```
+
+```{r}
+ library(ShortRead)
+library(tidyverse)
+```
+
+```{r}
+fastq_directory_k1 <- "~/Downloads/CIB_raw/combined/Raw Data 2020-22/Kenai_run_1" 
+fastq_directory_k2 <- "~/Downloads/CIB_raw/combined/Raw Data 2020-22/Kenai_run_2" 
+fastq_directory_k3 <- "~/Downloads/CIB_raw/combined/Raw Data 2020-22/Kenai_run_3" 
+fastq_directory_t2 <- "~/Downloads/CIB_raw/combined/Raw Data 2020-22/Twentymile River seqrun2" 
+fastq_directory_t1 <- "~/Downloads/CIB_raw/combined/Raw Data 2020-22/seq_run_1/Zack_beluga"
+
+
+
+```
+
+```{r}
+read_counts_k1 <- countFastq(dirPath = fastq_directory_k1, pattern = ".fastq$|.fastq.gz$")
+read_counts_k2 <- countFastq(dirPath = fastq_directory_k2, pattern = ".fastq$|.fastq.gz$")
+read_counts_k3 <- countFastq(dirPath = fastq_directory_k3, pattern = ".fastq$|.fastq.gz$")
+read_counts_t2 <- countFastq(dirPath = fastq_directory_t2, pattern = ".fastq$|.fastq.gz$")
+read_counts_t1 <- countFastq(dirPath = fastq_directory_t1, pattern = ".fastq$|.fastq.gz$")
+
+rbind(read_counts_k1,read_counts_k2,read_counts_k3, read_counts_t2, read_counts_t1) %>% 
+  mutate(., All="All") %>% 
+  rownames_to_column(var = "ID") %>% 
+  filter(., str_detect(ID,"R1_001.fastq.gz")) %>% 
+  group_by(All) %>% 
+  dplyr::summarise(sum(records))
+```
+

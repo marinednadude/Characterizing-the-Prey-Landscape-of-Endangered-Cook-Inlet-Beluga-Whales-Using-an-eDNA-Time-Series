@@ -1,0 +1,5 @@
+"0",""
+"0","obj_abund <- coho_20m_analysis %>%"
+"0","  group_by(species) %>% "
+"0","  do(model = t.test(meandnaconc_coho~time_chunk, data = .))"
+"0",""

@@ -1,0 +1,5 @@
+"0",""
+"0","qPCR_AK_data %>% "
+"0","   filter(., `Target Name`==""Eulachon"") %>% "
+"0","  filter(., is.na(Quantity)) %>% "
+"0","  filter(., CT != ""Undetermined"")"

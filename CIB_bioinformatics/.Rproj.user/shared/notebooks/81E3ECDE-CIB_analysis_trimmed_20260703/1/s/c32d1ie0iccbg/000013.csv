@@ -1,0 +1,7 @@
+"0",""
+"0","combined_data_long_reads_c %>% "
+"0","  filter(., River ==""Kenai"" & str_detect(New_name_no_tech, ""Jun|Jul"")) %>% "
+"0","  filter(., nReads >0) %>% "
+"0","    arrange(desc(prop_reads)) %>% "
+"0","  filter(., Species==""Oncorhynchus nerka"") %>% "
+"0","  dplyr::summarise(max(prop_reads), min(prop_reads), mean(prop_reads))"

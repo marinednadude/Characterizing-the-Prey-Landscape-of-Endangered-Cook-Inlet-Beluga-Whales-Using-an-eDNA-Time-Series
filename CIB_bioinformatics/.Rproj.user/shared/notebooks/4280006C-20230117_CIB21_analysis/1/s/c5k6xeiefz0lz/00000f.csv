@@ -1,0 +1,7 @@
+"0","#Betadiversity
+#Generate Vegan formatted data table
+method.sampledf <- data.frame(sample_data(physeq_obj_kenai))
+"
+"2","Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument 'object' in selecting a method for function 'sample_data': object 'physeq_obj_kenai' not found
+"

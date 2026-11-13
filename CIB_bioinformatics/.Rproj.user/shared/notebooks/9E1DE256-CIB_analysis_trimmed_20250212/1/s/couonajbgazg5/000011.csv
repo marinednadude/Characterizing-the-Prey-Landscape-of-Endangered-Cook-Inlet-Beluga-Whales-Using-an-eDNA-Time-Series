@@ -1,0 +1,12 @@
+"0","kenai_1_asv_nested$Step.2.low.read.depth[[1]] %>% 
+  left_join(kenai_1_hash) %>% 
+  group_by(across(c(-seq_number,-nReads))) %>% 
+  dplyr::summarise(nReads=sum(nReads)) %>% 
+  ungroup() %>% 
+  dplyr::select(-unique_sample, -barcode_1_col, -Miseq_run) %>% 
+  pivot_wider(names_from=sample, values_from = nReads, values_fill = 0) %>% 
+  pivot_longer(!sum.taxonomy, names_to = ""sample"", values_to= ""nReads"") %>% 
+  left_join(metadata_kenai_1, by=c(""sample""=""New_name""))-> kenai_1_asv_pre
+"
+"2","Joining with `by = join_by(seq_number)`"
+"2","`summarise()` has grouped output by 'unique_sample', 'sample', 'barcode_1_col', 'Miseq_run'. You can override using the `.groups` argument."

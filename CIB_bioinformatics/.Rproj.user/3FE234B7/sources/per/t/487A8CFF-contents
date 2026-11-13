@@ -1,0 +1,353 @@
+---
+title: "Mock Community File Organization"
+author: "Zack Gold"
+date: "1/5/2022"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(patchwork)
+```
+
+
+#Upload Data
+```{r}
+input_dna <- read.csv(file =here("data","Mock_community_data","data","input_dna_conc_communities_20210103.csv"), sep=",", header=TRUE)
+
+hash.key_updated <- readRDS(file=here("data","Mock_community_data","data","mock_sequences","hash.key_updated.RDS"))
+
+ASV_C60 <- read.table(file=here("data","Mock_community_data","data","mock_sequences","Anacapa_output_updated_20230106","12S_fishcard_taxonomy_tables","Summary_by_percent_confidence","60","12S_fishcard_ASV_raw_taxonomy_60.txt"), sep = "\t", header=TRUE)
+```
+
+#Organize Data
+```{r}
+
+ASV_C60 %>% 
+  pivot_longer(`X12S_fishcard_12SPCR.30C.Coastal.Even.1.S28.L001`:`X12S_fishcard_16SPCR.Coastal.Skew2.3.S19.L001`, names_to="Sample", values_to = "nReads") %>% 
+  filter(., !str_detect(Sample,"16SPCR")) %>% 
+  filter(., !str_detect(Sample,"Tuna")) %>% 
+  filter(., !str_detect(Sample,"lapia")) %>% 
+  filter(., str_detect(fishcard_seq_number,"merged")) %>% 
+  filter(., !str_detect(fishcard_seq_number,"unmerged")) %>%
+  dplyr::select(-sum.taxonomy, ASV=fishcard_seq_number,Sample,nReads) %>% 
+  left_join(hash.key_updated) %>% 
+  filter(., sum.taxonomy!=";NA;NA;NA;NA;NA;NA") %>% 
+  mutate(., Sample = str_replace(Sample,"X12S_fishcard_12S","MiFish")) %>% 
+  mutate(., community = case_when(str_detect(Sample,"Coastal.Even.") ~"Coastal_Even",
+         str_detect(Sample,"Coastal.Skew1.") ~"Coastal_Skew_1",
+str_detect(Sample,"Coastal.Skew2") ~"Coastal_Skew_2",
+str_detect(Sample,"North.Even.") ~"North_Even",
+         str_detect(Sample,"North.Skew1.") ~"North_Skew_1",
+str_detect(Sample,"North.Skew2") ~"North_Skew_2",
+str_detect(Sample,"Oceanic.Even.") ~"Oceanic_Even",
+         str_detect(Sample,"Oceanic.Skew1.") ~"Skew_Oceanic_1",
+str_detect(Sample,"Oceanic.Skew2") ~"Skew_Oceanic_2")) %>% 
+  mutate(., Sample2 = str_remove(Sample,regex("\\.S[:digit:][:graph:]*"))) %>%
+  mutate(., tech_rep = str_sub(Sample2, start = -1L, end = -1L)) %>% 
+ separate(
+., sum.taxonomy,
+into = c(
+"Domain",
+"Phylum",
+"Class",
+"Order",
+"Family",
+"Genus",
+"Species"
+),
+sep = ";",
+remove = FALSE
+) %>%
+ungroup() %>%
+mutate(., ID_mifish = if_else(Species == "", Genus, Species)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>%
+mutate(., ID_mifish = replace_na(ID_mifish, "")) %>% 
+    mutate(., Cycles = case_when(str_detect(Sample,"30C") ~"30",
+         str_detect(Sample,"33C") ~"33",
+str_detect(Sample,"36C") ~"36",
+str_detect(Sample,"39C") ~"39")) %>% 
+  dplyr::select(community,tech_rep,ID_mifish,Cycles, nReads) %>% 
+  group_by(community,tech_rep,ID_mifish,Cycles) %>% 
+  dplyr::summarize(nReads = sum(nReads)) -> mock_mifish_data
+
+input_dna %>% 
+  filter(., Barcode=="12S") %>% 
+  dplyr::select(ID_mifish=Species,community=Community,start_conc_ng = Total_DNA) %>% distinct() -> input_dna2
+
+ 
+mock_mifish_data %>% 
+  ungroup() %>% 
+  add_row(community="Coastal_Even", tech_rep="1",ID_mifish="Urobatis halleri",Cycles="30",nReads=0) %>% 
+  add_row(community="Coastal_Even", tech_rep="2",ID_mifish="Urobatis halleri",Cycles="30",nReads=0) %>% 
+  add_row(community="Coastal_Even", tech_rep="3",ID_mifish="Urobatis halleri",Cycles="30",nReads=0) %>% 
+  add_row(community="Coastal_Even", tech_rep="1",ID_mifish="Urobatis halleri",Cycles="33",nReads=0) %>% 
+  add_row(community="Coastal_Even", tech_rep="2",ID_mifish="Urobatis halleri",Cycles="33",nReads=0) %>% 
+    add_row(community="Coastal_Even", tech_rep="3",ID_mifish="Urobatis halleri",Cycles="33",nReads=0) %>% 
+  add_row(community="Coastal_Even", tech_rep="1",ID_mifish="Urobatis halleri",Cycles="36",nReads=0) %>% 
+  add_row(community="Coastal_Even", tech_rep="2",ID_mifish="Urobatis halleri",Cycles="36",nReads=0) %>% 
+    add_row(community="Coastal_Even", tech_rep="3",ID_mifish="Urobatis halleri",Cycles="36",nReads=0) %>% 
+  add_row(community="Coastal_Even", tech_rep="1",ID_mifish="Urobatis halleri",Cycles="39",nReads=0) %>% 
+  add_row(community="Coastal_Even", tech_rep="2",ID_mifish="Urobatis halleri",Cycles="39",nReads=0) %>% 
+    add_row(community="Coastal_Even", tech_rep="3",ID_mifish="Urobatis halleri",Cycles="39",nReads=0) %>%
+  unite("holder", c("community", "tech_rep","Cycles"),sep=":") %>% 
+  pivot_wider(names_from = holder, values_from = nReads, values_fill = 0) %>% 
+  pivot_longer(-ID_mifish, names_to="holder", values_to = "nReads") %>% 
+  separate(holder, into=c("community", "tech_rep","Cycles"),sep=":") -> mock_mifish_data
+  
+  
+mock_mifish_data %>%  
+  ungroup() %>% 
+  full_join(input_dna2) %>% 
+  dplyr::mutate(start_conc_ng = replace_na(start_conc_ng, 0))-> fully_combo
+  
+
+fully_combo %>% 
+  filter(., ID_mifish %in% c("Torpedo californicus", "Rhinobatos productus"))
+
+
+```
+
+```{r}
+fully_combo %>%
+  group_by(community, tech_rep) %>% 
+  mutate(., totReads=sum(nReads),
+         propReads = nReads/totReads,
+         tot_start = sum(start_conc_ng),
+         start_prop=start_conc_ng/tot_start) %>% 
+  filter(., ID_mifish %in% c("Oncorhynchus gorbuscha" ,  "Oncorhynchus keta"   ,   "Oncorhynchus kisutch"   ,  "Oncorhynchus nerka" ,     
+                             "Oncorhynchus tshawytscha")) %>% 
+  filter(., nReads>0) %>% 
+  ggplot(aes(x=tech_rep, y=propReads, fill = ID_mifish)) + geom_col() +facet_wrap(community~.)
+
+```
+
+```{r}
+saveRDS(fully_combo, here("data","Mock_community_data","data","mifish_mock_community_data.RDS") )
+
+```
+
+
+```{r}
+library(RColorBrewer)
+n <- 60
+qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+pie(rep(1,n), col=sample(col_vector, n))
+
+fully_combo %>% 
+    unite("sample", c("community", "tech_rep","Cycles"),sep=":", remove = F) %>%
+  group_by(sample) %>% 
+  dplyr::summarise(tot_reads=sum(nReads), tot_ng=sum(start_conc_ng)) -> tot_reads
+
+
+fully_combo %>% 
+    unite("sample", c("community", "tech_rep","Cycles"),sep=":", remove = F) %>%
+  group_by(sample) %>% 
+    filter(., ID_mifish %in% c("Oncorhynchus gorbuscha" ,  "Oncorhynchus keta"   ,   "Oncorhynchus kisutch"   ,  "Oncorhynchus nerka" ,     
+                             "Oncorhynchus tshawytscha"))  %>% 
+  dplyr::summarise(tot_reads=sum(nReads), tot_ng=sum(start_conc_ng)) -> tot_reads_salmon
+
+
+```
+
+```{r}
+
+
+fully_combo %>% 
+      unite("sample", c("community", "tech_rep","Cycles"),sep=":", remove = F) %>%
+  filter(., str_detect(community, "North_")& Cycles == 39) %>% 
+    mutate(., Type="Metabarcoding",
+           Community = case_when(str_detect(community, "Even")~"Even",
+                                 str_detect(community, "1")~"Skew 1",
+                                 str_detect(community, "2")~"Skew",
+                                 TRUE ~"WRONG")) %>% 
+    filter(., Community!="Skew 1") %>% 
+  left_join(tot_reads) %>% 
+  mutate(., prop=nReads/tot_reads) %>% 
+  filter(., nReads > 0) -> northern_even_df_for_plotting
+
+
+fully_combo %>% 
+      unite("sample", c("community", "tech_rep","Cycles"),sep=":", remove = F) %>%
+  filter(., str_detect(community,"North_") & Cycles == 30 & tech_rep==1) %>% 
+  mutate(., Type="Mock",
+           Community = case_when(str_detect(community, "Even")~"Even",
+                                 str_detect(community, "1")~"Skew 1",
+                                 str_detect(community, "2")~"Skew",
+                                 TRUE ~"WRONG")) %>% 
+  filter(., Community!="Skew 1") %>% 
+  left_join(tot_reads) %>% 
+  mutate(., prop=start_conc_ng/tot_ng) %>% 
+  filter(., start_conc_ng > 0) ->northern_even_mock_for_plotting
+  
+# 1. Create a single vector of all unique species across both dataframes
+species_northern_even <- unique(c(northern_even_df_for_plotting$ID_mifish, 
+                                  northern_even_mock_for_plotting$ID_mifish))
+
+# 2. Create a NAMED vector of colors (Name = Species, Value = Color)
+species_colors <- col_vector[1:length(species_northern_even)]
+species_colors[7] <- "black"
+species_colors[10] <- "#efb28c"
+species_colors[11] <- "#fa8775"
+species_colors[12] <- "grey50"
+species_colors[14] <- "#5f865f"
+species_colors[16] <- "#a2d2df"
+names(species_colors) <- species_northern_even
+
+# 3. Plot the Metabarcoding data (Map fill directly to ID_mifish)
+northern_even_df_for_plotting %>% 
+  ggplot(aes(x=tech_rep, y=prop, fill=ID_mifish)) +
+  geom_bar(position="stack", stat="identity") +
+  facet_wrap(.~Community) +
+  scale_fill_manual(values = species_colors, name = "Species") + 
+  ylab("% Reads") + 
+  xlab("Technical Replicate") +
+    labs(title = "Metabarcoding") +
+  theme_bw(base_size = 32) +
+  theme(plot.title = element_text(hjust = 0.5),strip.text = element_text(face = "bold"), strip.background = element_rect(fill = "white", color = "black")) +
+  scale_y_continuous(labels = scales::percent) -> north_stacked_bar_plot
+
+# 4. Plot the Mock data (Map fill directly to ID_mifish)
+northern_even_mock_for_plotting %>% 
+  ggplot(aes(x=Community, y=prop, fill=ID_mifish)) +
+  geom_bar(position="stack", stat="identity") +
+  facet_wrap(.~Community, scales="free_x") +
+  scale_fill_manual(values = species_colors, name = "Species") + 
+  ylab("% Input DNA Copies") + 
+  xlab("") +
+  labs(title = "Mock") +
+  theme_bw(base_size = 32) +
+  theme(legend.position="none", plot.title = element_text(hjust = 0.5), strip.text = element_text(face = "bold"), strip.background = element_rect(fill = "white", color = "black") ) +
+  scale_y_continuous(labels = scales::percent) -> north_stacked_bar_plot_mock
+
+# 5. Combine plots
+# 1. Completely remove the legend from the first plot
+p1 <- north_stacked_bar_plot_mock + 
+  guides(fill = "none")
+
+# 2. Apply the row/column formatting strictly to the second plot's legend
+p2 <- north_stacked_bar_plot + 
+  guides(fill = guide_legend(nrow = 8, byrow = TRUE, title.position = "top", title.hjust = 0.5))
+
+# 3. Combine the plots and position the single collected legend at the bottom
+p1 + p2 + 
+  plot_layout(guides = "collect") & 
+  theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.justification = "center",
+    legend.box = "horizontal",
+    legend.margin = margin(t = 0, r = 20, b = 0, l = 0) 
+  )
+
+ggsave(file=here("data","Mock_community_data","data","Figure_S4.1_Stacked_bar_plot_all.png"),
+  width = 22,
+  height = 14)
+
+
+```
+
+```{r}
+
+
+fully_combo %>% 
+      unite("sample", c("community", "tech_rep","Cycles"),sep=":", remove = F) %>%
+  filter(., str_detect(community, "North_")& Cycles == 39) %>% 
+    mutate(., Type="Metabarcoding",
+           Community = case_when(str_detect(community, "Even")~"Even",
+                                 str_detect(community, "1")~"Skew 1",
+                                 str_detect(community, "2")~"Skew",
+                                 TRUE ~"WRONG")) %>% 
+  filter(., ID_mifish %in% c("Oncorhynchus gorbuscha" ,  "Oncorhynchus keta"   ,   "Oncorhynchus kisutch"   ,  "Oncorhynchus nerka" ,     
+                             "Oncorhynchus tshawytscha"))  %>% 
+    filter(., Community!="Skew 1") %>% 
+  left_join(tot_reads_salmon) %>% 
+  mutate(., prop=nReads/tot_reads) %>% 
+  filter(., nReads > 0) -> northern_even_df_for_plotting_salmon
+
+
+fully_combo %>% 
+      unite("sample", c("community", "tech_rep","Cycles"),sep=":", remove = F) %>%
+  filter(., str_detect(community, "North_") & Cycles == 30 & tech_rep==1) %>% 
+  mutate(., Type="Mock",
+           Community = case_when(str_detect(community, "Even")~"Even",
+                                 str_detect(community, "1")~"Skew 1",
+                                 str_detect(community, "2")~"Skew",
+                                 TRUE ~"WRONG")) %>% 
+  filter(., Community!="Skew 1") %>% 
+    filter(., ID_mifish %in% c("Oncorhynchus gorbuscha" ,  "Oncorhynchus keta"   ,   "Oncorhynchus kisutch"   ,  "Oncorhynchus nerka" ,     
+                             "Oncorhynchus tshawytscha"))  %>% 
+  left_join(tot_reads_salmon) %>% 
+  mutate(., prop=start_conc_ng/tot_ng) %>% 
+  filter(., start_conc_ng > 0) ->northern_even_mock_for_plotting_salmon
+
+
+  
+# 1. Create a single vector of all unique species across both dataframes
+species_northern_even_salmon <- unique(c(northern_even_df_for_plotting_salmon$ID_mifish, 
+                                  northern_even_mock_for_plotting_salmon$ID_mifish))
+
+# 2. Create a NAMED vector of colors (Name = Species, Value = Color)
+species_colors_salmon <- c("#efb28c","#fa8775","grey50","#5f865f","#a2d2df")
+names(species_colors_salmon) <- species_northern_even_salmon
+
+# 3. Plot the Metabarcoding data (Map fill directly to ID_mifish)
+northern_even_df_for_plotting_salmon %>% 
+  ggplot(aes(x=tech_rep, y=prop, fill=ID_mifish)) +
+  geom_bar(position="stack", stat="identity") +
+  facet_wrap(.~Community) +
+  scale_fill_manual(values = species_colors_salmon, name = "Species") + 
+  ylab("% Reads") + 
+  xlab("Technical Replicate") +
+    labs(title = "Metabarcoding") +
+  theme_bw(base_size = 32) +
+  theme(plot.title = element_text(hjust = 0.5),strip.text = element_text(face = "bold"), strip.background = element_rect(fill = "white", color = "black")) +
+  scale_y_continuous(labels = scales::percent) -> north_stacked_bar_plot_salmon
+
+# 4. Plot the Mock data (Map fill directly to ID_mifish)
+northern_even_mock_for_plotting_salmon %>% 
+  ggplot(aes(x=Community, y=prop, fill=ID_mifish)) +
+  geom_bar(position="stack", stat="identity") +
+  facet_wrap(.~Community, scales="free_x") +
+  scale_fill_manual(values = species_colors_salmon, name = "Species") + 
+  ylab("% Input DNA Copies") + 
+  xlab("") +
+  labs(title = "Mock") +
+  theme_bw(base_size = 32) +
+  theme(legend.position="none", plot.title = element_text(hjust = 0.5), strip.text = element_text(face = "bold"), strip.background = element_rect(fill = "white", color = "black") ) +
+  scale_y_continuous(labels = scales::percent) -> north_stacked_bar_plot_mock_salmon
+
+# 5. Combine plots
+# 1. Completely remove the legend from the first plot
+p1_salmon <- north_stacked_bar_plot_mock_salmon + 
+  guides(fill = "none")
+
+# 2. Apply the row/column formatting strictly to the second plot's legend
+p2_salmon <- north_stacked_bar_plot_salmon + 
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE, title.position = "top", title.hjust = 0.5))
+
+# 3. Combine the plots and position the single collected legend at the bottom
+p1_salmon + p2_salmon + 
+  plot_layout(guides = "collect") & 
+  theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.justification = "center",
+    legend.box = "horizontal",
+    legend.margin = margin(t = 0, r = 20, b = 0, l = 0) 
+  )
+
+ggsave(file=here("data","Mock_community_data","data","Figure_S4.2_Stacked_bar_plot_salmon.png"),
+  width = 22,
+  height = 14)
+
+
+```
+
+

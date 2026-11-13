@@ -1,0 +1,14 @@
+"0","dropout_prop_all_pre %>% 
+  left_join(q_mean) %>% 
+   filter(., !is.na(`Target Name`)) %>% 
+       mutate(., `Concentration` = if_else(mean_Quantity> 10,""Greater than 10 copies/L"",""Less than 10 copies/L"")) %>% 
+    mutate(., drop_out= if_else(New_name_no_tech %in% sample_w_problems_tib$New_name_no_tech,New_name_no_tech,"""")) %>% 
+   ggplot(., aes(x=mean_Quantity, y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5)  +facet_wrap(`Target Name`~., scale=""free"") +
+  ylab(""Metabarcoding Non Detection"") +xlab(""qPCR DNA Concentration [copies/L]"")   +
+theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = ""grey50""))+
+  #geom_text(aes(label=drop_out)) +
+  facet_wrap(`Target Name`~.) 
+"
+"2","Joining with `by = join_by(LabID, `Target Name`)`"

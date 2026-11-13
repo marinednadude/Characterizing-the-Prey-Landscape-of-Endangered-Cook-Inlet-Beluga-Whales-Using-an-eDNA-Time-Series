@@ -1,0 +1,28 @@
+{
+    "id": "7AD8A4CA",
+    "path": "~/Documents/GitHub/CIB_2021/CIB_bioinformatics/analysis/scripts/qmeta_model_20261105.R",
+    "project_path": "analysis/scripts/qmeta_model_20261105.R",
+    "type": "r_source",
+    "hash": "4068271295",
+    "contents": "",
+    "dirty": false,
+    "created": 1740444986118.0,
+    "source_on_save": false,
+    "relative_order": 13,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "6,8",
+        "scrollLine": "0",
+        "docOutlineVisible": "0",
+        "docOutlineSize": "257"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1794288714,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1794288714306,
+    "read_only": false,
+    "read_only_alternatives": []
+}

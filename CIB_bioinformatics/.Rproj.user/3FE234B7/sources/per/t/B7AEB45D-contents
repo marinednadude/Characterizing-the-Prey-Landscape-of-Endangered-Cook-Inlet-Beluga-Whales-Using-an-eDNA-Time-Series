@@ -1,0 +1,2797 @@
+---
+title: "Preliminary Findings from eDNA Applications in Cook Inlet & Kenai River"
+author: "Zack Gold"
+date: "1/17/2023"
+output: pdf_document
+---
+
+
+Note: These are preliminary data and a first look at the eDNA results. Please only share internally with other NOAA & AKBMP partners and collaborators.
+
+
+
+# Executive Summary
+
+
+These are the results of a pilot study of eDNA in Cook Inlet from Nov. 2020 to Nov. 2021. This pilot project consisted of 3 eDNA sample collections: 
+
+1) Monthly samples were collected at two sites in the Kenai River across the year, 
+
+2) Higher frequency sampling of Twentymile River was conducted from August 2021-November 2021, and 
+
+3) Oppurtunistic sampling within and adjacent to Belugas from ADF&G small vessels in August 2021. We successfully designed, optimized, and implemented sample collection and processing methodologies for Beluga specific qPCR assays and vertebrate community metabarcoding assays.
+
+
+We demonstrate that eDNA metabarcoding can successfully capture changes in fish assemblages across both space and time allowing for comparison to Beluga foraging patterns. Time of sampling across seasons explained the greatest proportion of variance in our fish assemblage data. Site was also signficant, particularly across Cook Inlet, but also within the Kenai River. We observed no statistically signficant difference in depth within the Kenai River.
+
+
+Ultimately, these results demonstrate that eDNA approaches are an effective tool for capturing changes of Beluga prey assemblages across both space and time. Targeted deployments of eDNA can reveal critical ecological insights into fish ecology and endangered Cook Inlet Beluga foraging patterns.
+    
+<br />
+ <br />
+<br />
+<br />
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+library(tidyverse)
+library(here)
+library(phyloseq)
+library(ranacapa)
+library(patchwork)
+library(PNWColors)
+library(vegan)
+library(ggpmisc)
+
+```
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+results_reads <- readRDS(file=here("twentymile","seqrun1","decontam","Output_R","pre_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+results_reads_2 <- readRDS(file=here("twentymile","seqrun2","decontam","Output_R","pre_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+
+results_reads_kenai_1 <- readRDS(file=here("kenai","kenai_1","decontam","Output_R","pre_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+results_reads_kenai_2 <- readRDS(file=here("kenai","kenai_2","decontam","Output_R","pre_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+results_reads_kenai_3 <- readRDS(file=here("kenai","kenai_3","decontam","Output_R","pre_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+
+kenai_results_reads_1<- readRDS(file=here("kenai","kenai_1","decontam","Output_R","kenai_pre_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+kenai_results_reads_2<- readRDS(file=here("kenai","kenai_2","decontam","Output_R","kenai_pre_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+kenai_results_reads_3<- readRDS(file=here("kenai","kenai_3","decontam","Output_R","kenai_pre_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+
+input_meta_path <- here("Metadata","metadata_seqrun1_20211225.csv")
+metadata <- read.table(input_meta_path, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path2 <- here("Metadata","metadata_seqrun2_20220309.csv")
+metadata2 <- read.table(input_meta_path2, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path_kenai_1 <- here("Metadata","metadata_kenai1_20220401.csv")
+metadata_kenai_1 <- read.table(input_meta_path_kenai_1, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path_kenai_2 <- here("Metadata","metadata_kenai2_20220412.csv")
+metadata_kenai_2 <- read.table(input_meta_path_kenai_2, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path_kenai_3 <- here("Metadata","metadata_kenai_run_3_20220518.csv")
+metadata_kenai_3 <- read.table(input_meta_path_kenai_3, header = 1, sep = ",", stringsAsFactors = F)
+
+
+input_qPCR <- here("qPCR_results","qPCR_20210114.csv")
+qPCR <- read.table(input_qPCR, header = 1, sep = ",", stringsAsFactors = F)
+
+qPCR_AK_data <- readRDS(file=here("qPCR_results","qPCR_AK_data.RDS"))
+
+```
+
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+results_reads %>% 
+  pivot_longer(cols =`c19_fishcard_Knik_01_R1`:`c19_fishcard_TM_D9_03` ,names_to = "Sample", values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample,"c19_fishcard_")) %>% 
+  left_join(metadata) %>% 
+  separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";",remove=F) %>%   unite( Site,Location, col= "Station", remove=F) %>% 
+  ungroup() %>%
+mutate(., ID_mifish = if_else(Species == "", Genus, Species)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>%
+mutate(., ID_mifish = replace_na(ID_mifish, "")) %>% 
+  filter(., Domain !="")  %>%
+  dplyr::select(-Project, -PCR_Cycles,-Index.Cycles,-Location,-Extraction_set)-> combined_data_long_reads
+
+combined_data_long_reads$Sample_date <- as.Date(combined_data_long_reads$Sample_date, "%m/%d/%y")
+
+results_reads_2 %>% 
+  pivot_longer(cols =`c19_fishcard_SCSP_C12_02`:`c19_fishcard_TM_D9_03` ,names_to = "Sample", values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample,"c19_fishcard_")) %>% 
+  left_join(metadata2) %>% 
+  filter(., Project != "SCSP") %>% 
+  separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";",remove=F) %>%   unite( Site,Location, col= "Station", remove=F) %>% 
+  ungroup() %>%
+mutate(., ID_mifish = if_else(Species == "", Genus, Species)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>%
+mutate(., ID_mifish = replace_na(ID_mifish, "")) %>% 
+  filter(., Domain !="") %>% dplyr::select(-Project, -PCR_Cycles,-Index.Cycles,-Location,-Extraction_set)-> combined_data_long_2_reads
+
+combined_data_long_2_reads$Sample_date <- as.Date(combined_data_long_2_reads$Sample_date, "%m/%d/%y")
+
+results_reads_kenai_1 %>% 
+  pivot_longer(cols =`c19_fishcard_Bridge_5m_Apr_1`:`c19_fishcard_TM_D18_03` ,names_to = "Sample", values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample,"c19_fishcard_")) %>% 
+  left_join(metadata_kenai_1) %>% 
+  filter(., Project == "Kenai") %>% 
+  separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";",remove=F) %>%   unite( Site,Depth,Month, col= "Station", remove=F) %>% 
+  ungroup() %>%
+mutate(., ID_mifish = if_else(Species == "", Genus, Species)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>%
+mutate(., ID_mifish = replace_na(ID_mifish, "")) %>% 
+  filter(., Domain !="")%>%  
+  dplyr::select(-Project, -PCR_Cycles,-Index.Cycles,-Temp..Field.Bottle.ID, -Sample_ID,             -Month,-Site_code,-Depth_code)-> combined_data_long_kenai_1_reads
+
+combined_data_long_kenai_1_reads$Sample_date <- as.Date(combined_data_long_kenai_1_reads$Sample_date, "%m/%d/%y")
+
+results_reads_kenai_2 %>% 
+  pivot_longer(cols =`c19_fishcard_Beluga_Diet_1`:`c19_fishcard_TM_D18_03` ,names_to = "Sample", values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample,"c19_fishcard_")) %>% 
+  left_join(metadata_kenai_2) %>% 
+  filter(., Project == "Kenai") %>% 
+  separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";",remove=F) %>%   unite( Site,Depth,Month, col= "Station", remove=F) %>% 
+  ungroup() %>%
+mutate(., ID_mifish = if_else(Species == "", Genus, Species)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>%
+mutate(., ID_mifish = replace_na(ID_mifish, "")) %>% 
+  filter(., Domain !="") %>%  
+  dplyr::select(-Project, -PCR_Cycles,-Index.Cycles,-Temp..Field.Bottle.ID, -Sample_ID,             -Month,-Site_code,-Depth_code)-> combined_data_long_kenai_2_reads
+
+combined_data_long_kenai_2_reads$Sample_date <- as.Date(combined_data_long_kenai_2_reads$Sample_date, "%m/%d/%y")
+
+results_reads_kenai_3 %>% 
+  pivot_longer(cols =`c19_fishcard_Bridge_5m_Dec_1`:`c19_fishcard_TM_D18_03` ,names_to = "Sample", values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample,"c19_fishcard_")) %>% 
+  left_join(metadata_kenai_3) %>% 
+  filter(., Project == "Kenai") %>% 
+  separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";",remove=F) %>%   unite( Site,Depth,Month, col= "Station", remove=F) %>% 
+  ungroup() %>%
+mutate(., ID_mifish = if_else(Species == "", Genus, Species)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>%
+mutate(., ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>%
+mutate(., ID_mifish = replace_na(ID_mifish, "")) %>% 
+  filter(., Domain !="") %>%  
+  dplyr::select(-Project, -PCR_Cycles,-Index.Cycles,-Temp..Field.Bottle.ID, -Sample_ID,             -Month,-Site_code,-Depth_code)-> combined_data_long_kenai_3_reads
+
+combined_data_long_kenai_3_reads$Sample_date <- as.Date(combined_data_long_kenai_3_reads$Sample_date, "%m/%d/%y")
+
+combined_data_long_reads_c <- rbind(combined_data_long_reads,combined_data_long_2_reads,combined_data_long_kenai_1_reads,combined_data_long_kenai_2_reads,combined_data_long_kenai_3_reads)
+
+combined_data_long_reads_c %>% 
+  group_by(Sample) %>% 
+  dplyr::summarise(total_reads=sum(nReads)) -> tot_reads
+
+combined_data_long_reads_c %>% 
+  left_join(tot_reads) %>% 
+  filter(., total_reads >0) %>% 
+  mutate(., prop_reads= nReads/total_reads) ->combined_data_long_reads_c
+
+#Throw out suspicious samples, probably need to have stronger decontamination controls
+combined_data_long_reads_c %>% 
+filter(., prop_reads!=1) -> combined_data_long_reads_c
+  
+combined_data_long_reads_c %>% 
+  group_by(ID_mifish) %>% 
+  dplyr::summarise(max_prop=max(prop_reads)) -> max_prop
+
+
+combined_data_long_reads_c %>% 
+  left_join(max_prop) %>% 
+  mutate(., index_scores=prop_reads/max_prop) %>% 
+  filter(., !str_detect(New_name_no_tech,"TM_D19")) ->combined_data_long_reads_c #throw away this sampling day
+
+combined_data_long_reads_c %>% 
+  filter(., River=="Kenai")
+
+saveRDS(combined_data_long_reads_c, here("analysis","combined_data_long_reads_c.RDS"))
+
+```
+### Kenai index
+```{r}
+
+combined_data_long_reads_c %>% 
+    filter(., River=="Kenai") %>% 
+  group_by(Sample) %>% 
+  dplyr::summarise(total_reads=sum(nReads)) -> tot_reads_kenai
+
+combined_data_long_reads_c %>% 
+      filter(., River=="Kenai") %>% 
+  left_join(tot_reads_kenai) %>% 
+  filter(., total_reads >0) %>% 
+  mutate(., prop_reads= nReads/total_reads) ->kenai_data_long_reads_c
+
+#Throw out suspicious samples, probably need to have stronger decontamination controls
+kenai_data_long_reads_c %>% 
+filter(., prop_reads!=1) -> kenai_data_long_reads_c
+  
+kenai_data_long_reads_c %>% 
+  group_by(ID_mifish) %>% 
+  dplyr::summarise(max_prop=max(prop_reads)) -> max_prop_kenai
+
+
+kenai_data_long_reads_c %>% 
+  left_join(max_prop_kenai) %>% 
+  mutate(., index_scores=prop_reads/max_prop) %>% 
+  filter(., !str_detect(New_name_no_tech,"TM_D19")) ->kenai_data_long_reads_c #throw away this sampling day
+
+saveRDS(kenai_data_long_reads_c, here("analysis","kenai_data_long_reads_c.RDS"))
+
+
+```
+
+### 20m index
+```{r}
+combined_data_long_reads_c %>% 
+    filter(., River=="Twentymile") %>% 
+  group_by(Sample) %>% 
+  dplyr::summarise(total_reads=sum(nReads)) -> tot_reads_20m
+
+combined_data_long_reads_c %>% 
+      filter(., River=="Twentymile") %>% 
+  left_join(tot_reads_20m) %>% 
+  filter(., total_reads >0) %>% 
+  mutate(., prop_reads= nReads/total_reads) ->data_long_reads_c_20m
+
+#Throw out suspicious samples, probably need to have stronger decontamination controls
+data_long_reads_c_20m %>% 
+filter(., prop_reads!=1) -> data_long_reads_c_20m
+  
+data_long_reads_c_20m %>% 
+  group_by(ID_mifish) %>% 
+  dplyr::summarise(max_prop=max(prop_reads)) -> max_prop_20m
+
+
+data_long_reads_c_20m %>% 
+  left_join(max_prop_kenai) %>% 
+  mutate(., index_scores=prop_reads/max_prop) %>% 
+  filter(., !str_detect(New_name_no_tech,"TM_D19")) ->data_long_reads_c_20m #throw away this sampling day
+
+saveRDS(data_long_reads_c_20m, here("analysis","data_long_reads_c_20m.RDS"))
+
+
+```
+
+
+# General Statistics
+
+## Twentymile Sample Dates
+```{R}
+
+
+combined_data_long_reads_c %>% 
+    filter(., River %in% c("Twentymile")) %>% 
+  dplyr::select(Sample_date) %>% unique() %>% arrange(desc(Sample_date))
+```
+
+## Kenai River Sample Dates
+
+```{r}
+
+combined_data_long_reads_c %>% 
+    filter(., River %in% c("Kenai")) %>% 
+  dplyr::select(Sample_date) %>% unique() %>% arrange(desc(Sample_date))
+
+```
+
+## Unique Sampling Events
+
+```{r}
+combined_data_long_reads_c %>% 
+  distinct(New_name_no_tech) -> sample_names_metabarcoding
+
+sample_names_metabarcoding$New_name_no_tech %>%  length()
+```
+## Table of Twentymile Metabarcoding Samples
+```{r}
+
+combined_data_long_reads_c %>% 
+  filter(., str_detect(New_name, "_R")) %>% 
+  filter(., River %in% c("Twentymile")) %>% 
+  dplyr::select(New_name_no_tech,Station,Site,Bio_rep,Tech_rep) %>% 
+  distinct()
+
+```
+
+
+## Table of Kenai Metabarcoding Samples
+```{r}
+combined_data_long_reads_c %>% 
+  filter(., River %in% c("Kenai")) %>% 
+  filter(., !is.na(Tech_rep)) %>% 
+  dplyr::select(New_name_no_tech,Station,Site,Bio_rep,Tech_rep) %>% 
+  distinct()
+```
+## Unique qPCR Samples
+```{r}
+
+qPCR_AK_data %>% 
+  filter(., !str_detect(Sample.Name,"standard")) %>% 
+  filter(., !is.na(New_name_no_tech)) %>% 
+  filter(., Project!="Passive") %>% 
+  filter(., !str_detect(New_name_no_tech,"Diet")) %>% 
+  distinct(New_name_no_tech) -> sample_names_qPCR
+
+setdiff(sample_names_qPCR$New_name_no_tech,sample_names_metabarcoding$New_name_no_tech) -> unique_qPCR_samples
+
+
+# TMD19 did not trust the metabarcoding data at all
+# These are all samples that were removed from decontamination
+```
+
+
+## Unique qPCR assays
+```{r}
+
+qPCR_AK_data %>% 
+  filter(., !str_detect(Sample.Name,"standard")) %>% 
+  filter(., !is.na(New_name_no_tech)) %>% 
+  filter(., Project!="Passive") %>% 
+  filter(., !str_detect(New_name_no_tech,"Diet")) %>% 
+  filter(., `Target Name` %in% c("Chinook","Coho","Eulachon","cetacea"))
+```
+
+## Unique Taxa
+```{R}
+combined_data_long_reads_c %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>%
+    filter(., Class!="Insecta") %>% 
+  filter(., nReads >0) -> short_edna
+```
+
+```{r}
+short_edna %>% filter(.,nReads >0) %>% group_by(River,Species) %>% 
+  filter(., Species !="") %>% 
+  count() %>% arrange(desc(n)) -> tot_detections
+
+```
+
+
+### Species
+```{r}
+short_edna %>% 
+  dplyr::select(Species) %>%  unique()
+
+short_edna %>% 
+  dplyr::select(Species) %>%  unique()
+```
+### Genus
+```{r}
+short_edna %>% 
+  dplyr::select(Genus) %>%  unique()
+```
+### Family
+```{r}
+short_edna %>% 
+  dplyr::select(Family) %>%  unique()
+```
+### Class
+```{r}
+short_edna %>% 
+  dplyr::select(Class) %>%  unique()
+```
+## Species List
+
+### Fishes
+```{r}
+
+short_edna %>% 
+  filter(., River %in% c("Kenai", "Twentymile")) %>% 
+  left_join(tot_detections) %>% 
+  filter(., n> 1) %>% 
+  filter(., Class=="Actinopteri") %>% 
+  filter(., Class!="Insecta") %>% 
+  dplyr::select(Species) %>%  unique() %>% arrange(Species)
+```
+
+### Mammals
+```{r}
+
+short_edna %>% 
+  filter(., River %in% c("Kenai", "Twentymile")) %>% 
+  left_join(tot_detections) %>% 
+  filter(., n> 1) %>% 
+  filter(., Class=="Mammalia") %>% 
+  filter(., Class!="Insecta") %>% 
+  dplyr::select(Species) %>%  unique() %>% arrange(Species)
+
+short_edna %>% 
+  filter(., Species =="Berardius bairdii"	)
+```
+
+### Birds
+```{r}
+
+short_edna %>% 
+  filter(., River %in% c("Kenai", "Twentymile")) %>% 
+  left_join(tot_detections) %>% 
+  filter(., n> 1) %>% 
+  filter(., Class=="Aves") %>% 
+  filter(., Class!="Insecta") %>% 
+  dplyr::select(Species) %>%  unique() %>% arrange(Species)
+
+short_edna %>% 
+  filter(., Species =="Berardius bairdii"	)
+```
+
+### Elasmobranchs
+```{r}
+short_edna %>% 
+  filter(., Class=="Chondrichthyes") %>% 
+  filter(., Class!="Insecta") %>% 
+  dplyr::select(Species) %>%  unique() %>% arrange(Species)
+```
+
+### Pacific Lamprey
+```{r}
+short_edna %>% 
+  filter(., Class=="Hyperoartia") %>% 
+  filter(., Class!="Insecta") %>% 
+  dplyr::select(Species) %>%  unique() %>% arrange(Species)
+
+short_edna %>% 
+  filter(., Species=="Entosphenus tridentatus")
+```
+
+
+
+
+
+# qPCR vs. Metabarcoding
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+qPCR_AK_data %>% 
+  group_by(Sample.Name) %>% 
+  mutate(., Quantity=replace_na(Quantity,0)) %>% 
+  dplyr::summarise(mean_copy_number=mean(Quantity), max_copy_number=max(Quantity),min_copy_number=min(Quantity)) %>% 
+  filter(., !is.na(max_copy_number)) %>% 
+  mutate(., Method ="qPCR")-> qPCR_mean
+
+combined_data_long_reads_c %>%  
+  filter(., Species %in% c("Delphinapterus leucas", "Thaleichthys pacificus","Oncorhynchus tshawytscha","Oncorhynchus kisutch")) -> beluga_long
+  
+
+ beluga_long %>% 
+    filter(., River %in% c("Twentymile","Kenai")) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=Species)) + geom_smooth() +    
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1)) + facet_wrap(River~Site, scales = "free") + ylab("eDNA Index Score") + xlab("River")  +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) +xlab("")-> meta_beluga
+  
+  qPCR_AK_data %>% 
+  #filter(., `Sample Name`!="" & Sample.Name !="") %>% 
+  filter(., `Target Name` %in% c("cetacea", "Chinook" , "Coho"   ,  "Eulachon")) %>% 
+  filter(., Task =="UNKNOWN") %>% 
+  mutate(Quantity = ifelse(is.na(Quantity), 0, Quantity)) %>% 
+  filter(., !is.na(LabID)) %>% 
+  filter(., Quantity > 0) %>% 
+  mutate( Site = case_when(Project =="Beluga_Diet"~"Beluga_Diet",
+                                Control_Type=="Neg"~"Neg",
+                                 Control_Type=="Pos"~"Pos")) %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>% 
+  mutate(., Sample_date=as.Date(Sample_date,"%m/%d/%y")) %>% 
+ ggplot(aes(x=Sample_date, y=Quantity, color=`Target Name`)) + geom_point()+ facet_wrap(River ~ `Target Name`, scales = "free_y")+ theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + scale_y_sqrt(breaks=c(0,10,50,100,200,400)) -> q_beluga
+  
+
+```
+
+# 
+```{R}
+  
+beluga_long %>% 
+  mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  mutate(., Tide_height = as.numeric(Tide_height)) %>% 
+    mutate(., `Target Name`=case_when(Species=="Delphinapterus leucas"~ "cetacea" ,
+                                     Species=="Thaleichthys pacificus" ~ "Eulachon",
+                                     Species=="Oncorhynchus tshawytscha"~ "Chinook",
+                                     Species=="Oncorhynchus kisutch" ~ "Coho")) %>% 
+  left_join(qPCR_4_species) -> four_species_combo
+```
+
+
+```{r}
+
+four_species_combo %>% 
+   mutate(., `Target Name`=if_else(`Target Name`=="cetacea","Beluga",`Target Name`)) %>% 
+  ggplot(aes(y=index_scores, x=Quantity, color=`Target Name`)) + geom_point()+ facet_wrap(`Target Name`~., scale="free") +ylab("Metabarcoding eDNA Index") + xlab("qPCR DNA Concentration [copies/µL] ") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50")) 
+
+ggsave(file = here::here("analysis", "figures", "Fig_1_index_vs_qPCR_4_species.png"),
+  width = 12,
+  height = 12
+  )
+
+```
+
+```{r}
+four_species_combo %>% 
+  filter(., Quantity >20 & index_scores == 0) -> high_qPCR_no_edna_detection
+
+high_qPCR_no_edna_detection$Sample %>%  unique() -> sample_w_problems
+
+short_edna %>% 
+  filter(Sample %in% sample_w_problems) %>% 
+  filter(., prop_reads >0.05) %>% 
+  ggplot(aes(x=Sample, y=prop_reads, fill=sum.taxonomy)) +geom_bar(position="stack", stat="identity") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+```
+
+```{r}
+
+high_qPCR_no_edna_detection %>% 
+  filter(., Species =="Delphinapterus leucas") -> beluga_high_qPCR_no_meta_detection
+
+beluga_high_qPCR_no_meta_detection$Sample %>%  unique() -> beluga_sample_w_problems
+
+
+short_edna %>% 
+  filter(Sample %in% beluga_sample_w_problems) %>% 
+  filter(., prop_reads >0.01) %>% 
+  ungroup() %>%
+  mutate(., Name = if_else(Species == "", Genus, Species)) %>%
+mutate(., Name = if_else(Name == "", Family, Name)) %>%
+mutate(., Name = if_else(Name == "", Order, Name)) %>%
+mutate(., Name = if_else(Name == "", Class, Name)) %>%
+mutate(., Name = if_else(Name == "", Phylum, Name)) %>%
+mutate(., Name = if_else(Name == "", Domain, Name)) %>%
+mutate(., Name = replace_na(Name, "")) %>% 
+  ggplot(aes(x=Sample, y=prop_reads, fill=Name)) +geom_bar(position="stack", stat="identity") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))  +ggtitle("Beluga >50 qPCR Quant & Non-Detection from Metabarcoding") +ylab("Metabarcoding Read Proportion") + xlab("Sample") +theme(axis.text.x = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=18), axis.title = element_text(size=24), strip.text = element_text(size=20), axis.line = element_line(colour = "grey50")) -> beluga_high_qPCR_no_meta_detection_a
+```
+
+```{r}
+
+four_species_combo %>% 
+  filter(Sample %in% beluga_sample_w_problems) %>% 
+   mutate(., `Target Name`=if_else(`Target Name`=="cetacea","Beluga",`Target Name`)) %>% 
+  ggplot(aes(x=Sample, y=Quantity, color=`Target Name`)) + geom_point(size=5) + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))  +ggtitle("Beluga >50 qPCR Quant & Non-Detection from Metabarcoding") +xlab("Sample") + ylab("qPCR DNA Concentration [copies/µL] ") +theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=18), axis.text.x = element_blank(), axis.title = element_text(size=24), strip.text = element_text(size=20), axis.line = element_line(colour = "grey50")) -> beluga_high_qPCR_no_meta_detection_b
+
+
+```
+
+```{r}
+
+beluga_high_qPCR_no_meta_detection_a+beluga_high_qPCR_no_meta_detection_b
+
+
+ggsave(file = here::here("analysis", "figures", "Fig_2_beluga_high_qPCR_conc_but_metabarcoding_non_detection.png"),
+  width = 12,
+  height = 8
+  )
+
+```
+
+```{r}
+
+high_qPCR_no_edna_detection %>% 
+  filter(., Species =="Oncorhynchus kisutch") -> coho_high_qPCR_no_meta_detection
+
+coho_high_qPCR_no_meta_detection$Sample %>%  unique() -> coho_sample_w_problems
+
+
+short_edna %>% 
+  filter(Sample %in% coho_sample_w_problems) %>% 
+  filter(., prop_reads >0.05) %>% 
+    ungroup() %>%
+  mutate(., Name = if_else(Species == "", Genus, Species)) %>%
+mutate(., Name = if_else(Name == "", Family, Name)) %>%
+mutate(., Name = if_else(Name == "", Order, Name)) %>%
+mutate(., Name = if_else(Name == "", Class, Name)) %>%
+mutate(., Name = if_else(Name == "", Phylum, Name)) %>%
+mutate(., Name = if_else(Name == "", Domain, Name)) %>%
+mutate(., Name = replace_na(Name, "")) %>% 
+  ggplot(aes(x=Sample, y=prop_reads, fill=Name)) + geom_bar(position="stack", stat="identity") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +ggtitle("Stacked Bar Chart >5% Abundance")  +ylab("Metabarcoding Read Proportion") + xlab("Sample") +theme(axis.text.x = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))-> coho_high_qPCR_no_meta_detection_a
+```
+
+```{r}
+
+four_species_combo %>% 
+  filter(Sample %in% coho_sample_w_problems) %>% 
+   mutate(., `Target Name`=if_else(`Target Name`=="cetacea","Beluga",`Target Name`)) %>% 
+  ggplot(aes(x=Sample, y=Quantity, color=`Target Name`)) + geom_point(size=5) + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +ggtitle("Coho >50 qPCR Quant & Non-Detection from Metabarcoding") +ylab("qPCR DNA Concentration [copies/µL] ") + xlab("Sample") +theme(axis.text.x = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))-> coho_high_qPCR_no_meta_detection_b
+
+```
+
+
+```{r}
+coho_high_qPCR_no_meta_detection_a +  coho_high_qPCR_no_meta_detection_b
+
+
+ggsave(file = here::here("analysis", "figures", "Fig_3_coho_high_qPCR_conc_but_metabarcoding_non_detection.png"),
+  width = 12,
+  height = 8
+  )
+
+```
+
+
+```{r}
+ 
+beluga_long %>% 
+  mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  mutate(., Tide_height = as.numeric(Tide_height)) %>% 
+  left_join(combined_data_long_reads_c) %>% 
+    mutate(., `Target Name`=case_when(Species=="Delphinapterus leucas"~ "cetacea" ,
+                                     Species=="Thaleichthys pacificus" ~ "Eulachon",
+                                     Species=="Oncorhynchus tshawytscha"~ "Chinook",
+                                     Species=="Oncorhynchus kisutch" ~ "Coho")) %>% 
+  left_join(qPCR_4_species) %>% 
+    mutate(., `Target Name`=if_else(`Target Name`=="cetacea","Beluga",`Target Name`)) %>% 
+  ggplot(aes(y=nReads, x=Quantity, color=`Target Name`)) + geom_point()+ facet_wrap(`Target Name`~., scale="free") +ylab("Metabarcoding Read Counts")+ xlab("qPCR DNA Concentration [copies/µL] ") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))
+
+ ggsave(file = here::here("analysis", "figures", "Fig_4_nReads_vs_qPCR.png"),
+  width = 12,
+  height = 12
+  )
+  
+ 
+
+```
+
+
+```{r}
+ 
+beluga_long %>% 
+  mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  mutate(., Tide_height = as.numeric(Tide_height)) %>% 
+  left_join(combined_data_long_reads_c) %>% 
+    mutate(., `Target Name`=case_when(Species=="Delphinapterus leucas"~ "cetacea" ,
+                                     Species=="Thaleichthys pacificus" ~ "Eulachon",
+                                     Species=="Oncorhynchus tshawytscha"~ "Chinook",
+                                     Species=="Oncorhynchus kisutch" ~ "Coho")) %>% 
+  left_join(qPCR_4_species) %>% 
+    mutate(., `Target Name`=if_else(`Target Name`=="cetacea","Beluga",`Target Name`)) %>% 
+  ggplot(aes(y=log10(nReads+0.1), x=log10(Quantity+0.1), color=`Target Name`)) + geom_point()+ facet_wrap(`Target Name`~., scale="free") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50")) +ylab("log10(Metabarcoding Read Counts+0.1)")+ xlab("log10(qPCR DNA Concentration [copies/µL] +0.1)") 
+
+ ggsave(file = here::here("analysis", "figures", "Fig_5_log_nReads_vs_log_qPCR.png"),
+  width = 12,
+  height = 12
+  )
+  
+ 
+
+```
+
+
+```{R}
+  
+beluga_long %>% 
+  mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  mutate(., Tide_height = as.numeric(Tide_height)) %>% 
+    mutate(., `Target Name`=case_when(Species=="Delphinapterus leucas"~ "cetacea" ,
+                                     Species=="Thaleichthys pacificus" ~ "Eulachon",
+                                     Species=="Oncorhynchus tshawytscha"~ "Chinook",
+                                     Species=="Oncorhynchus kisutch" ~ "Coho")) %>% 
+  filter(.,  `Target Name`=="Coho") %>% 
+  left_join(qPCR_4_species) %>% 
+  ggplot(aes(y=log10(nReads+0.1), x=log10(Quantity+0.1), color=`Target Name`)) + geom_point()+ facet_wrap(`Target Name`~., scale="free") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))+ylab("log10(Metabarcoding Read Counts+0.1)")+ xlab("log10(qPCR DNA Concentration [copies/µL] +0.1)") 
+
+ggsave(file = here::here("analysis", "figures", "Fig_6_index_vs_qPCR_only.png"),
+  width = 12,
+  height = 12
+  )
+```
+
+
+
+```{r}
+
+beluga_long %>% 
+    mutate(., `Target Name`=case_when(Species=="Delphinapterus leucas"~ "Beluga" ,
+                                     Species=="Thaleichthys pacificus" ~ "Eulachon",
+                                     Species=="Oncorhynchus tshawytscha"~ "Chinook",
+                                     Species=="Oncorhynchus kisutch" ~ "Coho")) %>% 
+  ungroup() %>% 
+    group_by(New_name_no_tech,LabID,`Target Name`) %>% 
+    dplyr::summarise(mean_reads =mean(nReads),max_reads=max(nReads), min_reads=min(nReads),
+                     max_index_scores=max(index_scores), mean_index_scores=mean(index_scores),min_index_scores=min(index_scores),
+                     non_na_tech_count = n_distinct(New_name),
+                     non_na_tech_count2 = n_distinct(Tech_rep),
+          Drop_outs = length(nReads[nReads==0]),
+    drop_prop=Drop_outs/non_na_tech_count/non_na_tech_count2) %>% 
+  mutate(., drop_prop=if_else(drop_prop>1,1,drop_prop))-> dropout_prop_all
+
+  dropout_prop_all %>% 
+  filter(., !is.na(max_index_scores))-> plotting_drop_outs_all
+
+qPCR_4_species %>% 
+  mutate(., `Target Name`=if_else(`Target Name`=="cetacea","Beluga",`Target Name`)) %>% 
+  mutate(., Quantity=replace_na(Quantity,0)) %>% 
+  group_by(LabID,`Target Name`) %>% 
+  dplyr::summarise(mean_Quantity=mean(Quantity)) -> q_mean
+
+```
+
+# Plotting Non-detections in metabarcoding w/ out 3x zeros
+```{r}
+  plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+    filter(., mean_reads >0) %>% 
+   ggplot(., aes(x=log10(mean_Quantity+0.01), y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5)  +facet_wrap(`Target Name`~., scale="free") +ylab("Metabarcoding Non Detection") +xlab("log10(qPCR DNA Concentration [copies/µL]+0.01)")  +ggtitle("Non-detections in metabarcoding w/ out 3x zeros if qPCR >0")  +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))
+  
+  # What is going on with Coho.... check that
+  
+ ggsave(file = here::here("analysis", "figures", "Fig_7_log_non_detections_vs_log_qPCR_no_3x_zeros.png"),
+  width = 12,
+  height = 12
+  )
+ 
+```
+
+```{r}
+plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+        filter(., mean_reads >0) %>% 
+   ggplot(., aes(x=mean_Quantity+0.01, y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5) +facet_wrap(`Target Name`~., scale="free") +ylab("Metabarcoding Non Detection") +xlab("qPCR DNA Concentration [copies/µL]") +ggtitle("Non-detections in metabarcoding w/ out 3x zeros if qPCR >0") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=18), axis.title = element_text(size=24), strip.text = element_text(size=20), axis.line = element_line(colour = "grey50"))
+
+
+ ggsave(file = here::here("analysis", "figures", "Fig_8_non_detections_vs_qPCR_conc_no_3x_zeros.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+# Plotting Non-detections in metabarcoding w/ 3x zeros if qPCR >0
+```{r}
+  plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+    filter(., mean_Quantity >0) %>% 
+   ggplot(., aes(x=log10(mean_Quantity+0.01), y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5)  +facet_wrap(`Target Name`~., scale="free") +ylab("Metabarcoding Non Detection") +xlab("log10(qPCR DNA Concentration [copies/µL]+0.01)") +ggtitle("Non-detections in metabarcoding w/ 3x zeros if qPCR >0") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))
+  
+ ggsave(file = here::here("analysis", "figures", "Fig_9_w3x_zeros_qPCR>0_detect_log_non_detections.png"),
+  width = 12,
+  height = 12
+  )
+```
+
+```{r}
+ 
+plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+    filter(., mean_Quantity >0) %>% 
+   ggplot(., aes(x=mean_Quantity+0.01, y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5) +facet_wrap(`Target Name`~., scale="free") +ylab("Metabarcoding Non Detection") +xlab("qPCR DNA Concentration [copies/µL]") +ggtitle("Non-detections in metabarcoding w/ 3x zeros if qPCR >0")  +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=18), axis.title = element_text(size=24), strip.text = element_text(size=20), axis.line = element_line(colour = "grey50"))
+
+
+ggsave(file = here::here("analysis", "figures", "Fig_10_w3x_zeros_qPCR>0_detect_non_detections.png"),
+  width = 12,
+  height = 8
+  )
+ 
+```
+
+
+# Plotting Non-detections in metabarcoding w/ 3x zeros
+```{r}
+  plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+   ggplot(., aes(x=log10(mean_Quantity+0.01), y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5)  +facet_wrap(`Target Name`~., scale="free") +ylab("Metabarcoding Non Detection") +xlab("log10(qPCR DNA Concentration [copies/µL]+0.01)") +ggtitle("Non-detections in metabarcoding w/ 3x zeros")  +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))
+  
+ ggsave(file = here::here("analysis", "figures", "Fig_11_w3x_zeros_log_qPCR_conc_non_detections.png"),
+  width = 12,
+  height = 12
+  )
+```
+
+```{r}
+ 
+plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+    filter(., mean_Quantity >0) %>% 
+   ggplot(., aes(x=mean_Quantity+0.01, y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5) +facet_wrap(`Target Name`~., scale="free") +ylab("Metabarcoding Non Detection") +xlab("qPCR DNA Concentration [copies/µL]") +ggtitle("Non-detections in metabarcoding w/ 3x zeros") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))
+
+
+ ggsave(file = here::here("analysis", "figures", "Fig_12_w3x_zeros_qPCR_detect_non_detections.png"),
+  width = 12,
+  height = 12
+  )
+ 
+```
+
+### Plotting Detection Types
+```{r}
+
+plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+  mutate(., Detection = case_when(mean_Quantity ==0 & mean_reads ==0 ~"Both Absent",
+                                  mean_Quantity ==0 & mean_reads >0 ~"Metabarcoding Only",
+                                  mean_Quantity >0 & mean_reads ==0 ~"qPCR Only",
+                                  mean_Quantity >0 & mean_reads >0 ~"Both Detected",
+)) %>% 
+  group_by(`Target Name`) %>% 
+  count(Detection) %>% 
+  ggplot(., aes(x=Detection, y=n, fill=Detection)) +geom_bar(stat="identity") +facet_wrap(`Target Name`~.) +theme(axis.text.x = element_text(angle=30, hjust = 1)) +ylab("Count") + xlab("Detection Type") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))
+
+
+
+ ggsave(file = here::here("analysis", "figures", "Figure_13_qPCR_vs_Metabarcoding_detection_types_summarized.png"),
+  width = 12,
+  height = 12
+  )
+```
+
+### Plotting Visual vs. eDNA
+```{r}
+combo_4_species <- readRDS(here("analysis","combo_4_species.RDS"))
+beluga_visual_3 <- readRDS(here("analysis","beluga_visual_3.RDS"))
+
+combo_4_species %>% 
+  filter(., `Target Name`=="Beluga") %>% 
+  dplyr::select(Sample_date, Site.Name=River, Quantity, index_scores, nReads) %>% 
+filter(., Site.Name %in% c("Kenai", "Twentymile")) %>% 
+mutate(., Site.Name=case_when(Site.Name=="Kenai" ~"Kenai River",
+                             Site.Name=="Twentymile" ~"Twentymile River" )) %>% 
+  mutate(eDNA_detection = case_when(Quantity | index_scores | nReads >0 ~"Yes",TRUE ~"No")) %>% left_join(beluga_visual_3) %>% 
+  filter(., !is.na(Were.belugas.observed.during.the.monitoring.session.)) %>% 
+  mutate(., Detection = case_when(eDNA_detection =="Yes" & Were.belugas.observed.during.the.monitoring.session. =="Yes" ~"Both Detected",
+                                  eDNA_detection =="Yes" & Were.belugas.observed.during.the.monitoring.session. =="No" ~"eDNA Only",
+                                  eDNA_detection =="No" & Were.belugas.observed.during.the.monitoring.session. =="Yes" ~"Visual Only",
+                                   eDNA_detection =="No" & Were.belugas.observed.during.the.monitoring.session. =="No" ~"Both Absent"
+)) %>% 
+  count(Detection) %>% 
+  ggplot(., aes(x=Detection, y=n, fill=Detection)) +geom_bar(stat="identity")  +theme(axis.text.x = element_text(angle=30, hjust = 1)) +ylab("Count") + xlab("Detection Type") +theme_pubr()+theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=16), axis.title = element_text(size=24), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))  
+
+
+
+
+
+ ggsave(file = here::here("analysis", "figures", "Figure_13_eDNA_vs_visual_detection_types_summarized.png"),
+  width = 12,
+  height = 8
+  )
+
+```
+
+
+```{r}
+
+
+combo_4_species %>% 
+  filter(., `Target Name`=="Beluga") %>% 
+  dplyr::select(Sample_date, Site.Name=River, Quantity, index_scores, nReads) %>% 
+filter(., Site.Name %in% c("Kenai", "Twentymile")) %>% 
+mutate(., Site.Name=case_when(Site.Name=="Kenai" ~"Kenai River",
+                             Site.Name=="Twentymile" ~"Twentymile River" )) %>%
+  group_by(Sample_date, Site.Name) %>% 
+  dplyr::summarise(Quantity=sum(Quantity), nReads=mean(nReads),index_scores=mean(index_scores)) %>% 
+  mutate(eDNA_detection = case_when(Quantity | index_scores | nReads >0 ~"Yes",TRUE ~"No")) -> eDNA_detections
+
+eDNA_detections %>% 
+   ggplot(., aes(x=Sample_date, y=eDNA_detection, colour=eDNA_detection)) + geom_point(shape = "|", size = 7) + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("eDNA Beluga Obs.") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_grid(Site.Name~., scales = "free") + theme(legend.position="none") + scale_x_date(date_breaks = "3 month", 
+                 labels=date_format("%b-%Y"),
+                 limits = as.Date(c('2020-07-01','2022-01-01')))+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())-> visual_eDNA
+
+ beluga_visual_3 %>% 
+    ungroup() %>% 
+    filter(., Site.Name !="The Point at Alaska Wildlife Conservation Center") %>%   ggplot(., aes(x=Sample_date, y=Were.belugas.observed.during.the.monitoring.session., colour=Were.belugas.observed.during.the.monitoring.session.)) + geom_point(shape = "|", size = 7) + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("Visual Beluga Obs.") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=10)) + facet_grid(Site.Name~., scales = "free") + theme(legend.position="none") + scale_x_date(date_breaks = "3 month", 
+                 labels=date_format("%b-%Y"),
+                 limits = as.Date(c('2020-07-01','2022-01-01'))) -> visual_p
+
+ visual_eDNA+visual_p + 
+  plot_layout(ncol = 1)
+```
+
+```{r}
+
+
+combo_4_species %>% 
+  filter(., `Target Name`=="Beluga") %>% 
+  dplyr::select(Sample_date, Site.Name=River, Quantity, index_scores, nReads) %>% 
+filter(., Site.Name %in% c("Kenai", "Twentymile")) %>% 
+mutate(., Site.Name=case_when(Site.Name=="Kenai" ~"Kenai River",
+                             Site.Name=="Twentymile" ~"Twentymile River" )) %>%
+  group_by(Sample_date, Site.Name) %>% 
+  dplyr::summarise(Quantity=sum(Quantity), nReads=mean(nReads),index_scores=mean(index_scores)) %>% 
+  mutate(., Detection = case_when(Quantity >0 & nReads >0 ~"Both Detected",
+                                  Quantity >0 & nReads ==0  ~"qPCR Only",
+                                  Quantity ==0 & nReads >0 ~"Metabarcoding Only",
+                                   Quantity ==0 & nReads ==0 ~"Both Absent"
+)) -> eDNA_detections_2
+
+eDNA_detections_2 %>% 
+   ggplot(., aes(x=Sample_date, y=Detection, colour=Detection)) + geom_point(shape = "|", size = 7) + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("eDNA Beluga Obs.") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=12)) + facet_grid(Site.Name~., scales = "free") + theme(legend.position="none") + scale_x_date(date_breaks = "3 month", 
+                 labels=date_format("%b-%Y"),
+                 limits = as.Date(c('2020-07-01','2022-01-01')))+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())-> visual_eDNA_2
+
+
+
+ visual_eDNA_2+visual_p + 
+  plot_layout(ncol = 1)
+ 
+ 
+ ggsave(file = here::here("analysis", "figures", "Figure_13_eDNA_vs_visual_detection_types_summarized_v3.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+```{r}
+beluga_visual_3 %>% 
+  mutate(., Site.Name=case_when(Site.Name=="MM 95.3 Pullout" ~"Twentymile River",
+                             Site.Name=="Twentymile River" ~"Twentymile River",
+                             Site.Name=="The Point at Alaska Wildlife Conservation Center" ~"Twentymile River",
+                             Site.Name=="Kenai River" ~"Kenai River")) %>% 
+  group_by(Sample_date, Site.Name) %>% 
+  dplyr::summarise(max_group_size=sum(max_group_size)) %>% 
+  mutate(., Were.belugas.observed.during.the.monitoring.session.=if_else(max_group_size>0, "Yes","No")) -> beluga_visual_4
+
+
+combo_4_species %>% 
+  filter(., `Target Name`=="Beluga") %>% 
+  dplyr::select(Sample_date, Site.Name=River, Quantity, index_scores, nReads) %>% 
+filter(., Site.Name %in% c("Kenai", "Twentymile")) %>% 
+mutate(., Site.Name=case_when(Site.Name=="Kenai" ~"Kenai River",
+                             Site.Name=="Twentymile" ~"Twentymile River" )) %>% 
+  mutate(eDNA_detection = case_when(Quantity | index_scores | nReads >0 ~"Yes",TRUE ~"No")) %>% left_join(beluga_visual_4) %>% 
+  filter(., !is.na(Were.belugas.observed.during.the.monitoring.session.)) %>% 
+  mutate(., Detection = case_when(eDNA_detection =="Yes" & Were.belugas.observed.during.the.monitoring.session. =="Yes" ~"Both Detected",
+                                  eDNA_detection =="Yes" & Were.belugas.observed.during.the.monitoring.session. =="No" ~"eDNA Only",
+                                  eDNA_detection =="No" & Were.belugas.observed.during.the.monitoring.session. =="Yes" ~"Visual Only",
+                                   eDNA_detection =="No" & Were.belugas.observed.during.the.monitoring.session. =="No" ~"Both Absent"
+)) -> beluga_visual_vs_edna
+
+beluga_visual_vs_edna %>% 
+  count(Detection) %>% 
+  ggplot(., aes(x=Detection, y=n, fill=Detection)) +geom_bar(stat="identity")  +theme(axis.text.x = element_text(angle=30, hjust = 1)) +ylab("Count") + xlab("Detection Type") +theme_pubr()+theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=16), axis.title = element_text(size=24), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50"))  
+
+
+
+ ggsave(file = here::here("analysis", "figures", "Figure_13_eDNA_vs_visual_detection_types_summarized_combine_turnagain.png"),
+  width = 12,
+  height = 8
+  )
+
+```
+
+
+## Identifying Weird Samples
+ 
+```{r}
+ plotting_drop_outs_all %>% 
+    left_join(q_mean) %>%   
+  mutate(., Detection = case_when(mean_Quantity ==0 & mean_reads ==0 ~"Both Absent",
+                                  mean_Quantity ==0 & mean_reads >0 ~"Metabarcoding Only",
+                                  mean_Quantity >0 & mean_reads ==0 ~"qPCR Only",
+                                  mean_Quantity >0 & mean_reads >0 ~"Both Detected",
+)) %>% 
+  group_by(`Target Name`) %>% 
+ filter(., Detection %in% c("Metabarcoding Only", "qPCR Only")) %>% 
+  arrange(desc(mean_reads)) %>% 
+  mutate(., Weirdness_strength = case_when(mean_Quantity > 100 ~ "High",
+                                           mean_Quantity > 10 ~ "Medium",
+                                           mean_reads > 1000 ~ "High",
+                                           mean_reads > 100 ~ "Medium", TRUE~"Low")) %>% 
+        filter(., Weirdness_strength!= "Low")   -> weird_samples
+ 
+weird_samples %>%  View()
+
+weird_samples %>% 
+    filter(., LabID =="52386_040") %>% 
+  filter(.,`Target Name` =="Coho") %>% View()
+
+ combined_data_long_reads_c %>% 
+   filter(., LabID =="52386_040") %>% 
+   arrange(desc(nReads)) %>% View()
+ 
+ qPCR_4_species %>% 
+   filter(., LabID =="52386_040") %>% View()
+ 
+ qPCR_AK_data %>% 
+   filter(., LabID =="52386_040") %>% View()
+ 
+ weird_samples %>% 
+    filter(., LabID =="52386_003") %>% 
+  filter(.,`Target Name` =="Coho") %>% View()
+
+ combined_data_long_reads_c %>% 
+   filter(., LabID =="52386_003") %>% 
+   arrange(desc(nReads)) %>% View()
+ 
+ qPCR_4_species %>% 
+   filter(., LabID =="52386_003") %>% View()
+ 
+ qPCR_AK_data %>% 
+   filter(., LabID =="52386_003") %>% View()
+ 
+ qPCR_4_species %>% 
+   filter(., LabID =="52386_044") %>% View()
+
+```
+
+
+```{r}
+
+  
+beluga_long %>% 
+  mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  mutate(., Tide_height = as.numeric(Tide_height)) %>% 
+  left_join(combined_data_long_reads_c) %>% 
+    mutate(., `Target Name`=case_when(Species=="Delphinapterus leucas"~ "cetacea" ,
+                                     Species=="Thaleichthys pacificus" ~ "Eulachon",
+                                     Species=="Oncorhynchus tshawytscha"~ "Chinook",
+                                     Species=="Oncorhynchus kisutch" ~ "Coho")) %>% 
+  left_join(qPCR_4_species) %>%     mutate(., `Target Name`=if_else(`Target Name`=="cetacea","Beluga",`Target Name`)) %>% 
+  mutate(., Quantity=replace_na(Quantity,0)) -> combo_4_species
+
+saveRDS(combo_4_species, here("analysis","combo_4_species.RDS"))
+```
+
+### Kenai
+```{r}
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>%  
+ggplot(aes(x=Sample_date, y=Quantity,color=`Target Name`)) + geom_count()+ facet_wrap(`Target Name`~River, scale="free", ncol=4) + 
+  ggtitle('qPCR')+ theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "grey50"),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))  + scale_color_manual(values = pnw_palette("Starfish",7)) +scale_fill_manual(values = pnw_palette("Starfish",7)) +xlab("Date")+ ylab("qPCR DNA Concentration [copies/µL] ")   -> qPCR_4_k
+
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>% 
+ggplot(aes(x=Sample_date, y=log(Quantity+0.1),color=`Target Name`)) + geom_count()+ facet_wrap(`Target Name`~River, scale="free", ncol=4) + 
+  ggtitle('qPCR')+ theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "grey50"),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))  + scale_color_manual(values = pnw_palette("Starfish",7)) +scale_fill_manual(values = pnw_palette("Starfish",7)) +xlab("Date") + ylab("log10(qPCR DNA Concentration [copies/µL] +0.1) ")  -> qPCR_4_k_log
+
+
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>% 
+ggplot(aes(x=Sample_date, y=nReads,color=`Target Name`)) + geom_count()+  facet_wrap(`Target Name`~River, scale="free", ncol=4) + 
+  ggtitle('nReads') +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.line = element_line(colour = "grey50"),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))  + scale_color_manual(values = pnw_palette("Starfish",7)) +scale_fill_manual(values = pnw_palette("Starfish",7)) +xlab("Date") + ylab("Metabarcoding Read Count") -> nReads_4_k
+
+
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>% 
+ggplot(aes(x=Sample_date, y=log(nReads+0.1),color=`Target Name`)) + geom_count()+  facet_wrap(`Target Name`~River, scale="free", ncol=4) + 
+  ggtitle('nReads') +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.line = element_line(colour = "grey50"),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))  + scale_color_manual(values = pnw_palette("Starfish",7)) +scale_fill_manual(values = pnw_palette("Starfish",7)) +xlab("Date") + ylab("log10(Metabarcoding Read Count+0.1)") -> nReads_4_k_log
+
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>% 
+ggplot(aes(x=Sample_date, y=index_scores,color=`Target Name`)) + geom_count()+  facet_wrap(`Target Name`~River, scale="free", ncol=4) + 
+  ggtitle('eDNA Index')+ylab("eDNA Index") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.line = element_line(colour = "grey50"),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))  + scale_color_manual(values = pnw_palette("Starfish",7)) +scale_fill_manual(values = pnw_palette("Starfish",7)) +xlab("Date") + ylab("Metabarcoding eDNA Index") -> index_scores_4_k
+
+```
+
+```{r}
+
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>% 
+ggplot(aes(x=Sample_date, y=Quantity,color=`Target Name`, fill=`Target Name`)) + geom_count()+  facet_wrap(`Target Name`~., scale="free", ncol=2,strip.position = "top") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.line = element_line(colour = "grey50"),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))  + ylab("qPCR DNA Concentration [copies/µL] ") +geom_smooth()  + scale_color_manual(values = pnw_palette("Starfish",7)) +scale_fill_manual(values = pnw_palette("Starfish",7)) +xlab("Date") 
+
+ ggsave(file = here::here("analysis", "figures", "Fig_14_qPCR_overtime_kenai.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+```{r}
+
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>% 
+ggplot(aes(x=Sample_date, y=log(Quantity+0.1),color=`Target Name`, fill=`Target Name`)) + geom_count()+ geom_smooth()+ facet_wrap(`Target Name`~., scale="free", ncol=2,strip.position = "top") +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))  + ylab("log(DNA Concentration [copies/µL] +0.1)") +geom_smooth()  + scale_color_manual(values = pnw_palette("Starfish",7)) +scale_fill_manual(values = pnw_palette("Starfish",7)) +xlab("Date") 
+
+ ggsave(file = here::here("analysis", "figures", "Fig_15_log_qPCR_overtime_kenai.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+    qPCR_4_k / nReads_4_k  / index_scores_4_k + plot_layout(guides = "collect")+plot_annotation( title = 'qPCR vs. Reads vs. eDNA Index',
+  subtitle = 'Kenai River')
+  
+ ggsave(file = here::here("analysis", "figures", "Fig_16_qPCR_vs_nReads_vs_index_kenai.png"),
+  width = 30,
+  height = 14
+  )
+```
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+    qPCR_4_k_log / nReads_4_k_log  / index_scores_4_k + plot_layout(guides = "collect")+plot_annotation( title = 'qPCR vs. Reads vs. eDNA Index',
+  subtitle = 'Kenai River')
+  
+ ggsave(file = here::here("analysis", "figures", "Fig_17_log_qPCR_vs_nReads_vs_index_kenai.png"),
+  width = 30,
+  height = 18
+  )
+```
+
+### Twentymile
+```{r}
+
+combo_4_species %>% 
+  filter(., River %in% c("Twentymile")) %>% 
+ggplot(aes(x=Sample_date, y=Quantity,color=`Target Name`)) + geom_count()+  facet_wrap(`Target Name`~River, scale="free", ncol=8) + 
+  ggtitle('qPCR')+ theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16),axis.line = element_line(colour = "grey50"))  + scale_color_manual(values = pnw_palette("Cascades",7)) +scale_fill_manual(values = pnw_palette("Cascades",7)) +xlab("Date")+ ylab("qPCR DNA Concentration [copies/µL] ")-> qPCR_4_t
+
+
+combo_4_species %>% 
+  filter(., River %in% c("Twentymile")) %>% 
+ggplot(aes(x=Sample_date, y=nReads,color=`Target Name`)) + geom_count()+ facet_wrap(`Target Name`~River, scale="free", ncol=8) + 
+  ggtitle('nReads') + theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16),axis.line = element_line(colour = "grey50"))  + scale_color_manual(values = pnw_palette("Cascades",7)) +scale_fill_manual(values = pnw_palette("Cascades",7)) +xlab("Date") + ylab("Metabarcoding Read Counts ")-> nReads_4_t
+
+combo_4_species %>% 
+  filter(., River %in% c("Twentymile")) %>% 
+ggplot(aes(x=Sample_date, y=index_scores,color=`Target Name`)) + geom_count()+  facet_wrap(`Target Name`~River, scale="free", ncol=8) + 
+  ggtitle('eDNA Index') +ylab("eDNA Index")+ theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16),axis.line = element_line(colour = "grey50"))  + scale_color_manual(values = pnw_palette("Cascades",7)) +scale_fill_manual(values = pnw_palette("Cascades",7)) +xlab("Date") +ylab("Metabarcoding eDNA Index")-> index_scores_4_t
+
+combo_4_species %>% 
+  filter(., River %in% c("Twentymile")) %>% 
+ggplot(aes(x=Sample_date, y=prop_reads,color=`Target Name`)) + geom_count()+  facet_wrap(`Target Name`~River, scale="free", ncol=8) + 
+  ggtitle('Proportion') +ylab("Proportion")+ theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16),axis.line = element_line(colour = "grey50"))  + scale_color_manual(values = pnw_palette("Cascades",7)) +scale_fill_manual(values = pnw_palette("Cascades",7)) +xlab("Date") +ylab("Proportion")-> prop_4_t
+```
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+    qPCR_4_t / nReads_4_t  / index_scores_4_t /prop_4_t+ plot_layout(guides = "collect")+plot_annotation( title = 'qPCR vs. Reads vs. eDNA Index',
+  subtitle = 'Twentmile River',)
+  
+ ggsave(file = here::here("analysis", "figures", "Fig_18_qPCR_vs_nReads_vs_index_twentymile.png"),
+  width = 30,
+  height = 14
+  )
+```
+
+
+
+# Beluga Detections
+
+
+```{r}
+beluga_visual_3 <- readRDS(here("analysis","beluga_visual_3.RDS"))
+
+  beluga_visual_3 %>% 
+    ungroup() %>% 
+    filter(., Site.Name !="The Point at Alaska Wildlife Conservation Center") %>%   ggplot(., aes(x=Sample_date, y=Were.belugas.observed.during.the.monitoring.session., colour=Were.belugas.observed.during.the.monitoring.session.)) + geom_point(shape = "|", size = 7) + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("Beluga Observed by AKBMP") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_grid(Site.Name~., scales = "free") + theme(legend.position="none")
+  
+  
+ ggsave(file = here::here("analysis", "figures", "Fig_19_visual_presence_absence.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+```{r}
+
+
+  beluga_visual_3 %>% 
+  ggplot(., aes(x=Sample_date, y=max_group_size, colour=Were.belugas.observed.during.the.monitoring.session.)) + geom_point() + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1)) + facet_wrap(Depth~Site) + ylab("Max Group Size Observed by AKBMP") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed"))  +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_grid(Site.Name~., scales = "free")
+
+
+ ggsave(file = here::here("analysis", "figures", "Fig_20_visual_abudnance.png"),
+  width = 12,
+  height = 8
+  )
+ 
+ 
+```
+
+### Kenai River
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+  beluga_long %>% 
+    mutate(., Method = "Metabarcoding") %>% 
+  filter(., Site=="Bridge" | Site=="Dock") %>% 
+  unite( Site,Depth,Sample_date, col= "Station", remove=F)  ->
+    beluga_meta_plot_kenai
+  
+    beluga_meta_plot_kenai %>% 
+          mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores)) + geom_count() +     scale_size_continuous(breaks = c(1,3,6,9,18))+
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1)) + facet_wrap(Depth~Site) + ylab("eDNA Index Score") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +scale_color_manual(values = pnw_palette("Starfish",7)
+) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) 
+  
+   
+ ggsave(file = here::here("analysis", "figures", "Fig_21_Kenai_Beluga_detection_metabarcoding_stations.png"),
+  width = 12,
+  height = 8
+  )
+
+
+```
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>%  
+  filter(., `Target Name`=="Beluga") %>% 
+ggplot(aes(x=Sample_date, y=log(Quantity+0.01))) + geom_count() + 
+  ggtitle('qPCR')+ theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))   +xlab("Date")+scale_x_date(limits = as.Date(c("2020-10-01","2021-12-01"))) -> qPCR_beluga_plot
+
+
+combo_4_species %>% 
+  filter(., River %in% c("Kenai")) %>% 
+  filter(., `Target Name`=="Beluga") %>% 
+  ggplot(aes(x=Sample_date, y=index_scores)) + geom_count() + 
+  ggtitle('nReads') +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))   +xlab("Date")+scale_x_date(limits = as.Date(c("2020-10-01","2021-12-01"))) -> index_beluga_plot
+
+beluga_visual_3 %>% 
+  filter(., Site.Name=="Kenai River") %>% 
+  ggplot(., aes(x=Sample_date,y=max_group_size, color=Were.belugas.observed.during.the.monitoring.session.)) + geom_point() + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("Beluga Observed by AKBMP") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +scale_color_manual(values = c(pnw_palette("Mushroom",2)[1],pnw_palette("Lake",8)[3]
+)) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) +scale_x_date(limits = as.Date(c("2020-10-01","2021-12-01"))) -> visual_beluga_plot
+```
+
+
+```{r}
+
+visual_beluga_plot / qPCR_beluga_plot / index_beluga_plot + plot_layout(guides = "collect")+plot_annotation( title = 'Methods Comparison of Beluga Detection',
+  subtitle = 'Kenai River')
+   
+ ggsave(file = here::here("analysis", "figures", "Fig_20_Kenai_Beluga_detection_comparison.png"),
+  width = 12,
+  height = 8
+  )
+
+
+```
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+combo_4_species$River %>%  unique()
+library(scales)
+
+
+breaks <- c(0,1,5,25,50,100)
+
+combo_4_species %>% 
+  filter(., River %in% c("Twentymile")) %>%  
+  filter(., `Target Name`=="Beluga") %>% 
+ggplot(aes(x=Sample_date, y=Quantity)) + geom_count() + theme_bw() +
+  ggtitle('qPCR')+ theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))   +xlab("Date") + scale_y_continuous(trans=scales::pseudo_log_trans(base = 10), breaks=breaks) -> qPCR_beluga_plot_20m
+
+
+combo_4_species %>% 
+  filter(., River %in% c("Twentymile")) %>% 
+  filter(., `Target Name`=="Beluga") %>% 
+  ggplot(aes(x=Sample_date, y=index_scores)) + geom_count() + theme_bw() +
+  ggtitle('Metabarcoding eDNA Index') +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))   +xlab("Date") -> index_beluga_plot_20m
+
+beluga_visual_3 %>% 
+  filter(., Site.Name=="Twentymile River") %>% 
+  ggplot(., aes(x=Sample_date, y=max_group_size, color=Were.belugas.observed.during.the.monitoring.session.)) + geom_count() + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("Visual Obs.") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +scale_color_manual(values = c(pnw_palette("Mushroom",2)[1],pnw_palette("Lake",8)[3]
+)) +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))    + 
+  ggtitle('Visual 20m')-> visual_beluga_plot_20m
+
+beluga_visual_3 %>% 
+  filter(., Site.Name=="MM 95.3 Pullout") %>% 
+  ggplot(., aes(x=Sample_date, y=max_group_size, color=Were.belugas.observed.during.the.monitoring.session.)) + geom_count() + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("Visual Obs.") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +scale_color_manual(values = c(pnw_palette("Mushroom",2)[1],pnw_palette("Lake",8)[3]
+)) +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))    + 
+  ggtitle('Visual MM 95.3 Pullout') -> beluga_plot_20m_bird
+
+
+
+combo_4_species %>% 
+  filter(., River %in% c("Twentymile")) %>% 
+  filter(., `Target Name`=="Beluga") %>% 
+  ggplot(., aes(x=Sample_date, y=Tide_height)) + geom_point() + 
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1))  + ylab("Tide (ft.)") + xlab("Date") +guides(color=guide_legend(title="Tide Height (ft.)"))  +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16))    + 
+  ggtitle('Tide Height (ft.)') -> tide_height_20m_bird
+
+```
+
+
+```{r}
+
+visual_beluga_plot_20m / beluga_plot_20m_bird/ qPCR_beluga_plot_20m / index_beluga_plot_20m + tide_height_20m_bird+plot_layout(guides = "collect")+plot_annotation( title = 'Methods Comparison of Beluga Detection',
+  subtitle = 'Twentymile River')
+   
+ ggsave(file = here::here("analysis", "figures", "Fig_22_Twentymile_Beluga_detection_comparison.png"),
+  width = 20,
+  height = 12
+  )
+
+
+```
+
+
+
+
+
+### Twenty Mile River
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+  beluga_long %>% 
+    mutate(., Method = "Metabarcoding") %>% 
+  filter(., Site=="Twentymile") %>% 
+  unite( Site,Depth,Sample_date, col= "Station", remove=F)  ->
+    beluga_meta_plot_20m
+  
+    beluga_meta_plot_20m %>% 
+          mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores)) + geom_count() +     scale_size_continuous(breaks = c(1,3,6,9,18)) + ylab("eDNA Index Score") + xlab("Date") +guides(color=guide_legend(title="Beluga Observed")) +scale_color_manual(values = pnw_palette("Starfish",7)
+) +theme(axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = "grey50")) 
+  
+   
+ ggsave(file = here::here("analysis", "figures", "Fig_20_Twentymile_Beluga_detection.png"),
+  width = 12,
+  height = 8
+  )
+
+
+```
+
+
+
+
+# All Species Time
+```{r}
+
+combined_data_long_reads_c %>% 
+  group_by(ID_mifish) %>% 
+  dplyr::summarise(sum=sum(nReads)) %>% 
+  filter(., sum > 0) -> species_to_use
+  
+combined_data_long_reads_c %>% 
+  group_by(ID_mifish) %>% 
+  filter(., nReads >0) %>% 
+    filter(., River =="Kenai") %>% 
+  count() -> kenai_detections
+  
+combined_data_long_reads_c %>% 
+    mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  mutate(., index_scores = replace_na(index_scores,0)) %>% 
+  filter(., River =="Kenai") %>% 
+  left_join(kenai_detections) %>% 
+ # filter(., n >3) %>% 
+  filter(., ID_mifish %in% species_to_use$ID_mifish) %>% 
+ggplot(aes(x=Sample_date, y=index_scores,color=ID_mifish)) + geom_point()+ geom_smooth()+ facet_wrap(ID_mifish~Family) +theme_bw() +theme(legend.position = "none")+ggtitle("Kenai")
+
+ ggsave(file = here::here("analysis", "figures", "Kenai_species_time.png"),
+  width = 20,
+  height = 20
+  )
+```
+ 
+```{r}
+
+combined_data_long_reads_c %>% 
+  group_by(ID_mifish) %>% 
+  filter(., nReads >0) %>% 
+    filter(., River =="Twentymile") %>% 
+  count() -> Twentymile_detections
+
+
+combined_data_long_reads_c %>% 
+    mutate(., Sample_date = as.Date(Sample_date,"%m/%d/%y")) %>% 
+  mutate(., index_scores = replace_na(index_scores,0)) %>% 
+  filter(., River =="Twentymile") %>% 
+   left_join(Twentymile_detections) %>% 
+ # filter(., n >3) %>% 
+  filter(., ID_mifish %in% species_to_use$ID_mifish) %>% 
+ggplot(aes(x=Sample_date, y=index_scores,color=ID_mifish)) + geom_point()+ geom_smooth()+ facet_wrap(ID_mifish~Family) +theme_bw() +theme(legend.position = "none")+ggtitle("Twentymile")
+
+ ggsave(file = here::here("analysis", "figures", "20M_species_time.png"),
+  width = 20,
+  height = 20
+  )
+ 
+
+```
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+## Build All Method Phyloseq Object
+
+
+### ASV Reads
+combined_data_long_reads_c %>% 
+  filter(., River %in% c("Kenai","Twentymile")) %>%
+    filter(., Class!="Insecta") -> short_edna_v2
+
+short_edna_v2 %>% 
+  dplyr::select(sum.taxonomy) %>% 
+  distinct(.,sum.taxonomy) -> hashes_unique
+
+hashes_unique$number <- row.names(hashes_unique)
+hashes_unique$number <- paste0("taxon_",hashes_unique$number)
+row.names(hashes_unique)<-hashes_unique$number
+
+
+short_edna_v2 %>% 
+  left_join(hashes_unique) -> combined_data_long
+
+#Metadata
+combined_data_long %>% 
+  mutate(., Tech_rep= replace_na(Tech_rep,1) ) %>% 
+  dplyr::select(Sample,Seq_number,Depth,       Seq_number ,       Station ,                    Site,               Bio_rep,           Tech_rep,           Sample_date,River) %>% distinct() %>% as.data.frame-> sampledata
+
+rownames(sampledata) <- sampledata$Seq_number
+sample_data(sampledata) -> sampledata
+
+
+#TAX
+combined_data_long %>% 
+  dplyr::select(number,sum.taxonomy, Domain,Phylum,Class,Order,Family,Genus,Species,ID_mifish) %>%
+  distinct() -> taxonomy_table
+
+taxonomy_table %>% as.matrix() -> taxonomy_table_mat
+rownames(taxonomy_table_mat) <- taxonomy_table$number
+
+TAX = tax_table(taxonomy_table_mat)
+
+#ASV table
+combined_data_long %>% 
+  filter(., !is.na(index_scores)) %>% 
+  dplyr::select(number, Seq_number, index_scores) %>% 
+  pivot_wider(names_from = "Seq_number", values_from = "index_scores", values_fill = 0) -> combined_wide
+
+combined_wide %>% 
+  dplyr::select(-number) %>% as.matrix() -> otu_table
+rownames(otu_table) <- combined_wide$number
+
+OTU = otu_table(otu_table, taxa_are_rows = TRUE)
+physeq_obj = phyloseq(OTU, TAX, sampledata)
+```
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+physeq_obj = prune_taxa(taxa_sums(physeq_obj) > 0, physeq_obj) 
+physeq_obj = prune_samples(sample_sums(physeq_obj)>0, physeq_obj) 
+
+```
+
+<br />
+<br />
+<br />
+\newpage
+
+### PERMANOVA
+
+
+```{r,echo=FALSE,warning=FALSE}
+#Betadiversity
+#Generate Vegan formatted data table
+method.sampledf <- data.frame(sample_data(physeq_obj))
+method.rel_abun<- vegan_otu(physeq_obj)
+
+#Jaccard dissimilarity matrix
+method.d_carn <- vegdist(method.rel_abun, method="bray")
+
+#PERMANOVA: Method+Site
+method.adonis_results <- adonis2(method.rel_abun~Sample_date+Site+Depth + Sample_date*Site*Depth, data=method.sampledf)
+method.adonis_results
+```
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#Homogeneity of Dispersions test...Sample_date
+betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")) 
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")))
+broom::tidy(TukeyHSD(betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")))) 
+
+#Homogeneity of Dispersions test... Tide_height 
+betadisper(method.d_carn, getElement(method.sampledf, "Site"))
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Site")))
+```
+
+We find significant differences in vertebrate community assemblages across time and space. *We note that the latest Kenai Run includes samples that did not perform well and will be re run on the next sequencing run.
+
+<br />
+<br />
+
+### Ordination Clustering of Fish Communities
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#NMDS Ordination
+ord <- ordinate(physeq_obj, method = "NMDS", distance = ("bray"))
+
+##Plot_Ordination
+plot_ordination(physeq_obj, ord, "samples", color = "River", shape ="Site") +
+  ggtitle("NMDS Bray-Curtis Dissimilarity Method") + 
+  geom_point(size = 6) + 
+  theme_bw()+ 
+  theme(plot.title = element_text(hjust = 0.5,size = 24, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5,size = 18, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.text=element_text(size=16), 
+        axis.title=element_text(size=16,face="bold"),
+        legend.title = element_text( size=16, face="bold"),
+        legend.text = element_text(size=14)
+        ) + 
+  labs(shape = "Site", color = "Region") + 
+  stat_ellipse(geom = "path", type="norm", aes(group= Site),linetype = 2) +
+  scale_colour_manual(values=c(pnw_palette("Sunset", n=7)[c(1,4,7)], pnw_palette("Anemone", n=7)[c(1,2,3)]))
+
+
+ ggsave(file = here::here("analysis", "figures", "metabarcoding_all_samples.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#NMDS Ordination
+##Plot_Ordination
+plot_ordination(physeq_obj, ord, "samples", color = "Sample_date", shape ="River") +
+  ggtitle("NMDS Bray-Curtis Dissimilarity Method") + 
+  geom_point(size = 6) + 
+  theme_bw()+ 
+  theme(plot.title = element_text(hjust = 0.5,size = 24, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5,size = 18, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.text=element_text(size=16), 
+        axis.title=element_text(size=16,face="bold"),
+        legend.title = element_text( size=16, face="bold"),
+        legend.text = element_text(size=14)
+        ) + 
+  labs(shape = "Region", color = "Sample Date") + scale_fill_continuous()
+```
+We find a significant difference in assemblages across sites and time sampled. There appears to be a strong Winter/Spring vs. Summer/Fall clustering.
+
+<br />
+<br />
+
+\newpage
+
+
+### Kenai PERMANOVA
+
+
+```{r,echo=FALSE,warning=FALSE}
+physeq_obj_kenai= subset_samples(physeq_obj, River=="Kenai")
+physeq_obj_kenai = prune_taxa(taxa_sums(physeq_obj_kenai) > 0, physeq_obj_kenai) 
+#Betadiversity
+
+#Generate Vegan formatted data table
+method.sampledf <- data.frame(sample_data(physeq_obj_kenai))
+method.rel_abun<- vegan_otu(physeq_obj_kenai)
+
+#Jaccard dissimilarity matrix
+method.d_carn <- vegdist(method.rel_abun, method="bray")
+
+#PERMANOVA: Method+Site
+method.adonis_results <- adonis(method.rel_abun~Sample_date+Site + Depth+ Sample_date*Site + Sample_date*Site*Depth, data=method.sampledf)
+method.adonis_results
+
+adonis(method.rel_abun~Sample_date+Site + Depth  , data=method.sampledf)
+```
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#Homogeneity of Dispersions test...Sample_date
+betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")) 
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")))
+broom::tidy(TukeyHSD(betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")))) 
+
+#Homogeneity of Dispersions test... Tide_height 
+betadisper(method.d_carn, getElement(method.sampledf, "Site"))
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Site")))
+```
+
+### Ordination Clustering of Fish Communities
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#NMDS Ordination
+ord <- ordinate(physeq_obj_kenai, method = "NMDS", distance = ("bray"))
+
+##Plot_Ordination
+plot_ordination(physeq_obj_kenai, ord, "samples", color = "Sample_date", shape ="Site") +
+  scale_color_viridis_c(trans = "date")+
+  ggtitle("NMDS Bray-Curtis Dissimilarity Method") + 
+  geom_point(size = 6) + 
+  theme_bw()+ 
+  theme(plot.title = element_text(hjust = 0.5,size = 24, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5,size = 18, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.text=element_text(size=16), 
+        axis.title=element_text(size=16,face="bold"),
+        legend.title = element_text( size=16, face="bold"),
+        legend.text = element_text(size=14)
+        ) + 
+  labs(shape = "Site", color = "Sample_date") + 
+  stat_ellipse(geom = "path", type="norm", aes(group= Sample_date),linetype = 2) 
+
+
+
+ ggsave(file = here::here("analysis", "figures", "metabarcoding_kenai_date.png"),
+  width = 12,
+  height = 8
+  )
+
+```
+
+# Kenai Results
+
+### Salmon Observations
+
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+
+kenai_data_long_reads_c  %>%   filter(., Genus =="Oncorhynchus") %>% 
+  filter(., River =="Kenai") %>% 
+  mutate(., Species = case_when(str_detect(ID_mifish,"Oncorhynchus keta")~"Chum",
+         str_detect(ID_mifish,"Oncorhynchus nerka")~"Sockeye",
+str_detect(ID_mifish,"Oncorhynchus kisutch")~"Coho",
+str_detect(ID_mifish,"Oncorhynchus tshawytscha")~"Chinook",
+str_detect(ID_mifish,"Oncorhynchus gorbuscha")~"Pink")) %>% 
+  filter(., !is.na(Species)) -> salmon_data_kenai_plotting
+
+salmon_data_kenai_plotting %>% 
+  group_by(Sample_date, Species, Site) %>% 
+  dplyr::summarise(mean_index= mean(index_scores), sd_index= sd(index_scores)) -> mean_idx_salmon_kenai
+
+salmon_data_kenai_plotting %>% 
+  left_join(mean_idx_salmon_kenai) %>% 
+  ggplot(., aes(x=Sample_date, color=Species, fill=Species)) + geom_point(alpha=0.4, aes(y=index_scores)) + geom_point( aes(y=mean_index) , alpha=0.8,size=4)+
+  geom_errorbar(aes(ymin=mean_index-sd_index, ymax=mean_index+sd_index), width=.1) +
+  theme_bw() +
+  theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_wrap(Site~ Species, ncol=5) + 
+  ylab("eDNA Index Score")   + scale_color_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +scale_fill_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +xlab("Date")
+  
+
+ ggsave(file = here::here("analysis", "figures", "Salmon_run_kenai.png"),
+  width = 14,
+  height = 8
+  )
+```
+
+
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+salmon_data_kenai_plotting %>% 
+  group_by(Sample_date, Species, Site) %>% 
+  dplyr::summarise(mean_reads= mean(nReads), sd_reads= sd(nReads)) -> mean_reads_salmon_kenai
+
+salmon_data_kenai_plotting %>% 
+  left_join(mean_reads_salmon_kenai) %>% 
+  ggplot(., aes(x=Sample_date, color=Species, fill=Species)) + geom_point(alpha=0.4, aes(y=nReads)) + geom_point( aes(y=mean_reads) , alpha=0.8,size=4)+
+  geom_errorbar(aes(ymin=mean_reads-sd_reads, ymax=mean_reads+sd_reads), width=.1) +
+  theme_bw() +
+  theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_wrap(Site~ Species, ncol=5) + 
+  ylab("Read Counts")   + scale_color_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +scale_fill_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +xlab("Date")
+  
+  
+ ggsave(file = here::here("analysis", "figures", "Salmon_run_kenai_reads.png"),
+  width = 14,
+  height = 8
+  )
+```
+
+We see a large increase in Sockeye in July with a small concurrent increase in Chinook. Pink and Coho had higher abundances in Novemeber and December, potentially reflecting juvenile life stages.
+
+
+<br />
+<br />
+
+
+### Smelt Observations
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+
+kenai_data_long_reads_c  %>%   filter(., Family =="Osmeridae") %>% 
+  filter(., River =="Kenai") %>% 
+ mutate(., Species = case_when(str_detect(ID_mifish,"Thaleichthys pacificus")~"Eulachon",
+                                str_detect(ID_mifish,"Spirinchus thaleichthys")~"Longfin Smelt")) %>% 
+  filter(., !is.na(Species))-> smelt_data_kenai_plotting
+
+smelt_data_kenai_plotting %>% 
+  group_by(Sample_date, Species, Site) %>% 
+  dplyr::summarise(mean_index= mean(index_scores), sd_index= sd(index_scores)) -> mean_idx_smelt_kenai
+
+smelt_data_kenai_plotting %>% 
+  left_join(mean_idx_smelt_kenai) %>% 
+  ggplot(., aes(x=Sample_date, color=Species, fill=Species)) + geom_point(alpha=0.4, aes(y=index_scores)) + geom_point( aes(y=mean_index) , alpha=0.8,size=4)+
+  geom_errorbar(aes(ymin=mean_index-sd_index, ymax=mean_index+sd_index), width=.1) +
+  theme_bw() +
+  theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_wrap(Site~ Species, ncol=2) + 
+  ylab("eDNA Index Score")   +
+  scale_color_manual(values = c("grey40","grey20")) +scale_fill_manual(values = c("grey40","grey20")) +xlab("Date")
+  
+
+  
+ ggsave(file = here::here("analysis", "figures", "Smelt_run_kenai.png"),
+  width = 14,
+  height = 8
+  )
+```
+
+We see increases in Longfin smelt late in the year while Eulachon was predominantly only observed in May.
+<br />
+<br />
+
+
+### Exploring All Fish Species Ove Time
+
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+kenai_data_long_reads_c %>% 
+  filter(., River =="Kenai") %>% 
+  filter(., Class=="Actinopteri") %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=ID_mifish, fill= ID_mifish)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = "none") + facet_wrap(ID_mifish ~Site) + ylab("eDNA Index Score") +geom_smooth() 
+
+ggsave(file = here::here("analysis", "figures", "Kenai_Fish_Species_patterns.png"),
+  width = 12,
+  height = 8
+  )
+```
+### Transitions
+
+### Spring Transition
+```{r}
+
+beluga_visual_3
+kenai_data_long_reads_c$Sample_date %>%  unique() %>% sort()
+
+kenai_data_long_reads_c %>% 
+  filter(., Sample_date %in% c(  as.Date("2021-05-29"))) %>% View()
+  
+kenai_data_long_reads_c %>% 
+  filter(., River =="Kenai") %>% 
+  filter(., Class=="Actinopteri") %>% 
+  filter(., Sample_date %in% c(as.Date("2021-01-23"),as.Date("2021-02-26"), as.Date("2021-03-28"), as.Date("2021-04-24"), as.Date("2021-05-29"),  as.Date("2021-06-26"))) %>% mutate(., beluga_visual = case_when(Sample_date == as.Date("2021-03-28") ~"Beluga Present",
+                Sample_date == as.Date("2021-04-24") ~"Beluga Present", 
+                TRUE ~"Beluga Absent") ) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=beluga_visual, fill= beluga_visual)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = "none") + facet_wrap(ID_mifish~.) + ylab("eDNA Index Score") 
+
+
+```
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+kenai_data_long_reads_c %>% 
+  filter(., River =="Kenai") %>% 
+  filter(., Class=="Actinopteri") %>% 
+  filter(., Sample_date %in% c(as.Date("2020-11-14"), as.Date("2020-11-25"), as.Date("2020-12-28"), as.Date("2021-02-26"),  as.Date("2021-01-23"))) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=ID_mifish, fill= ID_mifish)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = "none") + facet_wrap(ID_mifish ~Site) + ylab("eDNA Index Score") +geom_smooth() 
+
+ggsave(file = here::here("analysis", "figures", "Kenai_Fish_Species_patterns.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+kenai_data_long_reads_c$Sample_date %>%  unique()
+
+kenai_data_long_reads_c %>% 
+  filter(., River =="Kenai") %>% 
+  filter(., Class=="Actinopteri") %>% 
+  filter(., Sample_date %in% c(as.Date("2021-02-26"), as.Date("2021-03-28"), as.Date("2021-04-24"), as.Date("2021-05-29"),  as.Date("2021-06-26"))) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=ID_mifish, fill= ID_mifish)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = "none") + facet_wrap(ID_mifish ~Site) + ylab("eDNA Index Score") +geom_smooth() 
+
+ggsave(file = here::here("analysis", "figures", "Kenai_Fish_Species_patterns.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+kenai_data_long_reads_c$Sample_date %>%  unique()
+
+kenai_data_long_reads_c %>% 
+  filter(., River =="Kenai") %>% 
+  filter(., Class=="Actinopteri") %>% 
+  filter(., Sample_date %in% c(as.Date("2021-06-26"), as.Date("2021-07-24"), as.Date("2021-08-08"), as.Date("2021-09-17"),  as.Date("2021-10-02"),
+as.Date("2021-11-14"))) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=ID_mifish, fill= ID_mifish)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = "none") + facet_wrap(ID_mifish ~Site) + ylab("eDNA Index Score") +geom_smooth() 
+
+ggsave(file = here::here("analysis", "figures", "Kenai_Fish_Species_patterns.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+## Build All Method Phyloseq Object
+
+
+### ASV Reads
+kenai_data_long_reads_c %>% 
+    filter(., Class!="Insecta") -> short_edna_v3
+
+short_edna_v3 %>% 
+  dplyr::select(sum.taxonomy) %>% 
+  distinct(.,sum.taxonomy) -> hashes_unique
+
+hashes_unique$number <- row.names(hashes_unique)
+hashes_unique$number <- paste0("taxon_",hashes_unique$number)
+row.names(hashes_unique)<-hashes_unique$number
+
+
+short_edna_v3 %>% 
+  left_join(hashes_unique) -> kenai_data_long
+
+#Metadata
+kenai_data_long %>% 
+  mutate(., Tech_rep= replace_na(Tech_rep,1) ) %>% 
+  dplyr::select(Sample,Seq_number,Depth,       Seq_number ,       Station ,                    Site,               Bio_rep,           Tech_rep,           Sample_date,Date_Sampled,River) %>% distinct() %>% as.data.frame-> sampledata
+
+rownames(sampledata) <- sampledata$Seq_number
+sample_data(sampledata) -> sampledata
+
+
+#TAX
+kenai_data_long %>% 
+  dplyr::select(number,sum.taxonomy, Domain,Phylum,Class,Order,Family,Genus,Species,ID_mifish) %>%
+  distinct() -> taxonomy_table
+
+taxonomy_table %>% as.matrix() -> taxonomy_table_mat
+rownames(taxonomy_table_mat) <- taxonomy_table$number
+
+TAX = tax_table(taxonomy_table_mat)
+
+#ASV table
+kenai_data_long %>% 
+  filter(., !is.na(index_scores)) %>% 
+  dplyr::select(number, Seq_number, index_scores) %>% 
+  pivot_wider(names_from = "Seq_number", values_from = "index_scores", values_fill = 0) -> kenai_wide
+
+kenai_wide %>% 
+  dplyr::select(-number) %>% as.matrix() -> otu_table
+rownames(otu_table) <- kenai_wide$number
+
+OTU = otu_table(otu_table, taxa_are_rows = TRUE)
+physeq_obj_kenai = phyloseq(OTU, TAX, sampledata)
+```
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+physeq_obj_kenai = prune_taxa(taxa_sums(physeq_obj_kenai) > 0, physeq_obj_kenai) 
+physeq_obj_kenai = prune_samples(sample_sums(physeq_obj_kenai)>0, physeq_obj_kenai) 
+
+```
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+physeq_obj_kenai = subset_samples(physeq_obj_kenai, Site=="Dock" | Site=="Bridge") 
+
+subset_taxa(physeq_obj_kenai, Class == "Actinopteri") -> physeq_obj_kenai
+filter_taxa(physeq_obj_kenai, function(x) mean(x) > 0, TRUE) -> physeq_obj_kenai
+physeq_obj_kenai = prune_samples(sample_sums(physeq_obj_kenai)>0, physeq_obj_kenai)
+
+```
+
+
+\newpage
+
+
+
+### PERMANOVA
+
+
+```{r,echo=FALSE,warning=FALSE}
+#Betadiversity
+#Generate Vegan formatted data table
+method.sampledf <- data.frame(sample_data(physeq_obj_kenai))
+method.rel_abun<- vegan_otu(physeq_obj_kenai)
+
+#Jaccard dissimilarity matrix
+method.d_carn <- vegdist(method.rel_abun, method="bray")
+
+#PERMANOVA: Method+Site
+method.adonis_results <- adonis(method.rel_abun~Site+Depth+Sample_date + Site*Sample_date, data=method.sampledf)
+method.adonis_results
+```
+
+We find a significant difference in eDNA signatures between the dock and bridge sites as well as across month sampled. We did not find a signficant difference between samples collected at the surface and at depth.
+
+<br />
+<br />
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#Homogeneity of Dispersions test...Sample_date
+betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")) 
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")))
+broom::tidy(TukeyHSD(betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")))) 
+
+#Homogeneity of Dispersions test... Tide_height 
+betadisper(method.d_carn, getElement(method.sampledf, "Site"))
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Site")))
+```
+
+### Mantel Test of Sample Date
+
+```{r Mantel Test, echo=FALSE,warning=FALSE}
+#Mantel Test
+
+#use edna_index_values as data frame
+method.sampledf$Sample_date <- as.Date(method.sampledf$Sample_date)
+dist.depth <- vegdist(method.sampledf$Sample_date, method = "euclidean")
+mantel_test <- mantel(method.d_carn, dist.depth, method = "spearman", permutations = 999)
+mantel_test
+```
+
+### NMDS
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#NMDS Ordination
+ord <- ordinate(physeq_obj_kenai, method = "NMDS", distance = ("bray"))
+
+##Plot_Ordination
+plot_ordination(physeq_obj_kenai, ord, "samples", color = "Depth", shape ="Site") +
+  ggtitle("NMDS Bray-Curtis Dissimilarity Method") + 
+  geom_point(size = 6) + 
+  theme_bw()+ 
+  theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5,size = 18, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.text=element_text(size=16), 
+        axis.title=element_text(size=16,face="bold"),
+        legend.title = element_text( size=16, face="bold"),
+        legend.text = element_text(size=14)
+        ) + 
+  labs(shape = "Site", color = "Site") + 
+  stat_ellipse(geom = "path", type="norm", aes(group= Site),linetype = 2) 
+```
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#NMDS Ordination
+ord <- ordinate(physeq_obj_kenai, method = "NMDS", distance = ("bray"))
+sample_data(physeq_obj_kenai)
+##Plot_Ordination
+plot_ordination(physeq_obj_kenai, ord, "samples", color = "Sample_date", shape ="Site") +
+  ggtitle("NMDS Bray-Curtis Dissimilarity Method") + 
+  geom_point(size = 6) + 
+  theme_bw()+ 
+  theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5,size = 18, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.text=element_text(size=16), 
+        axis.title=element_text(size=16,face="bold"),
+        legend.title = element_text( size=16, face="bold"),
+        legend.text = element_text(size=14)
+        ) + 
+  labs(shape = "Site", color = "Date Sampled") + 
+  stat_ellipse(geom = "path", type="norm", aes(group= Date_Sampled),linetype = 2) 
+```
+
+We observe weak clustering associated with site and date sampled. 
+
+
+
+
+### CAP Analysis
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#Run CAP analysis to identify predictor species
+all.vare.cap <- capscale(method.rel_abun ~ Site+Depth+Sample_date, data=method.sampledf, dist="bray")
+#Retain species scores
+sppscores(all.vare.cap) <- method.rel_abun
+as.data.frame(vegan::scores(all.vare.cap , display="species")) %>% 
+  rownames_to_column(var = "sample") %>% 
+  as.tibble %>%
+ mutate(dist = sqrt((CAP1 - 0)^2 + (CAP2 - 0)^2)) -> all.vare.cap_species_distances
+```
+
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE, fig.show='hide'}
+### Check For Break Point for Top Species
+
+all.species_distances <- as.data.frame(all.vare.cap_species_distances)
+rownames(all.species_distances) <- all.species_distances$sample
+# Now add the environmental variables as arrows
+all.arrowmat <- all.species_distances
+#Rename row names to clean up plot
+rownames(all.species_distances) %>% as.data.frame() -> all.namers
+
+rownames(all.arrowmat) <- all.namers$.
+# Add labels, make a data.frame
+all.arrowdf <- data.frame(labels = rownames(all.arrowmat), all.arrowmat)
+all.arrowdf %>% 
+arrange(desc(dist)) %>% 
+ggplot(., aes(x= reorder(labels, -dist), y=dist)) +
+  geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+all.vare.cap_species_distances %>% 
+  top_n(10, dist) -> all.top_species
+all.top_species <- data.frame(all.top_species)
+
+all.top_species %>% 
+  mutate(number=sample) %>% 
+  left_join(taxonomy_table) -> all.top_species
+rownames(all.top_species) <- all.top_species$ID_mifish
+# Now add the environmental variables as arrows
+all.arrowmat <- all.top_species
+#Rename row names to clean up plot
+rownames(all.top_species) %>% as.data.frame() -> all.namers
+rownames(all.arrowmat) <- all.namers$.
+# Add labels, make a data.frame
+all.arrowdf <- data.frame(labels = rownames(all.arrowmat), all.arrowmat)
+# Define the arrow aesthetic mapping
+all.arrow_map <- aes(xend = .75 * CAP1, 
+                 yend = .75 * CAP2, 
+                 x = 0, 
+                 y = 0, 
+                 shape = NULL, 
+                 color = NULL, 
+                 label = labels)
+all.label_map <- aes(x = 0.6 * CAP1, 
+                 y = 0.6 * CAP2, 
+                 shape = NULL, 
+                 color = NULL, 
+                 label = labels)
+all.arrowhead = arrow(length = unit(0.02, "npc"))
+#Hulls for each polygon
+all.test <- as.data.frame(all.vare.cap$CCA$wa)
+all.data.scores <- as.data.frame(scores(all.test))  
+#Using the scores function from vegan to extract the site scores and 
+# convert to a data.frame
+all.data.scores$Station <- method.sampledf$Station  
+# create a column of site names, from the rownames of data.scores
+#head(all.data.scores) 
+grp <- method.sampledf$Station
+
+all.data.scores$Station <- grp  #  add the grp variable created earlier
+#Add Method data
+grp <- method.sampledf$Station
+all.data.scores$Station <- grp  #  add the grp variable created earlier
+#### Calculate Shape Around Points
+
+all.data.scores %>% 
+  left_join(method.sampledf) %>% 
+  dplyr::select(-Bio_rep,-Sample) %>%  distinct() -> all.data.scores
+  
+
+# Plot CAP
+as.data.frame(all.vare.cap$CCA$wa) %>% 
+  rownames_to_column(var = "Seq_number") %>% 
+  as.tibble() %>% 
+  left_join(method.sampledf, by=c("Seq_number")) -> all.data_cap
+
+
+ all.data_cap %>% 
+  ggplot(aes(x=CAP1, y=CAP2)) + geom_point(aes(col=Sample_date, shape=Depth), size =3)  + geom_segment(
+    mapping = all.arrow_map, 
+    size = .5, 
+    data = all.arrowdf, 
+    color = "grey", 
+    arrow = all.arrowhead
+  ) +
+  geom_text(
+    mapping = all.label_map, 
+    size = 5,  
+    data = all.arrowdf, 
+    show.legend = FALSE,
+    position=position_jitter(width=0.08,height=0.08)
+    ) + 
+  ggtitle("Constrained Analysis of Principal Components", subtitle = "Top 10 Predictor Species") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),  panel.border = element_rect(colour = "black", fill=NA, size=2)) +
+  theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),
+        axis.text=element_text(size=14),
+        axis.title=element_text(size=16,face="bold"),
+        legend.title=element_text(size=14),
+        legend.text=element_text(size=12),
+        plot.subtitle = element_text(size=18, hjust = 0.5),
+        legend.spacing.y = unit(0.2, 'cm'), 
+        legend.key = element_rect(size = 10),
+        legend.key.size = unit(2, 'lines')) +
+    xlab("CAP2 (8.2%)") + ylab("CAP1 (2%)") 
+ 
+ 
+ggsave(file = here::here("analysis", "figures", "Kenai_CAP.png"),
+  width = 12,
+  height = 8
+  )
+
+```
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE, fig.show='hide'}
+#Constrained Analysis of Principle Components
+all.cap_ord <- ordinate(
+  physeq = physeq_obj_kenai,
+  method = "CAP",
+  distance = method.d_carn,
+  formula = ~ Site+Depth+Sample_date
+)
+#Results of model
+anova(all.cap_ord)
+all.cap_plot <- plot_ordination(
+  physeq = physeq_obj,
+  ordination = all.cap_ord,
+  color = "Site",
+  axes = c(1,2)) +
+  aes(shape = Site) 
+all.cap_plot
+#Percentages:
+#CAP1 - 8.2%
+#CAP2 - 2%
+  
+```
+
+<br />
+<br />
+<br />
+<br />
+
+
+\newpage
+
+
+```{r}
+combined_data_long_kenai_only_reads
+
+
+```
+
+
+#  Twentymile Only
+
+### Salmon Observations
+
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+data_long_reads_c_20m  %>%   filter(., Genus =="Oncorhynchus") %>% 
+  filter(., River =="Twentymile") %>% 
+  mutate(., Species = case_when(str_detect(ID_mifish,"Oncorhynchus keta")~"Chum",
+         str_detect(ID_mifish,"Oncorhynchus nerka")~"Sockeye",
+str_detect(ID_mifish,"Oncorhynchus kisutch")~"Coho",
+str_detect(ID_mifish,"Oncorhynchus tshawytscha")~"Chinook",
+str_detect(ID_mifish,"Oncorhynchus gorbuscha")~"Pink")) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=Species, fill=Species)) + geom_point() +
+  theme_bw() +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_wrap(Species ~., ncol=5) + ylab("eDNA Index Score") +geom_smooth() +
+  annotate("rect", xmin = as.Date("2021-08-24"), xmax = as.Date("2021-10-21"), ymin = 0, ymax = 1, alpha = .2,fill ="darkred") + scale_color_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +scale_fill_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +xlab("Date")
+  
+ ggsave(file = here::here("analysis", "figures", "Salmon_run_20mile.png"),
+  width = 14,
+  height = 8
+  )
+```
+
+
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+ data_long_reads_c_20m %>% 
+mutate(., Species = case_when(str_detect(ID_mifish,"Oncorhynchus keta")~"Chum",
+         str_detect(ID_mifish,"Oncorhynchus nerka")~"Sockeye",
+str_detect(ID_mifish,"Oncorhynchus kisutch")~"Coho",
+str_detect(ID_mifish,"Oncorhynchus tshawytscha")~"Chinook",
+str_detect(ID_mifish,"Oncorhynchus gorbuscha")~"Pink"))
+
+
+
+combined_data_long_reads_c %>% 
+  filter(., str_detect(sum.taxonomy,"Esox lucius")) %>% 
+  filter(., nReads >0)
+
+combined_data_long_reads_c  %>%  
+  filter(., River =="Kenai")-> kenai_play
+
+kenai_play %>% 
+  filter(., str_detect(sum.taxonomy,"Delphinapterus leucas")) %>% 
+  dplyr::select(Seq_number, Beluga_reads=nReads) -> beluga_k
+
+kenai_play %>% 
+  filter(., nReads >0) %>% 
+  group_by(sum.taxonomy) %>% 
+  dplyr::summarise(count=n()) %>% 
+  filter(., count >60) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=Species, fill=Species)) + geom_point() +
+  theme_bw() +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_wrap(Species ~., ncol=5) + ylab("eDNA Index Score") +geom_smooth() +
+  annotate("rect", xmin = as.Date("2021-08-24"), xmax = as.Date("2021-10-21"), ymin = 0, ymax = 1, alpha = .2,fill ="darkred") + scale_color_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +scale_fill_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +xlab("Date")
+  
+ ggsave(file = here::here("analysis", "figures", "Salmon_run_Kenai.png"),
+  width = 14,
+  height = 8
+  )
+```
+
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+combo_4_species  %>%  
+  filter(., River =="Twentymile") %>% 
+  mutate(., Species =`Target Name`) %>% 
+  ggplot(., aes(x=Sample_date, y=Quantity, color=Species, fill=Species)) + geom_point() +
+  theme_bw() +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_wrap(Species ~., ncol=5) + ylab("DNA Concentration +1") +geom_smooth() +
+  annotate("rect", xmin = as.Date("2021-08-24"), xmax = as.Date("2021-10-21"), ymin = 0, ymax = 10, alpha = .2,fill ="darkred") + scale_color_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +scale_fill_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +xlab("Date")
+  
+ ggsave(file = here::here("analysis", "figures", "Salmon_run_20mile_qPCR.png"),
+  width = 14,
+  height = 8
+  )
+```
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+data_long_reads_c_20m  %>%   filter(., Genus =="Oncorhynchus") %>% 
+  filter(., Site =="Twentymile") %>% 
+  mutate(., Species = case_when(str_detect(ID_mifish,"Oncorhynchus keta")~"Chum",
+         str_detect(ID_mifish,"Oncorhynchus nerka")~"Sockeye",
+str_detect(ID_mifish,"Oncorhynchus kisutch")~"Coho",
+str_detect(ID_mifish,"Oncorhynchus tshawytscha")~"Chinook",
+str_detect(ID_mifish,"Oncorhynchus gorbuscha")~"Pink")) %>% 
+  group_by(Species,Sample_date) %>% 
+  dplyr::summarise(mean_index_scores=mean(index_scores), max=max(index_scores), min=min(index_scores)) %>% 
+  ggplot(., aes(x=Sample_date, y=mean_index_scores, color=Species, fill=Species)) + geom_point(size=5) + geom_errorbar(aes(x=Sample_date, ymin=min, ymax=max, color=Species, fill=Species))+
+  theme_bw() +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16)) + facet_wrap(Species ~., ncol=5) + ylab("eDNA Index Score") +geom_smooth() +
+  annotate("rect", xmin = as.Date("2021-08-24"), xmax = as.Date("2021-10-21"), ymin = 0, ymax = 1, alpha = .2,fill ="darkred") + scale_color_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +scale_fill_manual(values = c("#efb28c","#958f73","grey50","#fa8775","#acc4ac")) +xlab("Date")
+  
+ ggsave(file = here::here("analysis", "figures", "Salmon_run_20mile_mean.png"),
+  width = 14,
+  height = 8
+  )
+```
+
+
+### Eulachon Observations
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+data_long_reads_c_20m  %>%   filter(., Genus =="Thaleichthys") %>% 
+  filter(., Site =="Twentymile") %>% 
+  mutate(., Species = case_when(str_detect(ID_mifish,"Thaleichthys pacificus")~"Eulachon")) %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=Species, fill=Species)) + geom_point() +
+  theme_bw() +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=18), axis.title = element_text(size=24), strip.text = element_text(size=24)) + facet_wrap(Species ~., ncol=5) + ylab("eDNA Index Score") +geom_smooth() +
+  scale_color_manual(values = c("grey30")) +scale_fill_manual(values = c("grey30")) +xlab("Date") +scale_x_date(date_breaks = "4 days", date_labels = "%b %d")
+  
+ ggsave(file = here::here("analysis", "figures", "Eulachon_run_20mile.png"),
+  width = 14,
+  height = 8
+  )
+```
+
+
+
+### All Species Over Time
+
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+data_long_reads_c_20m %>% 
+  filter(., ID_mifish=="Salmonidae")
+
+data_long_reads_c_20m %>% 
+  filter(., nReads >1000) %>% 
+  group_by(sum.taxonomy
+) %>% count() %>%  arrange(desc(`n`)) -> species_observed_often
+  
+data_long_reads_c_20m %>% 
+  filter(., Site =="Twentymile") %>% 
+  filter(., sum.taxonomy %in% species_observed_often$sum.taxonomy) -> eDNA_index_20m_plotting
+  
+saveRDS(eDNA_index_20m_plotting, here("analysis","eDNA_index_20m_plotting.RDS"))
+
+data_long_reads_c_20m %>% 
+  filter(., Site =="Twentymile") %>% 
+  filter(., sum.taxonomy %in% species_observed_often$sum.taxonomy) -> eDNA_index_20m_plotting
+  
+saveRDS(eDNA_index_20m_plotting, here("analysis","eDNA_index_20m_plotting.RDS"))
+
+eDNA_index_20m_plotting %>% 
+  ggplot(., aes(x=Sample_date, y=index_scores, color=ID_mifish, fill= ID_mifish)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = "none") + facet_wrap(ID_mifish ~.) + ylab("eDNA Index Score") +geom_smooth() +
+  annotate("rect", xmin = as.Date("2021-08-24"), xmax = as.Date("2021-10-21"), ymin = 0, ymax = 1, alpha = .2,fill ="darkred")
+
+
+data_long_reads_c_20m %>% 
+  filter(., Site =="Twentymile") %>% 
+  filter(., sum.taxonomy %in% species_observed_often$sum.taxonomy) %>% 
+  ggplot(., aes(x=Sample_date, y=nReads, color=ID_mifish, fill= ID_mifish)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = "none") + facet_wrap(ID_mifish ~., scales = "free") + ylab("eDNA Index Score") +geom_smooth() +
+  annotate("rect", xmin = as.Date("2021-08-24"), xmax = as.Date("2021-10-21"), ymin = 0, ymax = 1, alpha = .2,fill ="darkred")
+
+
+ggsave(file = here::here("analysis", "figures", "Twentymile_Species_patterns.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+
+
+### All Species vs. Tide Height
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+tm_combined_data_long %>% 
+  filter(., Site =="Twentymile") %>% 
+  ggplot(., aes(x=Tide_height, y=index_scores, color=ID_mifish, fill= ID_mifish)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1),legend.position = "none") + facet_wrap(ID_mifish ~.) + ylab("eDNA Index Score") +
+  geom_smooth()
+
+ggsave(file = here::here("analysis", "figures", "Twentymile_tidal_height.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+
+
+### Dog Only Observed at Highest of Tides
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+tm_combined_data_long %>% 
+  filter(., str_detect(ID_mifish,"Canis lupus")) %>% 
+  mutate(., Species = case_when(str_detect(ID_mifish,"Canis lupus")~"Dog")) %>% 
+  filter(., Site =="Twentymile") %>% 
+  ggplot(., aes(x=Tide_height, y=index_scores, color=Species, fill= Species)) + geom_point(size=3) +
+  theme_bw() +theme(legend.position = "none",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=18), axis.title = element_text(size=24), strip.text = element_text(size=24)) + facet_wrap(Species ~.) + ylab("eDNA Index Score") + geom_smooth(method="lm") + 
+  scale_fill_manual(values="#B40F20") + 
+  scale_colour_manual(values="#B40F20") +
+  stat_poly_eq(formula = y~x, 
+                aes(label = paste(..rr.label..,..p.value.label.., sep = "~~~")), 
+                parse = TRUE,
+               label.x = 1.5,
+  label.y = -0.1, p.digits =2, rr.digits = 2,size = 7) + xlab("Tidal Height")
+
+ggsave(file = here::here("analysis", "figures", "Twentymile_tidal_height_dog.png"),
+  width = 12,
+  height = 8
+  )
+```
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+tm_combined_data_long %>% 
+  filter(., Site =="Twentymile") %>% 
+  ggplot(., aes(x=Time_of_Collection, y=index_scores, color=ID_mifish, fill= ID_mifish)) + geom_point() +
+  theme_bw() +theme(axis.text.x = element_text(angle=30, hjust = 1)) + facet_wrap(ID_mifish ~.) + ylab("eDNA Index Score") +geom_smooth()
+
+
+ggsave(file = here::here("analysis", "figures", "Twentymile_Time_of_Collection.png"),
+  width = 12,
+  height = 8
+  )
+
+```
+
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+tm_combined_data_long %>% 
+  dplyr::select(sum.taxonomy) %>% 
+  distinct(.,sum.taxonomy) -> hashes_unique
+
+hashes_unique$number <- row.names(hashes_unique)
+hashes_unique$number <- paste0("taxon_",hashes_unique$number)
+row.names(hashes_unique)<-hashes_unique$number
+
+
+tm_combined_data_long %>% 
+  left_join(hashes_unique) -> tm_combined_data_long
+
+tm_combined_data_long$Date_Sampled %>%  unique()
+#Metadata
+tm_combined_data_long %>% 
+  dplyr::select(Sample,Seq_number,New_name ,          Seq_number ,       Station ,           Location,           Site,               Bio_rep,           Tech_rep,           Sample_date,        Extraction_set,     Sample_Control,     Control_Type,       High_Tide_.Time,    Tide_height,        Time_of_Collection,Beluga_Observed, Beluga, Date_Sampled ) %>% distinct() %>% as.data.frame-> sampledata
+
+sampledata$Bio_rep <- as.character(sampledata$Bio_rep)
+
+sampledata$Date_Sampled %>%  unique()
+sampledata$Date_Sampled <- factor(sampledata$Date_Sampled, levels = c("8/4",   "8/6" , "8/7"  ,"8/10" ,"8/12", "8/14","8/16", "8/18", "8/20", "8/23", "8/25", "8/26","9/3" ,  "9/19" , "9/26" , "10/3" , "10/15", "10/21" ,"11/7" , "11/11"))
+
+rownames(sampledata) <- sampledata$New_name
+sample_data(sampledata) -> sampledata
+
+#TAX
+tm_combined_data_long %>% 
+  dplyr::select(number,sum.taxonomy, Domain,Phylum,Class,Order,Family,Genus,Species,ID_mifish) %>%
+  distinct() -> taxonomy_table
+
+taxonomy_table %>% as.matrix() -> taxonomy_table_mat
+rownames(taxonomy_table_mat) <- taxonomy_table$number
+
+TAX = tax_table(taxonomy_table_mat)
+
+#ASV table
+tm_combined_data_long %>% 
+  dplyr::select(number, New_name, index_scores) %>% 
+  pivot_wider(names_from = "New_name", values_from = "index_scores") %>% 
+  replace(is.na(.), 0)-> combined_wide
+
+combined_wide %>% 
+  dplyr::select(-number) %>% as.matrix() -> otu_table
+rownames(otu_table) <- combined_wide$number
+
+OTU = otu_table(otu_table, taxa_are_rows = TRUE)
+physeq_obj = phyloseq(OTU, TAX, sampledata)
+```
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+subset_samples(physeq_obj, Site=="Twentymile") -> physeq_obj_20M
+subset_taxa(physeq_obj_20M, Class == "Actinopteri") -> physeq_obj_20M_fish
+
+
+```
+
+
+### PERMANOVA
+
+
+```{r,echo=FALSE,warning=FALSE}
+#Betadiversity
+#Generate Vegan formatted data table
+method.sampledf <- data.frame(sample_data(physeq_obj_20M_fish)) 
+method.rel_abun<- vegan_otu(physeq_obj_20M_fish)
+
+#Jaccard dissimilarity matrix
+method.d_carn <- vegdist(method.rel_abun, method="bray")
+
+#PERMANOVA: Method+Site
+method.adonis_results <- vegan::adonis(method.rel_abun~Sample_date+Bio_rep, data=method.sampledf)
+method.adonis_results
+
+
+```
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#Homogeneity of Dispersions test...Sample_date
+betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")) 
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")))
+broom::tidy(TukeyHSD(betadisper(method.d_carn, getElement(method.sampledf, "Sample_date")))) 
+
+#Homogeneity of Dispersions test... Tide_height 
+betadisper(method.d_carn, getElement(method.sampledf, "Tide_height"))
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Tide_height")))
+
+#Homogeneity of Dispersions test... Beluga_Observed 
+betadisper(method.d_carn, getElement(method.sampledf, "Beluga_Observed"))
+anova(betadisper(method.d_carn, getElement(method.sampledf, "Beluga_Observed")))
+```
+
+
+\newpage
+
+
+
+### NMDS
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+#NMDS Ordination
+ord <- ordinate(physeq_obj_20M_fish, method = "NMDS", distance = ("bray"))
+
+myBreaks <- function(x){
+    breaks <- c(min(x),median(x),max(x))
+    attr(breaks,"labels") <- as.Date(breaks, origin="1970-01-01")
+    names(breaks) <- attr(breaks,"labels")
+    return(breaks)
+    
+    
+}
+pnw_palette("Anemone", n=7)-> anemone
+pnw_palette("Sunset2", n=5)-> sunset
+pnw_palette("Cascades", n=6)-> cascades
+pnw_palette("Winter", n=8)-> winter
+
+
+
+##Plot_Ordination
+plot_ordination(physeq_obj_20M_fish, ord, "samples", color="Sample_date")  +
+  scale_color_viridis_c()+
+  geom_point(size = 6) + 
+  theme_bw()+ 
+  theme(plot.title = element_text(hjust = 0.5,size = 24, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5,size = 22, face = "bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.text=element_text(size=20), 
+        axis.title=element_text(size=20,face="bold"),
+        legend.title = element_text( size=20, face="bold"),
+        legend.text = element_text(size=18)
+        ) + 
+  labs(color = "Date",linetype="Sample_date" ) 
+
+
+ggsave(file = here::here("analysis", "figures", "Twentymile_NMDS_beluga.png"),
+  width = 12,
+  height = 8
+  )
+
+
+
+```
+
+
+### CAP Analysis
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE, fig.show='hide'}
+#Run CAP analysis to identify predictor species
+all.vare.cap <- capscale(method.rel_abun ~ Sample_date+Bio_rep, data=method.sampledf, dist="bray")
+#Retain species scores
+sppscores(all.vare.cap) <- method.rel_abun
+as.data.frame(vegan::scores(all.vare.cap , display="species")) %>% 
+  rownames_to_column(var = "sample") %>% 
+  as.tibble %>%
+ mutate(dist = sqrt((CAP1 - 0)^2 + (CAP2 - 0)^2)) -> all.vare.cap_species_distances
+```
+
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE,fig.show='hide'}
+### Check For Break Point for Top Species
+
+all.species_distances <- as.data.frame(all.vare.cap_species_distances)
+rownames(all.species_distances) <- all.species_distances$sample
+# Now add the environmental variables as arrows
+all.arrowmat <- all.species_distances
+#Rename row names to clean up plot
+rownames(all.species_distances) %>% as.data.frame() -> all.namers
+
+rownames(all.arrowmat) <- all.namers$.
+# Add labels, make a data.frame
+all.arrowdf <- data.frame(labels = rownames(all.arrowmat), all.arrowmat)
+all.arrowdf %>% 
+arrange(desc(dist)) %>% 
+ggplot(., aes(x= reorder(labels, -dist), y=dist)) +
+  geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+
+
+
+```{r,fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+all.vare.cap_species_distances %>% 
+  top_n(9, dist) -> all.top_species
+all.top_species <- data.frame(all.top_species)
+
+all.top_species %>% 
+  mutate(number=sample) %>% 
+  left_join(taxonomy_table) %>% 
+   mutate(., Species = case_when(str_detect(ID_mifish,"Oncorhynchus keta")~"Chum",
+         str_detect(ID_mifish,"Oncorhynchus nerka")~"Sockeye",
+str_detect(ID_mifish,"Oncorhynchus kisutch")~"Coho",
+str_detect(ID_mifish,"Oncorhynchus tshawytscha")~"Chinook",
+str_detect(ID_mifish,"Oncorhynchus gorbuscha")~"Pink",
+str_detect(ID_mifish,"Salvelinus malma")~"Dolly Varden",
+str_detect(ID_mifish,"Salvelinus alpinus")~"Arctic Char",
+str_detect(ID_mifish,"Thaleichthys pacificus")~"Eulachon",
+str_detect(ID_mifish,"Hippoglossus stenolepis")~"Pacific Halibut",
+str_detect(ID_mifish,"Cottus")~"Sculpin sp.",
+str_detect(ID_mifish,"Pungitius pungitius")~"Ninespine stickleback",
+str_detect(ID_mifish,"Salmonidae")~"Salmonidae"
+)) -> all.top_species
+
+rownames(all.top_species) <- all.top_species$Species
+# Now add the environmental variables as arrows
+all.arrowmat <- all.top_species
+
+all.arrowmat 
+#Rename row names to clean up plot
+rownames(all.top_species) %>% as.data.frame() -> all.namers
+rownames(all.arrowmat) <- all.namers$.
+# Add labels, make a data.frame
+all.arrowdf <- data.frame(labels = rownames(all.arrowmat), all.arrowmat)
+# Define the arrow aesthetic mapping
+all.arrow_map <- aes(xend = .75 * CAP1, 
+                 yend = .75 * CAP2, 
+                 x = 0, 
+                 y = 0, 
+                 shape = NULL, 
+                 color = NULL, 
+                 label = labels)
+all.label_map <- aes(x = 0.6 * CAP1, 
+                 y = 0.6 * CAP2, 
+                 shape = NULL, 
+                 color = NULL, 
+                 label = labels)
+all.arrowhead = arrow(length = unit(0.02, "npc"))
+#Hulls for each polygon
+all.test <- as.data.frame(all.vare.cap$CCA$wa)
+all.data.scores <- as.data.frame(scores(all.test))  
+#Using the scores function from vegan to extract the site scores and 
+# convert to a data.frame
+all.data.scores$Station <- method.sampledf$Station  
+# create a column of site names, from the rownames of data.scores
+#head(all.data.scores) 
+grp <- method.sampledf$Station
+
+all.data.scores$Station <- grp  #  add the grp variable created earlier
+#Add Method data
+grp <- method.sampledf$Beluga_Observed
+all.data.scores$Beluga_Observed <- grp  #  add the grp variable created earlier
+#### Calculate Shape Around Points
+
+method.sampledf2 <- method.sampledf %>% 
+  rownames_to_column(var = "New_name")
+# Plot CAP
+as.data.frame(all.vare.cap$CCA$wa) %>% 
+  rownames_to_column(var = "New_name") %>% 
+  as.tibble() %>% 
+  left_join(method.sampledf2, by=c("New_name")) -> all.data_cap
+
+
+ all.data_cap %>% 
+  ggplot(aes(x=CAP1, y=CAP2)) + geom_point(aes(col=Sample_date), size =3)  + geom_segment(
+    mapping = all.arrow_map, 
+    size = .5, 
+    data = all.arrowdf, 
+    color = "grey", 
+    arrow = all.arrowhead
+  ) +
+  geom_text(
+    mapping = all.label_map, 
+    size = 10,  
+    data = all.arrowdf, 
+    show.legend = FALSE,
+    position=position_jitter(width=0.12,height=0.2)
+    ) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),  panel.border = element_rect(colour = "black", fill=NA, size=2)) +
+  scale_shape_manual(values=c(8, 14, 12, 0, 11, 9, 7, 5, 2, 4, 6, 1, 13, 10, 16, 15, 17, 18,3,19), guide = 'none') + 
+  theme(plot.title = element_text(hjust = 0.5,size = 20, face = "bold"),
+        axis.text=element_text(size=18),
+        axis.title=element_text(size=20,face="bold"),
+        legend.title=element_text(size=18),
+        legend.text=element_text(size=18),
+        plot.subtitle = element_text(size=18, hjust = 0.2),
+        legend.spacing.y = unit(0.2, 'cm'), 
+        legend.key = element_rect(size = 18),
+        legend.key.size = unit(2, 'lines')) +
+    ylab("CAP2 (1.1%)") + xlab("CAP1 (43.8%)") 
+ 
+ggsave(file = here::here("analysis", "figures", "Twentymile_CAP.png"),
+  width = 14,
+  height = 8
+  )
+
+```
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE, fig.show='hide'}
+#Constrained Analysis of Principle Components
+all.cap_ord <- ordinate(
+  physeq = physeq_obj_20M,
+  method = "CAP",
+  distance = method.d_carn,
+  formula = ~ Sample_date+Bio_rep
+)
+#Results of model
+anova(all.cap_ord)
+all.cap_plot <- plot_ordination(
+  physeq = physeq_obj_20M,
+  ordination = all.cap_ord,
+  color = "Station",
+  axes = c(1,2))  
+all.cap_plot
+#Percentages:
+#CAP1 - 24.7%
+#CAP2 - 13.2%
+  
+```
+
+### Mantel Test of Sample Date
+
+```{r Mantel Test, echo=FALSE,warning=FALSE}
+#Mantel Test
+
+#use edna_index_values as data frame
+method.sampledf$Sample_date <- as.Date(method.sampledf$Sample_date)
+dist.depth <- vegdist(method.sampledf$Sample_date, method = "euclidean")
+mantel_test <- mantel(method.d_carn, dist.depth, method = "spearman", permutations = 999)
+mantel_test
+```
+
+### Transition
+
+```{r, fig.height = 8, fig.width = 14,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+
+```

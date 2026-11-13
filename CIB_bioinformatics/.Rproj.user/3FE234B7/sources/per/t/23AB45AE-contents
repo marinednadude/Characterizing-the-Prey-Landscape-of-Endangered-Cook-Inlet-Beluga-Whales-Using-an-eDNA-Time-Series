@@ -1,0 +1,217 @@
+---
+title: "Combine Metabarcoding Data"
+author: "Zack Gold"
+date: "2025-02-24"
+output: html_document
+---
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+# Load the necessary libraries for data manipulation and file path handling
+library(tidyverse)
+library(here)
+
+```
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+# Read RDS files for various datasets, each corresponding to different sequence runs and locations
+
+results_reads <- readRDS(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","twentymile","seqrun1","decontam","Output_R","post_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+results_reads_2 <- readRDS(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","twentymile","seqrun2","decontam","Output_R","post_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+results_reads_kenai_1 <- readRDS(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","kenai","kenai_1","decontam","Output_R","post_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+results_reads_kenai_2 <- readRDS(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","kenai","kenai_2","decontam","Output_R","post_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+results_reads_kenai_3 <- readRDS(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","kenai","kenai_3","decontam","Output_R","post_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+kenai_results_reads_1<- readRDS(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","kenai","kenai_1","decontam","Output_R","kenai_post_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+kenai_results_reads_2<- readRDS(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","kenai","kenai_2","decontam","Output_R","kenai_post_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+kenai_results_reads_3<- readRDS(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","kenai","kenai_3","decontam","Output_R","kenai_post_occupancy_results_sum.taxonomy_tech_reps_separate_read_counts.RDS"))
+
+# Read metadata files for each sequence run and location
+input_meta_path <- here("data","Metadata","metadata_seqrun1_20211225.csv")
+metadata <- read.table(input_meta_path, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path2 <- here("data","Metadata","metadata_seqrun2_20220309.csv")
+metadata2 <- read.table(input_meta_path2, header = 1, sep = ",", stringsAsFactors = F)
+
+input_meta_path_kenai_1 <- here("data","Metadata","metadata_kenai1_20220401.csv")
+metadata_kenai_1 <- read.table(input_meta_path_kenai_1, header = 1, sep = ",", stringsAsFactors = F) 
+
+input_meta_path_kenai_2 <- here("data","Metadata","metadata_kenai2_20220412.csv")
+metadata_kenai_2 <- read.table(input_meta_path_kenai_2, header = 1, sep = ",", stringsAsFactors = F) %>% 
+  mutate(, Site_code=as.character(Site_code))
+
+input_meta_path_kenai_3 <- here("data","Metadata","metadata_kenai_run_3_20220518.csv")
+metadata_kenai_3 <- read.table(input_meta_path_kenai_3, header = 1, sep = ",", stringsAsFactors = F) %>% 
+  mutate(, Site_code=as.character(Site_code))
+
+```
+
+```{r}
+
+bind_rows(metadata, metadata2,metadata_kenai_1, metadata_kenai_2,metadata_kenai_3) %>% 
+  filter(., Sample_Control=="Sample") %>% 
+  filter(., !str_detect(New_name,"SCSP")) %>% 
+  filter(., !str_detect(New_name,"Diet")) %>% 
+  dplyr::summarise(n_distinct(New_name),(n_distinct(New_name_no_tech)))
+
+```
+
+
+
+
+```{r,echo=FALSE, results='hide',message=FALSE,warning=FALSE}
+# Transform and clean the dataset from the first sequence run
+results_reads %>% 
+  pivot_longer(cols = `c19_fishcard_Knik_03_R3`:`c19_fishcard_TM_D9_03`, # Convert wide format to long format for specific columns
+               names_to = "Sample", 
+               values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample, "c19_fishcard_")) %>% # Remove prefix from sample names
+  left_join(metadata) %>% # Join with metadata for additional information
+  separate(sum.taxonomy, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";", remove = FALSE) %>% # Split taxonomy info into separate columns
+  unite(Site, Location, col = "Station", remove = FALSE) %>% # Combine Site and Location into a new column 'Station'
+  ungroup() %>%
+  mutate(ID_mifish = if_else(Species == "", Genus, Species)) %>% # Create a unique identifier, prefer Species over Genus
+  mutate(ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>% # Use Family if Species and Genus are missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>% # Use Order if Family is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>% # Use Class if Order is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>% # Use Phylum if Class is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>% # Use Domain if Phylum is missing
+  mutate(ID_mifish = replace_na(ID_mifish, "")) %>% # Replace remaining NA with empty string
+  filter(Domain != "") %>% # Filter out rows where Domain is missing
+  dplyr::select(-Project, -PCR_Cycles, -Index.Cycles, -Location, -Extraction_set) -> combined_data_long_reads # Select relevant columns and store in combined_data_long_reads
+
+# Convert 'Sample_date' to Date format
+combined_data_long_reads$Sample_date <- as.Date(combined_data_long_reads$Sample_date, "%m/%d/%y")
+
+# Transform and clean the dataset from the second sequence run
+results_reads_2 %>% 
+  pivot_longer(cols = `c19_fishcard_SCSP_C24_01`:`c19_fishcard_TM_D9_03`, # Convert wide format to long format for specific columns
+               names_to = "Sample", 
+               values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample, "c19_fishcard_")) %>% # Remove prefix from sample names
+  left_join(metadata2) %>% # Join with metadata for additional information
+  filter(Project != "SCSP") %>% # Exclude rows where Project is "SCSP"
+  separate(sum.taxonomy, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";", remove = FALSE) %>% # Split taxonomy info into separate columns
+  unite(Site, Location, col = "Station", remove = FALSE) %>% # Combine Site and Location into a new column 'Station'
+  ungroup() %>%
+  mutate(ID_mifish = if_else(Species == "", Genus, Species)) %>% # Create a unique identifier, prefer Species over Genus
+  mutate(ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>% # Use Family if Species and Genus are missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>% # Use Order if Family is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>% # Use Class if Order is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>% # Use Phylum if Class is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>% # Use Domain if Phylum is missing
+  mutate(ID_mifish = replace_na(ID_mifish, "")) %>% # Replace remaining NA with empty string
+  filter(Domain != "") %>% # Filter out rows where Domain is missing
+  dplyr::select(-Project, -PCR_Cycles, -Index.Cycles, -Location, -Extraction_set) -> combined_data_long_2_reads # Select relevant columns and store in combined_data_long_2_reads
+
+# Convert 'Sample_date' to Date format
+combined_data_long_2_reads$Sample_date <- as.Date(combined_data_long_2_reads$Sample_date, "%m/%d/%y")
+
+# Transform and clean the dataset from Kenai run 1
+results_reads_kenai_1 %>% 
+  pivot_longer(cols = `c19_fishcard_Bridge_5m_Apr_1`:`c19_fishcard_TM_D18_03`, # Convert wide format to long format for specific columns
+               names_to = "Sample", 
+               values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample, "c19_fishcard_")) %>% # Remove prefix from sample names
+  left_join(metadata_kenai_1) %>% # Join with metadata for additional information
+  filter(Project == "Kenai") %>% # Filter to include only rows where Project is "Kenai"
+  separate(sum.taxonomy, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";", remove = FALSE) %>% # Split taxonomy info into separate columns
+  unite(Site, Depth, Month, col = "Station", remove = FALSE) %>% # Combine Site, Depth, and Month into a new column 'Station'
+  ungroup() %>%
+  mutate(ID_mifish = if_else(Species == "", Genus, Species)) %>% # Create a unique identifier, prefer Species over Genus
+  mutate(ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>% # Use Family if Species and Genus are missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>% # Use Order if Family is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>% # Use Class if Order is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>% # Use Phylum if Class is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>% # Use Domain if Phylum is missing
+  mutate(ID_mifish = replace_na(ID_mifish, "")) %>% # Replace remaining NA with empty string
+  filter(Domain != "") %>% # Filter out rows where Domain is missing
+  dplyr::select(-Project, -PCR_Cycles, -Index.Cycles, -Temp..Field.Bottle.ID, -Sample_ID, -Month, -Site_code, -Depth_code) -> combined_data_long_kenai_1_reads # Select relevant columns and store in combined_data_long_kenai_1_reads
+
+# Convert 'Sample_date' to Date format
+combined_data_long_kenai_1_reads$Sample_date <- as.Date(combined_data_long_kenai_1_reads$Sample_date, "%m/%d/%y")
+
+# Transform and clean the dataset from Kenai run 2
+results_reads_kenai_2 %>% 
+  pivot_longer(cols = `c19_fishcard_Beluga_Diet_2`:`c19_fishcard_TM_D18_03`, # Convert wide format to long format for specific columns
+               names_to = "Sample", 
+               values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample, "c19_fishcard_")) %>% # Remove prefix from sample names
+  left_join(metadata_kenai_2) %>% # Join with metadata for additional information
+  filter(Project == "Kenai") %>% # Filter to include only rows where Project is "Kenai"
+  separate(sum.taxonomy, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";", remove = FALSE) %>% # Split taxonomy info into separate columns
+  unite(Site, Depth, Month, col = "Station", remove = FALSE) %>% # Combine Site, Depth, and Month into a new column 'Station'
+  ungroup() %>%
+  mutate(ID_mifish = if_else(Species == "", Genus, Species)) %>% # Create a unique identifier, prefer Species over Genus
+  mutate(ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>% # Use Family if Species and Genus are missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>% # Use Order if Family is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>% # Use Class if Order is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>% # Use Phylum if Class is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>% # Use Domain if Phylum is missing
+  mutate(ID_mifish = replace_na(ID_mifish, "")) %>% # Replace remaining NA with empty string
+  filter(Domain != "") %>% # Filter out rows where Domain is missing
+  dplyr::select(-Project, -PCR_Cycles, -Index.Cycles, -Temp..Field.Bottle.ID, -Sample_ID, -Month, -Site_code, -Depth_code) -> combined_data_long_kenai_2_reads # Select relevant columns and store in combined_data_long_kenai_2_reads
+
+# Convert 'Sample_date' to Date format
+combined_data_long_kenai_2_reads$Sample_date <- as.Date(combined_data_long_kenai_2_reads$Sample_date, "%m/%d/%y")
+
+# Transform and clean the dataset from Kenai run 3
+results_reads_kenai_3 %>% 
+  pivot_longer(cols = `c19_fishcard_Bridge_5m_Dec_1`:`c19_fishcard_TM_D18_03`, # Convert wide format to long format for specific columns
+               names_to = "Sample", 
+               values_to = "nReads") %>% 
+  mutate(New_name = str_remove(Sample, "c19_fishcard_")) %>% # Remove prefix from sample names
+  left_join(metadata_kenai_3) %>% # Join with metadata for additional information
+  filter(Project == "Kenai") %>% # Filter to include only rows where Project is "Kenai"
+  separate(sum.taxonomy, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";", remove = FALSE) %>% # Split taxonomy info into separate columns
+  unite(Site, Depth, Month, col = "Station", remove = FALSE) %>% # Combine Site, Depth, and Month into a new column 'Station'
+  ungroup() %>%
+  mutate(ID_mifish = if_else(Species == "", Genus, Species)) %>% # Create a unique identifier, prefer Species over Genus
+  mutate(ID_mifish = if_else(ID_mifish == "", Family, ID_mifish)) %>% # Use Family if Species and Genus are missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Order, ID_mifish)) %>% # Use Order if Family is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Class, ID_mifish)) %>% # Use Class if Order is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Phylum, ID_mifish)) %>% # Use Phylum if Class is missing
+  mutate(ID_mifish = if_else(ID_mifish == "", Domain, ID_mifish)) %>% # Use Domain if Phylum is missing
+  mutate(ID_mifish = replace_na(ID_mifish, "")) %>% # Replace remaining NA with empty string
+  filter(Domain != "") %>% # Filter out rows where Domain is missing
+  dplyr::select(-Project, -PCR_Cycles, -Index.Cycles, -Temp..Field.Bottle.ID, -Sample_ID, -Month, -Site_code, -Depth_code) -> combined_data_long_kenai_3_reads # Select relevant columns and store in combined_data_long_kenai_3_reads
+
+# Convert 'Sample_date' to Date format
+combined_data_long_kenai_3_reads$Sample_date <- as.Date(combined_data_long_kenai_3_reads$Sample_date, "%m/%d/%y")
+
+# Combine all cleaned datasets into a single dataframe
+combined_data_long_reads_c <- bind_rows(combined_data_long_reads, combined_data_long_2_reads, combined_data_long_kenai_1_reads, combined_data_long_kenai_2_reads, combined_data_long_kenai_3_reads) %>% dplyr::select(-Month)
+
+# Calculate the total number of reads per sample
+combined_data_long_reads_c %>% 
+  group_by(Sample) %>% 
+  dplyr::summarise(total_reads = sum(nReads)) -> tot_reads
+
+# Join the total reads with the combined data and calculate the proportion of reads per sample
+combined_data_long_reads_c %>% 
+  left_join(tot_reads) %>% 
+  filter(total_reads > 0) %>% # Filter out samples with zero total reads
+  mutate(prop_reads = nReads / total_reads) -> combined_data_long_reads_c
+
+# Calculate the maximum proportion of reads for each identifier
+combined_data_long_reads_c %>% 
+  group_by(ID_mifish) %>% 
+  dplyr::summarise(max_prop = max(prop_reads)) -> max_prop
+
+# Calculate index scores and filter out specific sampling days
+combined_data_long_reads_c %>% 
+  left_join(max_prop) %>% 
+  mutate(index_scores = prop_reads / max_prop) -> combined_data_long_reads_c 
+
+# Save the final cleaned data to an RDS file
+saveRDS(combined_data_long_reads_c, here("analysis", "Output", "combined_data_long_reads_c.RDS"))
+
+```
+
+

@@ -1,0 +1,21 @@
+c19_fishcard_TM_D13_01,c19_fishcard_TM_D13_02,c19_fishcard_TM_D13_03,c19_fishcard_TM_D16_01,c19_fishcard_TM_D16_02,c19_fishcard_TM_D16_03,c19_fishcard_TM_D18_01,c19_fishcard_TM_D18_02,c19_fishcard_TM_D18_03,sum.taxonomy
+0.6688824119435659,0.41259144324468955,0.6192480367536817,1,0.9041167539328079,0.376987706445002,0.5327147063099867,0.7637451377033888,0,Eukaryota;Chordata;Actinopteri;Perciformes;Cottidae;Cottus;
+0.24956906411134644,0.2969990288737289,0.12665462280401554,0.8354251066611535,1,0.9866641374655335,0.692411766264204,0,0,Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Salvelinus;Salvelinus malma
+0.3962442134104384,0.16924403624003057,0.7102141376977467,0.48047494790048356,0.1669843233074035,0.957744717080173,0,0,1,Eukaryota;Chordata;Actinopteri;Perciformes;Gasterosteidae;Pungitius;Pungitius pungitius
+0,0,0,0,0,0,0,1,0,Eukaryota;Chordata;Mammalia;Artiodactyla;Monodontidae;Delphinapterus;Delphinapterus leucas
+0,0.22096098919119928,0.5605939592098449,1,0.4349445165196758,0.5640399975877719,0,0,0,Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Salvelinus;Salvelinus alpinus
+0,0,0,0.6437039006390655,0.16269124187214423,0.217144747854305,0,1,0,Eukaryota;Chordata;Aves;Anseriformes;Anatidae;Anas;Anas platyrhynchos
+0.9920496116110671,1,0.8303780046597943,0,0,0,0.08306608166082285,0.17487002893217768,0,Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus keta
+0,0,0,0.5721754166513373,0.34586712072424436,1,0.44460351657516156,0,0.06685523790281847,Eukaryota;Chordata;Mammalia;Rodentia;Castoridae;Castor;Castor canadensis
+0,0,0,0.48495476824088724,1,0.9958866391323327,0,0,0,Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;
+0,0.5177362954186013,0,0,0,0,0,1,0,Eukaryota;Chordata;Actinopteri;Perciformes;Cottidae;Comephorus;Comephorus baicalensis
+0.10667202258568306,0.10102238268188268,0.08514918310586715,0.8465960332956645,0.92730988555523,0.8792192982554744,0.9422952318551855,0.9010159476680629,1,Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus kisutch
+0,0,0,0,0,1,0,0,0,Eukaryota;Chordata;Aves;Anseriformes;Anatidae;Anas;Anas acuta
+0,0,0,0,0.12837155258383576,0.24655534854990885,0,0,1,Eukaryota;Chordata;Mammalia;Rodentia;Cricetidae;Ondatra;Ondatra zibethicus
+0.9261246316846828,1,0.9201152805723511,0.04454243762924202,0.04108562334560344,0.07076603954140949,0,0.04332808931563502,0.023531810602665064,Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus gorbuscha
+0,0,0,0,0,1,0,0,0,Eukaryota;Chordata;Aves;Anseriformes;Anatidae;Mareca;
+0,1,0,0,0,0,0,0,0,Eukaryota;Chordata;Actinopteri;Perciformes;Cottidae;Comephorus;
+0,0.10789777119334767,0.1379511879167861,0,0.12376014150105732,0.09737492855533939,0.9947170076572305,1,0.716845229867697,Eukaryota;Chordata;Actinopteri;Perciformes;Gasterosteidae;Gasterosteus;Gasterosteus aculeatus
+0.8818521009852197,1,0.7691631529629523,0.03801679911944425,0.051399239198612355,0.14377248872487292,0.04455798949159125,0,0.08226997176682802,Eukaryota;Chordata;Actinopteri;Osmeriformes;Osmeridae;Thaleichthys;Thaleichthys pacificus
+0.969827064665565,0.9558529840148319,1,0.22957168008987408,0.057170512046385784,0.22298941656185517,0.2205524830693032,0,0.28278673964813017,Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus nerka
+0.5898899230214287,0.28891144135510394,1,0.3358472659851077,0,0.309574309391465,0,0,0,Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus tshawytscha

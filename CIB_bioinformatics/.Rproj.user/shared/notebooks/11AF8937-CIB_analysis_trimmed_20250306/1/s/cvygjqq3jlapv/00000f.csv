@@ -1,0 +1,8 @@
+"0","  pre_c %>% 
+    filter(., nReads > 0) %>% 
+  group_by(sample, Seq_number,New_name_no_tech,LabID) %>% 
+  dplyr::summarise(max_prop_per_sample = max(prop_reads), mean_prop_per_sample = mean(prop_reads),species_richness=n_distinct(sum.taxonomy)) %>% 
+  mutate(., expected_mean_perc_based_on_richness = 1/species_richness,
+         expected_richness_based_on_mean_prop = 1/mean_prop_per_sample)-> max_prop_per_sample
+"
+"2","`summarise()` has grouped output by 'sample', 'Seq_number', 'New_name_no_tech'. You can override using the `.groups` argument."

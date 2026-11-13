@@ -1,0 +1,236 @@
+---
+title: "Cook Inlet Beluga Readme File"
+author: "Zack Gold"
+date: "2026-11-12"
+output: pdf_document
+bibliography: export-data.bib
+---
+
+# Workflow
+To generate quantitative metabarcoding we are integrating multiple datastreams: 
+
+- **metabarcoding of environmental DNA** samples using MiFish 12S primers, 
+- metabarcoding from **mock communities** with known starting input concentrations using MiFish 12S primers,
+-  and **qPCR of Coho salmon** (*Oncorhynchus kisutch*) 
+
+[**Note**: qPCR was run on 3 other species Beluga (*Delphinapterus leucas*), Eulachon (*Thaleichthys pacificus*), and King salmon (*Oncorhynchus tshawytscha*).
+
+Here we follow the workflow laid out in Andruszkiewicz Allan et al. 2023 [@allan2023quantifying].
+
+![image](./Flowchart_gold_beluga_analysis_2.jpg) 
+
+**Figure 2.** Workflow diagram of quantitative metabarcoding approach.
+
+
+# Data Organization & QA/QC 
+
+As illustrated in Figure 2, there are a series of data organization and QA/QC steps needed to process the multiple data streams and files into a cohesive analysis. This section outlines the processes in more granular detail.
+
+## Mock community data
+- The raw and processed data has been published in Shelton et al. 2023 [@shelton2023toward] and Gold et al. 2023[@gold2023signal].
+
+- Mock community metabarcoding data was processed using the Anacapa Toolkit pipeline following Gold et al. 2021 with an additional taxonomy fix step implemented for salmon (**Oncorhynchus sp.**) following Shelton et al. 2023.
+
+- Data was post processed to remove poorly sequenced mock communities and confirm annotations to known input species following Shelton et al. 2023.
+
+###### Input Data
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `Zack_MockCommunity/`    |  Raw fastq reads of mock community data   | Data | `./data/Mock_community_data/` <br /> `data/mock_sequences/` <br /> `Zack_MockCommunity` <br /> `_raw_sequences/` |
+| `Anacapa_output_` <br /> `updated_20230106/`    |  Out processed data from Anacapa Toolkit as described in [Gold et al. 2023](https://doi.org/10.1371/journal.pone.0285674)   | Data | `./data/Mock_community_data/`<br /> `data/mock_sequences/` <br /> `Anacapa_output_` <br /> `updated_20230106/` |
+| `input_dna_conc_` <br /> `communities_` <br /> `20210103.csv`    |  Sample metadata for mock communities including the known input DNA concentrations for each sample   | Data | `./data/Mock_community_data/` <br /> ` data/input_dna_conc_` <br /> `communities_` <br /> `20210103.csv` |
+| `hash.key_updated.RDS`    |  Updated taxonomic assignments for ASVs with GenBank Accessions and full taxonomic paths. This includes improved *Oncorhynchus* assignments from `taxonomy_matcher_12S_20210106.Rmd` | Data | `./data/Mock_community_data/` <br /> `data/mock_sequences/` <br /> `hash.key_updated.RDS` |
+	
+#### Code
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `mc31_organization_` <br /> `20261109.Rmd`       |  This file conducts QA/QC and organizes the mock community metabarcoding data, bringing together observed sequences reads and known input concentrations.    | Code | `./data/Mock_community_data/` <br /> `code/mc31_organization_` <br /> `20261109.Rmd` |
+| `taxonomy_matcher_` <br /> `12S_20210106.Rmd`           |   This file improves taxonomic assignments made to ASVs in the genus *Oncorhynchus* through a simple paired BLAST + phylogenetic analysis of ASVs and known reference sequences as described in [Gold et al. 2023](https://doi.org/10.1371/journal.pone.0285674). Importantly we note that this specifically ignores GenBank Accessions `NC_002980` (*Oncorhynchus tshawytscha*) and `NC_017838` (*Oncorhynchus keta*). `Both sequences are not regionally relevant` (from Russia) and appear to be potential misannotations or hybridization events.  | Code | `./data/Mock_community_data/` <br /> `code/taxonomy_matcher_` <br /> `12S_20210106.Rmd` |
+| `run-anacapa_qc_mc31` <br /> `_20220104.sh`           | Anacapa QA/QC ASV generation script run using the California Current Large Marine Ecosystem specific FishCard reference database described in [Gold et al. 2021](https://doi.org/10.1111/1755-0998.13450)  | Code | `./data/Mock_community_data/` <br /> `code/run-anacapa_qc_` <br /> `mc31_20220104.sh` |
+| `run-anacapa_qc_mc31` <br /> `_20220105.sh`           | Anacapa QA/QC ASV generation run script run using the Global FishCard reference database described in [Gold et al. 2021](https://doi.org/10.1111/1755-0998.13450)  | Code | `./data/Mock_community_data/` <br /> `code/run-anacapa_qc_` <br /> `mc31_20220105.sh` |
+| `run-anacapa-` <br /> `classifier` <br /> `-mc31_20210105.sh`           | Anacapa classifier script run using the California Current Large Marine Ecosystem specific FishCard reference database described in [Gold et al. 2021](https://doi.org/10.1111/1755-0998.13450)  | Code | `./data/Mock_community_data/` <br /> `code/run-anacapa-classifier` <br /> `-mc31_20210105.sh` |
+| `run-anacapa-` <br /> `classifier-mc31_` <br /> `combo_20210105.sh`           | Anacapa classifier script run using the Global FishCard reference database described in [Gold et al. 2021](https://doi.org/10.1111/1755-0998.13450)  | Code | `./data/Mock_community_data/` <br /> `code/run-anacapa-classifier-mc31_` <br /> `combo_20210105.sh` |
+
+	
+#### Output Data
+	
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `mifish_mock_` <br /> `community_data.RDS`       |  Output file of organized mock community metabarcoding data. `This data is used to calibrate observations from eDNA metabarcoding.` | Data | `./data/Mock_community_data/` <br /> `data/mifish_mock_` <br /> `community_data.RDS` |
+
+
+## Metabarcoding Environmental data
+
+- Enviromental DNA Metabarcoding data was processed using the Anacapa Toolkit pipeline following Gold et al. 2021 [@gold2021improving] with an additional taxonomy fix step implemented for salmon (*Oncorhynchus* sp.) following Shelton et al. 2023. A total of five sequencing runs were conducted for this project, 3 runs from Kenai River samples and 2 runs from Twentymile River samples.
+
+- Resulting amplicon sequence variant tables (ASVs) were then further processed using the Gruinard decontamination pipeline as implemented in [Gold et al. 2022](https://peerj.com/articles/14071/) [@gold2022manager]. Scripts to run the decontamination are in the decontam/ directories located within each of the five sequencing run directories.
+
+- Metadata was organized and cleaned to allow for downstream sample merging.
+
+- eDNA index was derived for all species following Kelly et al. 2019 [@kelly2019understanding]. This was done as high quality mock community data was only available for a distinct subset of taxa and this allowed for community analyses across a broader swath of observed taxa for supplemental analyses. 
+
+#### Data
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `Anacapa_processed_` <br /> `sequence_data/`    |  Data processed from 5 sequencing runs (`Kenai_1`, `Kenai_2`, `Kenai_3`, `Twentymile_1`, `Twentymile_2`) using the Anacapa Toolkit as described in [Gold et al. 2021](https://doi.org/10.1111/1755-0998.13450).  | Data | `./data/eDNA_data/` <br /> `data/Anacapa_processed` <br /> `_sequence_data/` |
+| `Raw_sequence_data`    |  Raw fastq reads   | Data | `./data/eDNA_data/` <br /> `data/Raw_sequence_data/` |
+
+
+#### Code
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `Anacapa_scripts/`           | Directory of Anacapa QA/QC ASV generation & Anacapa classifier scripts run using using the `Global FishCard reference database` described in [Gold et al. 2021](https://doi.org/10.1111/1755-0998.13450)  | Code | `./data/eDNA_data/` <br /> `code/Anacapa_scripts/` |
+| `taxonomy_fix/`           | Directory of scripts and data used to correct taxonomy. This approach is identical to that described for the mock community above. | Code & Data | `./data/eDNA_data/` <br /> `code/taxonomy_fix/scripts/` |
+| `decontam/`    | These subdirectorties within each of the five sequencing run directories includes the code to run decontamination of each output Anacapa ASV table. Decontamination was completed with the following steps: 0) Retain only paired merged reads , 1)  Account for estimated rate tag jumping (index hopping) by subtracting proportional read abundances observed in positive controls from samples, 2) Retain PCR technical replicates with greater than 30K reads, 3) Retain ASVs with a probability of detection greater than the maximum estimated probability of an ASV being detected only once. This was implemented using a Site Occupancy Modeling framework on the pattern of presence of ASVs observed across the data set, 4) Discard Biological and PCR Technical replicates with greater than 99% dissimilarity from all other samples. | Data | `.data/eDNA_data/` <br /> `data/Anacapa_processed` <br /> `_sequence_data/` <br /> `[insert river]/` <br /> `[insert sequencing run]` <br /> `/decontam` |
+
+
+#### Outputs
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `pre_occupancy_` <br /> `results_` <br /> `sum.taxonomy` <br /> `_tech_reps_` <br /> `separate_` <br /> `read_counts.RDS`           | `Long formatted data table` of final ASVs and assigned taxonomy with relevant sample metadata from eDNA samples.  | Data | `./data/Anacapa_processed` <br /> `_sequence_data/` <br /> `[kenai/twetnymile]/` <br /> `*/decontam/` <br /> `Output_R/pre_occupancy` <br /> `_results_sum.taxonomy` <br /> `_tech_reps_` <br /> `separate_read_` <br /> `counts.RDS` |
+
+
+## qPCR Data
+
+- qPCR data was processed following Shelton et al. 2022 [@shelton2022environmental] using a bayesian model to estimate qPCR concentrations of environmental data from known standards.
+
+- Metadata was organized and cleaned to allow for downstream sample merging.
+
+#### Data
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `qPCR_raw/`    |  `Raw qPCR results from 10 distinct plates.` Eulachon, Coho, and Chinook were multiplexed together. Beluga was run separately. Each plate includes it's own standard curve with known concentrations as well as samples with unknown concentrations.  | Data | `.data/qPCR_results/` <br /> `data/qPCR_raw/` |
+| `sample_metadata/`    |  Sample metadata from each of the 10 qPCR plates   | Data | `./data/qPCR_results/` <br /> `data/sample_metadata/` |
+
+#### Code
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `qpcr_formatting` <br /> `_20220624.Rmd/`           | Code to organize, merge, and clean up the raw qPCR and sample metadata. The resulting output is `qPCR_AK_data.RDS` which is a merged long data table with all results needed for downstream analyses | Code | `./data/qPCR_results/` <br /> `code/qpcr_formatting` <br /> `_20220624.Rmd` |
+| `qPCR_attempt_` <br /> `20230223.Rmd`           | Code modified from [Andruszkiewicz Allan et al. 2023](https://doi.org/10.1002/eap.2914) to import qPCR data and run a STAN based model to estimate concentrations of DNA based on standards using the model and code developed originally by Ole Shelton used in [Shelton et al. 20](https://doi.org/10.1098/rspb.2021.2613) | Code | `.data/qPCR_results/` <br /> `code/qPCR_attempt_` <br /> `20230223.Rmd` |
+
+
+#### Outputs
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `qPCR_AK_data.RDS`           | Long formatted data table of qPCR data including both observed values and standards with relevant sample metadata.  | Data | `.data/qPCR_results/qPCR_AK_data.RDS` |
+| `[species]_input_` <br /> `csv_for_stan.csv` | Formatted data for input into STAN model to estimate true DNA concentrations.  | Data | `.data/qPCR_results/` <br /> `data/qPCR_results/` <br /> `[species]_input_` <br /> `csv_for_stan.csv` |
+| `qMod_[species].RDS`           | Full STAN output for beluga, chinook, coho, and eulachon DNA concentrations.  | Data | `.data/qPCR_results/` <br /> `data/qPCR_results/` <br /> `qMOD_[species].RDS` |
+| `qMod_[species]_` <br /> `tibble.RDS`           | Full STAN output for beluga, chinook, coho, and eulachon DNA concentrations converted to a tibble format for ease of use.  | Data | `.data/qPCR_results/` <br /> `data/qPCR_results/` <br /> `qMOD_[species]_tibble.RDS` |
+
+## Visual Beluga Observations data
+
+1. Alaska Beluga Monitoring Program community science derived [visual data](https://akbmp.org/beluga-observation-log/). Observations are derived from 2 hour visual observations centered around high tide.
+
+2. Sonia Kumar visual observations (following similar methods with the exception of not stricly being associated with high tides).
+
+#### Data
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `AKBMP-Fall2021` <br /> `-eDNA_20220208.csv`    |  AKBMP Visual Observations of Belugas from Fall 2021  | Data | `./data/Visual_` <br /> `observations/data/` <br /> `AKBMP-Fall2021-` <br /> `eDNA_20220208.csv` |
+| `AKBMP-KenaiRiver` <br /> `-Sightings_` <br /> `spring.csv`    |  AKBMP Visual Observations of Belugas on Kenai River  | Data | `./data/Visual_` <br /> `observations/data/` <br /> `AKBMP-KenaiRiver` <br /> `-Sightings_` <br /> `spring.csv` |
+| `sonia_kumar_` <br /> `visual_observations.csv`    |  Sonia Kumar's Visual Observations of Belugas on Kenai River   | Data | `./data/Visual_observations/` <br /> `data/sonia_kumar_` <br /> `visual_observations.csv` |
+
+#### Code
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `beluga_visual_` <br /> `observation_` <br /> `20240823.Rmd`           | Code to organize, merge, and clean up the visual observations. The resulting output is `beluga_visual_3.RDS` which is a merged long data table with all results needed for downstream analyses | Code | `./data/Visual_` <br /> `observations/code` <br /> `/beluga_visual_` <br /> `observation_20240823.Rmd` |
+
+#### Outputs
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `beluga_visual_3.RDS` | Long formatted data table of visual beluga observations data  | Data | `./data/Visual_observations/data/beluga_visual_3.RDS` |
+
+	
+## Bias Corrected Metabarcoding
+- Mock communities were used to calibrate eDNA metabarcoding results following Shelton et al. 2023. Here we focus on only the five common *Oncorhynchus* salmon species: Coho, King, Chum, Pink, and Sockeye. All five species had sufficient mock community data to accurately estimate amplification efficiencies. 
+
+#### Data
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `Metabarcoding Data`    |  Decontaminated metabarcoding data for 5 runs |Data | `./data/eDNA_data/` <br /> `data/Anacapa_processed_` <br /> `sequence_data/[river]/` <br /> `[sequencing run]/decontam/` <br /> `Output_R/pre_occupancy_` <br /> `results_sum.taxonomy_` <br /> `tech_reps_separate_` <br /> `read_counts.RDS` |
+| `Sample Metadata`    |  Sample metadata for 5 runs |Data |  `./data/Metadata/` |
+| `mifish_mock_` <br /> `community_data.RDS`       |  This output file of organized mock community metabarcoding data used to calibrate observations from eDNA metabarcoding. | Data | `./data/Mock_community_` <br /> `data/data/mifish_mock_` <br /> `community_data.RDS` |
+
+#### Code
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `combined_beluga_` <br /> `metabarcoding_data_` <br /> `20240824.Rmd`           | Code to organize and merge eDNa metabarcoding data. The resulting output is combined_data_long_reads_c.RDS which is a merged long data table with all results needed for downstream analyses | Code | `./analysis/scripts/` <br /> `combined_beluga_` <br /> `metabarcoding_data_` <br /> `20240824.Rmd` |
+| `qmeta_model_` <br /> `20231213.R`           | Code to run metabarcoding bias correction. Code modified from [Andruszkiewicz Allan et al. 2023](https://doi.org/10.1002/eap.2914). Important output is `20231210_bayesout_salmon_only.RDS` | Code | `./analysis/scripts/` <br /> `qmeta_model_20231213.R` |
+
+#### Outputs
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `20231210_bayesout_` <br /> `salmon_only.RDS` | Model output of bias corrected metabarcoding data for 5 species of salmon.  | Data | `./analysis/Output/` <br /> `20231210_bayesout_` <br /> `salmon_only.RDS` |
+	
+## Estimating Abundance
+
+### Metabarcoding Proportions x qPCR Absolute Abundance
+
+- Proportional metabarcoding data for Coho was cross multiplied against qPCR absolute abundance concentrations to derive the total number of DNA molecules in a given sample following Andruszkiewicz Allan et al. 2023. Coho was chosen as the anchor species as it was the species amplified via qPCR that was the most commonly detected species across the metabarcoding data set. Estimates of quantitative abundance for the five species with bias corrected metabarcoding proportional data were then derived cross multiplying the observed proportional reads with the estimated total DNA molecules per sample.
+
+
+#### Data
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `20231210_bayesout_` <br /> `salmon_only.RDS` | Model output of bias corrected metabarcoding data.  | Data | `./analysis/Output/` <br /> `20231210_bayesout_` <br /> `salmon_only.RDS` |
+| `qMod_[species].RDS`           | Full STAN output for beluga, chinook, coho, and eulachon.  | Data | `.data/qPCR_results/` <br /> `data/qPCR_results/` <br /> `qMOD_[species].RDS` |
+| `qMod_[species]_` <br /> `tibble.RDS`           | Full STAN output for beluga, chinook, coho, and eulachon converted to a tibble format for ease of use.  | Data | `.data/qPCR_results/` <br /> `data/qPCR_results/` <br /> `qMOD_[species].RDS` |
+| `qPCR_AK_data.RDS`           | Long formatted data table of qPCR data including both observed values and standards with relevant sample metadata.  | Data | `.data/qPCR_results/` <br /> `qPCR_AK_data.RDS` |
+
+
+#### Code
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `qPCR_qm_merge_` <br /> `attempt_20231213.R`           | Code to estimate abundance by multpying bias corrected proportions x qPCR concentrations. Code modified from [Andruszkiewicz Allan et al. 2023](https://doi.org/10.1002/eap.2914). | Code | `./analysis/scripts/` <br /> `qPCR_qm_merge_` <br /> `attempt_20231213.R` |
+
+
+#### Outputs
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `coho_anchor_` <br /> `predicted` <br /> `_DNA_conc.RDS ` | Model output using Coho as anchor for estimated abundance.  | Data | `./data/Visual_` <br /> `observations/data/` <br /> `beluga_visual_3.RDS` |
+| `coho_anchor_abs_` <br /> `abundance_` <br /> `notflowcorrected.RDS ` | Model output using Coho as anchor for estimated abundance.   | Data | `./data/Visual_observations/` <br /> `data/beluga_` <br /> `visual_3.RDS` |
+
+
+
+## Analyses
+
+Analyses conducted for the manuscript
+
+### Main Manuscript
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `CIB_analysis_` <br /> `trimmed_` <br /> `20261109.Rmd` | Main Analysis Document  | Code | `analysis/scripts/` <br /> `CIB_analysis_` <br /> `trimmed_` <br /> `20261109.Rmd` |
+
+- Beluga occurrence. Visual, qPCR, and metabarcoding detection rates for beluga were compared before, during, and after beluga river habitat use.
+
+- Twentymile river quantitative metabarcoding time series. Estimated abundance of fish species from eDNA were compared before and during observations of Cook Inlet Beluga in Twentymile river.
+
+- Summary of general statistics and diversity observed via eDNA metabarcoding data.
+
+- General statistics and figures of fish species occurrences during periods of beluga observation on both Kenai and Twentymile River.
+
+- Temporal and Spatial Variation. Specifically, an analysis of factors explaining variance in Kenai River environmental data, examining fish communities across time, site, and depth to inform future sampling strategies.
+
+- Non-detections and the effects of swamping and rare molecules.
+
+### Supplemental
+
+| File              | Description | Type | Path |
+| ----- | ----------- | --- | ---- |
+| `Supplemental_Analsyses` <br /> `20240825.Rmd` | Supplemental Analysis Document for Appendix 5  | Code | `analysis/scripts/` <br /> `Supplemental_Analsyses`  <br /> `20240825.Rmd` |
+
+- Appendix 5 qPCR Anchor Comparisons
+
+## References

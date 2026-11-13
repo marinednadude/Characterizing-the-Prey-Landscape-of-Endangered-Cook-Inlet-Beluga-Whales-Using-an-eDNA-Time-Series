@@ -1,0 +1,10 @@
+"0","combined_data_long_reads_c %>% 
+  filter(Sample %in% coho_sample_w_problems) %>% 
+  filter(., prop_reads >0.05) %>% 
+  filter(., str_detect(New_name, ""May"")) %>% 
+  group_by(New_name, Species) %>% 
+  summarise(max(prop_reads))
+"
+"1","[38;5;232m`summarise()` has grouped output by 'New_name'. You can override using
+the `.groups` argument.[39m
+"

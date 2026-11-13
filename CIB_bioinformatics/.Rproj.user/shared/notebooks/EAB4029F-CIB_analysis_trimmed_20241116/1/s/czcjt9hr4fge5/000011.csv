@@ -1,0 +1,2 @@
+"0","phyloseq_to_df(physeq_obj_kenai) %>%"
+"0","  pivot_longer(cols=`Kenai.seqrun1.021.S21.L001`:`Kseq3.033.S33.L001`, names_to = ""Sample"",values_to = ""eDNA.Index"" )"

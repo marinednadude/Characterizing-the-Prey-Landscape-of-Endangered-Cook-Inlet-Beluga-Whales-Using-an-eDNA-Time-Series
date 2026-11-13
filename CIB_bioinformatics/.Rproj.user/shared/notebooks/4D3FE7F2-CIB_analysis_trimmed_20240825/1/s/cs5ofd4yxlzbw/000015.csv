@@ -1,0 +1,11 @@
+"0","# Plotting Non-detections in metabarcoding w/ out 3x zeros
+  plotting_drop_outs_all %>% 
+    left_join(q_mean) %>% 
+    filter(., mean_reads >0) %>% 
+  filter(., !is.na(`Target Name`)) %>% 
+   ggplot(., aes(x=mean_Quantity, y=drop_prop, colour=`Target Name`, fill=`Target Name`))+
+      geom_count(alpha =0.5)  +facet_wrap(`Target Name`~., scale=""free"") +ylab(""Metabarcoding Non Detection"") +xlab(""qPCR DNA Concentration [copies/L]"")  +ggtitle(""Non-detections in metabarcoding w/ out 3x zeros if qPCR >0"")  +theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = ""grey50""))
+"
+"1","[38;5;232mJoining with `by = join_by(LabID, `Target Name`)`[39m
+"

@@ -1,0 +1,7 @@
+"0","qPCR_4_species %>% 
+  mutate(., `Target Name`=if_else(`Target Name`==""cetacea"",""Beluga"",`Target Name`)) %>% 
+  mutate(., Quantity=replace_na(Quantity,0)) %>% 
+  group_by(LabID,`Target Name`) %>% 
+  dplyr::summarise(mean_Quantity=mean(Quantity)) -> q_mean
+"
+"2","`summarise()` has grouped output by 'LabID'. You can override using the `.groups` argument."

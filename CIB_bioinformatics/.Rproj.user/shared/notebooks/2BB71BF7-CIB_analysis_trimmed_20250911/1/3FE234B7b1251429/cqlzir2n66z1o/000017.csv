@@ -1,0 +1,8 @@
+"0",""
+"0","detection_comparison_eDNA %>% "
+"0","  ggplot(., aes(x=Detection, y=n, fill=Detection)) +"
+"0","  geom_bar(stat=""identity"") +facet_wrap(`Target Name`~.)+"
+"0","  scale_fill_manual(values=palette_cl)+"
+"0","  theme(axis.text.x = element_text(angle=30, hjust = 1))  +"
+"0","  ylab(""Count"") + xlab(""Detection Type"") +theme(legend.position = ""none"",axis.text.x = element_text(angle=30, hjust = 1), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),"
+"0","panel.background = element_blank(), axis.text = element_text(size=14), axis.title = element_text(size=18), strip.text = element_text(size=16), axis.line = element_line(colour = ""grey50""))"

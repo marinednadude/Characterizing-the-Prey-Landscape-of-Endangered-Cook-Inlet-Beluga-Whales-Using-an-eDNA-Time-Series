@@ -1,0 +1,7 @@
+"0","qPCR_data_combo %>% "
+"0","  filter(., Marker==""saleu"") %>% "
+"0","    mutate(., Quantity2 =str_remove(Quantity,"",""),"
+"0","         Quantity2=as.numeric(Quantity2)) %>% "
+"0","  filter(., Quantity2>9999) %>%"
+"0","    mutate(., CT=as.numeric(CT)) %>% "
+"0","  dplyr::summarise(., min(CT), max(CT), mean(CT))"

@@ -1,0 +1,14 @@
+"0","library(metagMisc)"
+"2","
+Attaching package: ‘metagMisc’
+
+"
+"2","The following object is masked from ‘package:purrr’:
+
+    some
+
+"
+"0","sample_data(physeq_obj_kenai)"
+"1","Sample Data:        [161 samples by 10 sample variables]:"
+"1","
+"

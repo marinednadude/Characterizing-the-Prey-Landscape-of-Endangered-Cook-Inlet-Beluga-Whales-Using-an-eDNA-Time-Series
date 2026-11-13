@@ -1,0 +1,5 @@
+"0","rbind(turnagain_viz, twentymile_qPCR,twentymile_metabar) %>%"
+"0","  mutate(Method = recode(Method, `Metabarcoding` = ""MetaBar"")) %>% "
+"0","  dplyr::select(Method, `Beluga Occurrence`= time_chunk, `Detection Rate`=prob_detection ) %>% "
+"0","  mutate(., "
+"0","         `Detection Rate` = round(`Detection Rate`,3)) %>% knitr::kable()"

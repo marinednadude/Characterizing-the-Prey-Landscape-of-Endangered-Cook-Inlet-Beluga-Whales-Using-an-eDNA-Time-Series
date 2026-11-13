@@ -1,0 +1,4 @@
+"0",""
+"0","bd1$Sample_date$tukeyHSD$group %>% "
+"0","  as.tibble(rownames=""Comparisons"") %>% "
+"0","  arrange(`p adj`) "

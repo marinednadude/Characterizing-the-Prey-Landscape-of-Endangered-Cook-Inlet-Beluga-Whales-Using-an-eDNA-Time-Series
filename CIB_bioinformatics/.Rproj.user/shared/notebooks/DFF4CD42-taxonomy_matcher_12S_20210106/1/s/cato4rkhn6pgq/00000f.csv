@@ -1,0 +1,12 @@
+"0",""
+"0","ASV_C60 %>% "
+"0","  mutate(Tot_reads = rowSums(select(., contains(""X12S_fishcard"")))) %>% "
+"0","  dplyr::select(ASV = fishcard_seq_number,Tot_reads, sum.taxonomy) %>% "
+"0","  separate(sum.taxonomy, into = c(""Domain"",""Phylum"",""Class"",""Order"",""Family"",""Genus"",""Species""), remove =F, sep="";"") %>% "
+"0","  filter(., str_detect(ASV,""merged"")) %>% "
+"0","  filter(., !str_detect(ASV,""unmerged""))  -> ASVs_unidentified"
+"2","Warning:"
+"2"," [38;5;232mExpected 7 pieces. Missing pieces filled with `NA` in 209 rows [2305, 2437, 2447, 2567,
+2574, 2575, 2580, 2588, 2624, 2625, 2716, 2833, 3012, 3155, 3866, 4674, 4706, 4711,
+4766, 4797, ...].[39m
+"

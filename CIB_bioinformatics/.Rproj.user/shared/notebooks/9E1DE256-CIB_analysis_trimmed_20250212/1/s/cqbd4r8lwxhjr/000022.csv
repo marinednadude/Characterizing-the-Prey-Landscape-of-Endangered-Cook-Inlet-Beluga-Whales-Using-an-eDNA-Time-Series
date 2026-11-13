@@ -1,0 +1,2 @@
+"0",""
+"0","knitr::kable(rbind(Eulachon_table_abund, chinook_table_abund))"

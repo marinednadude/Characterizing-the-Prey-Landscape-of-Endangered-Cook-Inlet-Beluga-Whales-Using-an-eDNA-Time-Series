@@ -1,0 +1,906 @@
+---
+title: "Amp Eff Punnet Square Exploration"
+author: "Zack Gold"
+date: "12/2/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(ggpmisc)
+here()
+library(see)
+library(PNWColors)
+library(ggbeeswarm)
+library(patchwork)
+library(scales)
+library(ggplot2)
+
+```
+
+
+```{r}
+MiFish_data <- readRDS(file = here("data","zack_ocean","CalCOFI","data","mifish_tech_nReads.RDS"))
+larvae_data <- readRDS(file = here("data","zack_ocean","CalCOFI","data", "microscopy_tech_nReads.RDS"))
+alphas <- read.csv(file = here("data","zack_ocean","All_amp_efficiencies-2022-06-03.csv"))
+
+alphas %>% 
+  mutate(., alpha = mean) %>% 
+  mutate(., ID_mifish=Species) %>% distinct() %>% 
+  mutate(., ID_mifish = if_else(str_detect(ID_mifish, "zRefSpecies_Citharichthys sordidus"),		"Citharichthys sordidus",ID_mifish)) %>% 
+mutate(., ID_mifish = if_else(str_detect(ID_mifish, "Vinciguerria lucetia"),"Vinciguerria sp.",ID_mifish)) %>% 
+  mutate(., ID_mifish = if_else(str_detect(ID_mifish, "Nannobrachium ritteri"),"Nannobrachium",ID_mifish)) -> alphas
+
+alphas %>% 
+  dplyr::summarise(max(alpha),min(alpha), mean(alpha))
+
+
+alphas %>% 
+  mutate(., alpha = mean) %>% 
+  mutate(., ID_mifish=Species) %>% distinct() %>% 
+  mutate(., ID_mifish = if_else(str_detect(ID_mifish, "zRefSpecies_Citharichthys sordidus"),		"Citharichthys sordidus",ID_mifish))-> alphas_mock
+
+```
+#general description of data
+```{r}
+
+
+mi_reads <- MiFish_data %>%
+    filter(., !is.na(mifish_reads)) %>% 
+  mutate(bio_rep = paste(station_id, ext_rep, sep = "_")) %>%
+  mutate(tech_unique = paste(station_id, ext_rep,tech_rep, sep = "_")) %>%
+  select(-c(Sample, ID_sebastes, Unique_ID)) %>%
+  distinct() 
+
+
+mi_larvae <- larvae_data %>%
+    filter(., !is.na(larval_counts)) %>% 
+  select(-c(ID_sebastes, Unique_ID)) %>%
+  distinct() 
+
+shared_bottles <- intersect(mi_larvae$station_id,mi_reads$station_id)
+
+mi_reads <- mi_reads %>% filter(., station_id %in% shared_bottles)
+mi_larvae <- mi_larvae %>% filter(., station_id %in% shared_bottles)
+
+mi_reads %>% 
+  dplyr::select(ID_mifish) %>% unique() %>% 
+  filter(!str_detect(ID_mifish,"MISSING")) 
+
+mi_reads %>% 
+  dplyr::select(ID_mifish) %>% unique() %>% 
+  filter(!str_detect(ID_mifish,"MISSING")) %>% 
+  filter(str_detect(ID_mifish," "))
+
+mi_reads %>% 
+  dplyr::select(ID_mifish) %>% unique() %>% 
+  filter(!str_detect(ID_mifish,"MISSING")) %>% 
+  filter(str_detect(ID_mifish,"idae"))
+  
+mi_reads %>% 
+  dplyr::select(ID_mifish) %>% unique() %>% 
+  filter(!str_detect(ID_mifish,"MISSING")) %>% 
+  filter(!str_detect(ID_mifish,"idae")) %>% 
+  filter(!str_detect(ID_mifish," "))
+
+mi_reads %>% 
+  dplyr::summarise(sum(mifish_reads), n_distinct(tech_unique),n_distinct(bio_rep), n_distinct(station_id))
+
+
+mi_larvae %>% 
+  dplyr::summarise(sum(larval_counts), n_distinct(station_id))
+
+
+mi_larvae %>% 
+  dplyr::select(ID_microscopy) %>% unique() %>% 
+    filter(str_detect(ID_microscopy," "))
+
+
+```
+
+# Figure 1
+```{r}
+counts_plus_reads <- left_join(MiFish_data, larvae_data) %>% filter(., station_id %in% shared_bottles)
+
+# lets get the data into wide form 
+counts_plus_reads <- counts_plus_reads %>%
+  mutate(bio_rep = paste(station_id, ext_rep, sep = "_")) %>%
+  select(-c(Sample, ID_sebastes, Unique_ID)) %>%
+  dplyr::mutate(larval_counts = replace_na(larval_counts, 0)) %>% 
+  dplyr::mutate(mifish_reads = replace_na(mifish_reads, 0)) %>% 
+  distinct() 
+
+counts_plus_reads %>% 
+  unite(., Sample_ID, c("station_id","ext_rep","tech_rep"), sep=":") %>% 
+  dplyr::select(-larval_counts) %>% 
+  group_by(Sample_ID) %>% 
+  dplyr::summarise(tot_reads=sum(mifish_reads)) -> mifish_tot_reads
+
+counts_plus_reads %>% 
+  unite(., Sample_ID, c("station_id","ext_rep","tech_rep"), sep=":") %>% 
+  dplyr::select(-mifish_reads) %>% 
+  group_by(Sample_ID) %>% 
+  dplyr::summarise(tot_counts=sum(larval_counts)) -> larvae_tot_counts
+
+
+
+counts_plus_reads %>% 
+  unite(., Sample_ID, c("station_id","ext_rep","tech_rep"), sep=":",remove="F") %>% 
+  left_join(mifish_tot_reads) %>% 
+  left_join(larvae_tot_counts) %>% 
+  mutate(., prop_reads= mifish_reads/tot_reads,
+         prop_counts=larval_counts/tot_counts) %>% 
+  dplyr::select(ID_mifish,station_id,larval_counts,prop_counts,prop_reads) %>% distinct() %>% 
+  arrange(desc(prop_counts)) %>% 
+  ggplot(aes(y=prop_reads, x=prop_counts)) +geom_count() + geom_abline(color="red",linetype="dashed") +
+  theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12, angle = 0),
+axis.title.x =element_text(size = 16,  face = "bold"),
+axis.title.y = element_text(size = 16, face = "bold")
+) + xlab("Larvae Proportion") + ylab("Amplicon Proportion") -> prop_compare 
+
+
+counts_plus_reads %>% 
+  filter(., mifish_reads==0) %>% 
+  arrange(desc(larval_counts))
+
+counts_plus_reads %>% 
+  unite(., Sample_ID, c("station_id","ext_rep","tech_rep"), sep=":",remove="F") %>% 
+  ggplot(aes(x=log(larval_counts+1), y=log(mifish_reads+1))) +geom_point() +geom_count()   +
+  theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12, angle = 0),
+axis.title.x =element_text(size = 16,  face = "bold"),
+axis.title.y = element_text(size = 16, face = "bold")
+) + xlab(" log(Larval Counts +1)") + ylab(" log(Amplicon Reads +1)") -> read_compare
+
+
+prop_compare
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_1.png"),
+width = 14,
+height = 8
+)
+```
+
+
+# Figure 2
+```{r}
+
+counts_plus_reads %>% 
+    unite(., Sample_ID, c("station_id","ext_rep","tech_rep"), sep=":",remove="F") %>% 
+  left_join(mifish_tot_reads) %>% 
+  left_join(larvae_tot_counts) %>% 
+  mutate(., prop_reads= mifish_reads/tot_reads,
+         prop_counts=larval_counts/tot_counts) %>% 
+  left_join(alphas) %>% 
+  mutate(larval_abundance = case_when(larval_counts > 250  ~"High Counts",
+                              larval_counts >100  ~"Medium Counts",
+                              larval_counts >10  ~"Low Counts",
+                              larval_counts >0  ~"Super Low Counts",
+                              TRUE ~"Not Counted")) %>% 
+  mutate(alpha_group = case_when(alpha >-0.07  ~"High Alpha",
+                              TRUE ~"Low Alpha")) %>% 
+    filter(., tot_reads>0)-> calcofi_dont
+
+
+calcofi_dont %>% 
+  dplyr::select(ID_mifish,Sample_ID,larval_counts) %>% 
+  distinct() %>% 
+    filter(., larval_counts >0) %>% 
+  group_by(ID_mifish) %>% 
+  dplyr::summarise(Sample_count_micro=n_distinct(Sample_ID), tot_obs_micro = sum(larval_counts)) -> micro_obs
+```
+
+
+```{r}
+#geom_quasirandom(dodge.width=1, method = "pseudorandom", alpha =0.05)
+
+calcofi_dont %>% 
+  filter(., !is.na(alpha)) %>% 
+   mutate( log_counts = log10(larval_counts+1),
+      bin=cut_width(log_counts, width=0.5, boundary=0) ) %>%
+  ggplot(., aes(x=bin, y=log10(mifish_reads), side = ifelse(alpha_group == "High Alpha", "left", "right"), colour=alpha_group, fill=alpha_group, group=alpha_group)) + 
+  ggdist::stat_dots( dotsize = 1,
+    stackratio = 1,
+    binwidth = .05, alpha=0.5) +
+  ggdist::stat_slab(
+    adjust = 3,
+    width = 0.6, 
+    .width = 0, fill=NA
+  )  +
+scale_colour_manual(values=c(pnw_palette("Sunset",3)[1],pnw_palette("Sunset",3)[2])) +
+  scale_fill_manual(values=c(pnw_palette("Sunset",3)[1],pnw_palette("Sunset",3)[2]))+
+  theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12, angle = 0),
+axis.title.x =element_text(size = 16,  face = "bold"),
+axis.title.y = element_text(size = 16, face = "bold"),legend.position = "none"
+) + xlab(" log10(Larval Counts +1)") + ylab(" log10(Amplicon Reads)")+ guides(fill=guide_legend(title="Amplification Efficiency"), colour=guide_legend(title="Amplification Efficiency")) -> fig_2
+
+fig_2
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_2_beeswarm_no_zeros.png"),
+width = 16,
+height = 8
+)
+
+
+```
+
+```{r}
+
+counts_plus_reads %>% 
+  filter(., !is.na(mifish_reads)) %>% 
+    unite(., Sample_ID, c("station_id","ext_rep","tech_rep"), sep=":",remove="F") %>% 
+  left_join(mifish_tot_reads) %>% 
+  left_join(larvae_tot_counts) %>% 
+  mutate(., prop_reads= mifish_reads/tot_reads,
+         prop_counts=larval_counts/tot_counts) %>% 
+ mutate(larval_abundance = case_when(larval_counts >10  ~ ">10 Larvae",
+                              larval_counts >0  ~ ">0 Larvae",
+                              TRUE ~"No Larvae"))  %>% 
+  filter(., tot_reads >0)-> calcofi_use_all
+
+calcofi_use_all %>% 
+     # filter(larval_counts >0) %>% 
+    group_by(ID_mifish,station_id,ext_rep) %>% 
+ dplyr::summarise(non_na_tech_count = n_distinct(tech_rep),
+    mean_prop_reads = mean(prop_reads),
+    mean_reads = mean(mifish_reads),
+    max_reads = max(mifish_reads),
+    min_reads = min(mifish_reads),
+    larval_counts=mean(larval_counts),
+          Drop_outs = length(mifish_reads[mifish_reads==0]),
+                   max_prop_reads=max(prop_reads),
+                   min_prop_reads=min(prop_reads),
+                   mean_prop_counts = mean(prop_counts),
+                   max_prop_counts=max(prop_counts),
+                   min_prop_counts=min(prop_counts),
+    drop_prop=Drop_outs/non_na_tech_count) %>% 
+  mutate(Drop_outs_cat = case_when(drop_prop ==1 ~"Non Detection",
+                              drop_prop >0.66 ~"2/3rds of reps are zero",
+                              drop_prop >0.49 ~"1/2 of reps are zero",
+                              drop_prop >0.3 ~"1/3 of reps are zero",
+                              min_prop_reads >0 ~"Detected Across all Reps")) -> calcofi_dropout_prop_all
+
+  calcofi_dropout_prop_all %>% 
+  filter(., !is.na(mean_prop_reads)) %>% 
+    mutate(., Species =ID_mifish)-> plotting_drop_outs_all
+  
+```
+
+#Figure 2.5
+
+```{r}
+plotting_drop_outs_all %>% 
+    left_join(alphas) %>% 
+    filter(., !is.na(alpha)) %>% 
+   mutate(alpha_group = case_when(alpha >-0.07  ~"High Alpha",
+                              TRUE ~"Low Alpha"))  %>% 
+  filter(., ID_mifish !="MISSING") %>% 
+  filter(., ID_mifish !="Paralepididae") %>% 
+  ggplot(., aes(x=log10(larval_counts+1), y=drop_prop, colour=alpha_group, fill=alpha_group))+
+      geom_count(alpha =0.5) + 
+  scale_size(range = c(2, 12), breaks=c(1,10,100,1000,5000)) +
+  geom_smooth(
+    method="glm",
+    method.args=list(family="binomial"))+ scale_colour_manual(values=c(pnw_palette("Starfish",3)[1],pnw_palette("Starfish",3)[3])) +
+  scale_fill_manual(values=c(pnw_palette("Starfish",3)[1],pnw_palette("Starfish",3)[3])) + 
+  theme(axis.text.x = element_text(angle =30, hjust=1)) +xlab("log10(Larvae Counts +1)") + ylab("Proportion Non-Detect") + theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12, angle = 0),
+          strip.text.x=element_text(size=16),
+axis.title.x =element_text(size = 16,  face = "bold"),
+axis.title.y = element_text(size = 16, face = "bold"),
+#legend.position = "none"
+) +facet_wrap(.~alpha_group) + guides(fill=guide_legend(title="Amplification Efficiency"), colour=guide_legend(title="Amplification Efficiency")) -> fig_2.5
+fig_2.5
+
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_2.5_larval_counts_drop_outs.png"),
+width = 12,
+height = 8
+)
+
+
+
+
+```
+# Figure 2 Combination
+```{r}
+
+fig_2/fig_2.5  + plot_annotation(tag_levels = 'A') + plot_layout(guides = 'collect')
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_2_combined.png"),
+width = 14,
+height = 8
+)
+```
+
+# Reads per larvae
+
+```{r}
+calcofi_dont %>% 
+  filter(., !is.na(alpha)) %>% 
+   left_join(micro_obs) %>% 
+  filter(., larval_counts > 0) %>% 
+  mutate(., Reads_per_count = mifish_reads/larval_counts) %>% 
+  group_by(alpha_group) %>% 
+  dplyr::summarise(mean(Reads_per_count), max(Reads_per_count), min(Reads_per_count), n_distinct(Species))
+
+```
+
+
+
+
+# Mock Community Emprical Data
+
+
+```{r}
+
+fully_combo <- readRDS( here("data","zack_ocean","mifish_mock_community_data.RDS") )
+fully_combo %>% 
+  filter(., Cycles==39) %>% 
+  mutate(., Input_DNA_conc = case_when(community=="Coastal_Even" ~ 426.9,
+                                       community=="Coastal_Skew_1" ~ 545.0,
+                                       community=="Coastal_Skew_2" ~ 381.5,
+                                       community=="North_Even" ~ 395.1,
+                                       community=="North_Skew_1" ~ 467.8,
+                                       community=="North_Skew_2" ~ 445.1,
+                                       community=="Oceanic_Even" ~ 381.5,
+                                       community=="Skew_Oceanic_1" ~ 399.7,
+                                        community=="Skew_Oceanic_2" ~ 499.6)) %>% 
+  mutate(., Input_DNA_per_species= case_when(community=="Coastal_Even" ~ 12.9,
+                                       community=="Coastal_Skew_1" ~ 45.4,
+                                       community=="Coastal_Skew_2" ~ 31.8,
+                                       community=="North_Even" ~ 22,
+                                       community=="North_Skew_1" ~ 39,
+                                       community=="North_Skew_2" ~ 37.1,
+                                       community=="Oceanic_Even" ~ 17.3,
+                                       community=="Skew_Oceanic_1" ~ 33.3,
+                                        community=="Skew_Oceanic_2" ~ 41.6)) %>% 
+  filter(., start_conc_ng>0)->coastal_even_1
+
+coastal_even_1 %>% 
+  filter(., start_conc_ng >0) -> coastal_even_1_species_to_keep
+
+fully_combo_redo <- readRDS(here("data","zack_ocean","mifish_mock_community_data_coastal_even_redo.RDS") )
+
+fully_combo_redo %>% 
+  filter(., community !="Coastal_Even") %>% 
+  mutate(., Input_DNA_conc = case_when(community=="Coastal_Even_e4" ~ 4.26*10^6,
+                                       community=="Coastal_Even_e5" ~ 4.26*10^5)) %>% 
+  mutate(., Input_DNA_per_species = case_when(community=="Coastal_Even_e4" ~ (4.26*10^6)/33,
+                                       community=="Coastal_Even_e5" ~ (4.26*10^5)/33)) %>% 
+  mutate(., community ="Coastal_Even") -> coastal_even_2
+
+```
+
+```{r}
+
+rbind(coastal_even_1,coastal_even_2) -> coastal_mock_complete
+
+
+sharkrs <- c("Carcharodon carcharias" ,"Mustelus californicus"   ,     "Myliobatis californica" ,"Rhinobatos productus" ,"Torpedo californicus"   ,      "Triakis semifasciata", "Urobatis halleri", "Squatina californica", "Squalus acanthias","Bathyraja abyssicola")
+
+coastal_mock_complete %>% 
+  group_by(Input_DNA_conc,community,ID_mifish) %>% 
+  dplyr::summarise(observations = n_distinct(tech_rep), zeros = length(tech_rep[nReads==0]), mean_reads = mean(nReads), max_reads=max(nReads), min_reads= min(nReads), start_conc_ng=mean(start_conc_ng), Input_DNA_conc=mean(Input_DNA_conc), Input_DNA_per_species=mean(Input_DNA_per_species)) %>% 
+  mutate(., `Probability of Observing 0 DNA From a Species After Sequencing` = zeros/observations,
+         lambda= Input_DNA_per_species) %>% 
+  filter(., ID_mifish %in% coastal_even_1_species_to_keep$ID_mifish)  %>% 
+  left_join(alphas_mock)-> bony_fish_emp_drop
+
+```
+  
+
+
+# Figure 3
+
+
+```{r}
+
+coastal_mock_complete %>% 
+  left_join(alphas_mock) %>% 
+ mutate(alpha_group = case_when(alpha >-0.07  ~"High Alpha",
+                              TRUE ~"Low Alpha")) %>% 
+  mutate( log_Input_DNA_conc = log10(Input_DNA_conc+1),
+      bin=cut_width(log_Input_DNA_conc, width=0.05, boundary=0) ) %>%
+  filter(., nReads>0) %>% 
+  ggplot(., aes(x=bin, y=log10(nReads), side = ifelse(alpha_group == "High Alpha", "left", "right"), colour=alpha_group, fill=alpha_group, group=alpha_group)) + 
+  ggdist::stat_dots( dotsize = 1,
+    stackratio = 1,
+    binwidth = .05, alpha=0.5) +
+  ggdist::stat_slab(
+    adjust = 3,
+    width = 0.6, 
+    .width = 0, fill=NA
+  )  +
+scale_colour_manual(values=c(pnw_palette("Starfish",3)[1],pnw_palette("Starfish",3)[3])) +
+  scale_fill_manual(values=c(pnw_palette("Starfish",3)[1],pnw_palette("Starfish",3)[3]))+
+  theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12, angle = 0),
+axis.title.x =element_text(size = 16,  face = "bold"),
+axis.title.y = element_text(size = 16, face = "bold"), legend.position="none"
+) + xlab("log10(DNA Molecules)") + ylab(" log10(Amplicon Reads)")+ guides(fill=guide_legend(title="Amplification Efficiency"), colour=guide_legend(title="Amplification Efficiency")) -> fig_3
+
+fig_3
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_3_beeswarm_no_zeros.png"),
+width = 16,
+height = 8
+)
+
+
+```
+# Figure 3.5
+
+```{r}
+
+bony_fish_emp_drop %>% 
+      mutate(alpha_group = case_when(alpha >-0.07  ~"High Alpha",
+                              TRUE ~"Low Alpha")) %>% 
+   ggplot(aes(x=lambda, y=`Probability of Observing 0 DNA From a Species After Sequencing`, colour=alpha_group, fill=alpha_group)) + geom_count(alpha=0.6)  +xlab(expression(lambda)) +ylab("Proportion Non-Detect")   + scale_size(range = c(2, 12), breaks=c(1,10,100,1000,5000)) +
+  geom_smooth(method = "nls", method.args = 
+        list(formula = y ~ a * x / (b + x), start = list(a = -1, b = -1)), se = FALSE)+
+   scale_colour_manual(values=c(pnw_palette("Starfish",3)[1],pnw_palette("Starfish",3)[3])) +
+  scale_fill_manual(values=c(pnw_palette("Starfish",3)[1],pnw_palette("Starfish",3)[3])) + 
+  theme_bw() +theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12, angle = 0),
+          strip.text.x=element_text(size=16),
+axis.title.x =element_text(size = 16,  face = "bold"),
+axis.title.y = element_text(size = 16, face = "bold"),
+#legend.position = "none"
+) +scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+              labels = trans_format("log10", math_format(10^.x))) +scale_y_continuous(trans='sqrt', breaks = c(0.01,0.05,0.1,0.25,0.5,0.75,1)) +facet_wrap(~alpha_group) + guides(fill=guide_legend(title="Amplification Efficiency"), colour=guide_legend(title="Amplification Efficiency"))-> figure_3.5
+
+figure_3.5
+
+ggsave(
+  file = here::here("data","zack_ocean","figures_exploration", "Figure_3.5_mock_community_data.png"),
+  width = 14,
+  height = 8
+)
+
+```
+
+# Figure 3 Combination
+```{r}
+
+fig_3/figure_3.5 + plot_annotation(tag_levels = 'A') + plot_layout(guides = 'collect')
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_3_combined.png"),
+width = 14,
+height = 8
+)
+```
+#Figure 4 SD vs. Mean
+
+```{r}
+
+
+counts_plus_reads %>% 
+  unite(., Sample_ID, c("station_id","ext_rep","tech_rep"), sep=":") %>% 
+  dplyr::select(-mifish_reads) %>% 
+  group_by(Sample_ID) %>% 
+  dplyr::summarise(tot_counts=sum(larval_counts)) -> larvae_tot_counts
+
+larvae_tot_counts %>% 
+  separate(., Sample_ID, into = c("station_id","ext_rep","tech_rep"), sep=":") %>% 
+  group_by(station_id) %>% 
+  dplyr::summarise(tot_larval_counts=sum(tot_counts)) -> counts_jars
+
+calcofi_use_all %>% 
+     # filter(larval_counts >0) %>% 
+    group_by(ID_mifish,station_id,ext_rep) %>% 
+ dplyr::summarise(non_na_tech_count = n_distinct(tech_rep),
+    mean_prop_reads = mean(prop_reads),
+    sd_prop_reads = sd(prop_reads),
+    mean_reads = mean(mifish_reads),
+    max_reads = max(mifish_reads),
+    min_reads = min(mifish_reads),
+    larval_counts=mean(larval_counts)) %>% 
+  filter(., !is.na(mean_prop_reads)) %>% 
+    mutate(., Species =ID_mifish) %>% 
+  filter(., larval_counts>0) %>%  
+  left_join(counts_jars)-> calcofi_rainbow_input
+
+ calcofi_rainbow_input %>% 
+   ggplot(aes(x=mean_prop_reads, y=sd_prop_reads, colour=tot_larval_counts)) +geom_point() +scale_colour_viridis_c(option="turbo", trans="log") +ylab("SD(Proportion)")+xlab("Mean(Proportion)") +theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12, angle = 0),
+          strip.text.x=element_text(size=16),
+axis.title.x =element_text(size = 16,  face = "bold"),
+axis.title.y = element_text(size = 16, face = "bold"),
+#legend.position = "none"
+) +guides(colour=guide_legend(title="Total Larval Counts per Jar")) +scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+              labels = trans_format("log10", math_format(10^.x))) +
+     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+              labels = trans_format("log10", math_format(10^.x)))
+ 
+ 
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_SD_vs_Mean.png"),
+width = 12,
+height = 8,
+limitsize = FALSE
+)
+
+
+```
+
+#Figure 5 SD vs. Mean Mock
+
+```{r}
+
+coastal_mock_complete %>% 
+  group_by(community,tech_rep,Cycles) %>% 
+  dplyr::summarise(tot_reads=sum(nReads)) -> tot_reads_mock
+
+coastal_mock_complete %>% 
+    left_join(tot_reads_mock) %>% 
+  mutate(., prop_reads=nReads/tot_reads) %>% 
+    group_by(ID_mifish,community,Cycles) %>% 
+ dplyr::summarise(non_na_tech_count = n_distinct(tech_rep),
+    mean_prop_reads = mean(prop_reads),
+    sd_prop_reads = sd(prop_reads),
+    mean_reads = mean(nReads),
+    max_reads = max(nReads),
+    min_reads = min(nReads),
+    Input_DNA_per_species=mean(Input_DNA_per_species)) %>% 
+  filter(., !is.na(mean_prop_reads)) %>% 
+    mutate(., Species =ID_mifish) %>% 
+  filter(., Input_DNA_per_species>0) -> mock_rainbow_input
+
+ mock_rainbow_input %>% 
+   filter(., mean_prop_reads >0) %>% 
+   ggplot(aes(x=mean_prop_reads, y=sd_prop_reads, colour=Input_DNA_per_species)) +geom_point() +scale_colour_viridis_c(option="turbo", breaks = trans_breaks("log10", function(x) 10^x,n=10),
+              labels = trans_format("log10", math_format(10^.x))) +ylab("SD(Proportion)")+xlab("Mean(Proportion)") +theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12, angle = 0),
+          strip.text.x=element_text(size=16),
+axis.title.x =element_text(size = 16,  face = "bold"),
+axis.title.y = element_text(size = 16, face = "bold"),
+#legend.position = "none"
+) +guides(colour=guide_legend(title=expression(lambda))) +scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+              labels = trans_format("log10", math_format(10^.x))) +
+     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+              labels = trans_format("log10", math_format(10^.x)))
+ 
+ 
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_SD_vs_Mean_mock.png"),
+width = 12,
+height = 8,
+limitsize = FALSE
+)
+
+
+```
+
+
+# Check max prop drop
+
+```{r}
+
+calcofi_dropout_prop_all %>% 
+filter(., Drop_outs_cat=="1/2 of reps are zero")
+
+
+
+plotting_drop_outs_all %>% 
+  group_by(Drop_outs) %>% 
+  dplyr::summarise(max(mean_prop_reads), mean(mean_prop_reads), min(mean_prop_reads), sd(mean_prop_reads))
+
+plotting_drop_outs_all %>% 
+  ungroup() %>% 
+  dplyr::summarise(max(mean_prop_reads), mean(mean_prop_reads), min(mean_prop_reads), sd(mean_prop_reads), mean(drop_prop), sd(drop_prop))
+```
+
+
+
+
+
+
+# Figure 6 Tile plot
+```{r}
+
+plotting_drop_outs_all %>% 
+   left_join(alphas) %>% 
+  mutate(alpha_group = case_when(alpha > -0.07  ~"High Alpha",
+                              TRUE ~"Low Alpha")) %>% 
+    mutate(larval_abundance = case_when(larval_counts >5  ~ ">5 Larvae",
+                              larval_counts >0  ~ "<5 Larvae",
+                              TRUE ~"No Larvae")) %>% 
+  mutate(larval_abundance_prop = case_when(mean_prop_counts >.2  ~ ">20%",
+                              mean_prop_counts >0  ~ ">0%",
+                              TRUE ~"No Larvae"))-> plotting_drop_outs_2
+
+plotting_drop_outs_2$alpha_group <- factor(plotting_drop_outs_2$alpha_group, levels = c("Low Alpha","High Alpha"))
+
+plotting_drop_outs_2$larval_abundance <- factor(plotting_drop_outs_2$larval_abundance, levels = c("No Larvae",
+                                                                                                  "<5 Larvae",
+                                                                                                  ">5 Larvae"))
+
+plotting_drop_outs_2$larval_abundance_prop <- factor(plotting_drop_outs_2$larval_abundance_prop, levels = c("No Larvae",
+                                                                                                  ">0%",
+                                                                                                  ">20%"))
+
+plotting_drop_outs_2 %>% 
+    filter(., larval_counts >0) %>% 
+  filter(., max_prop_reads >0) %>% 
+  ungroup() %>% 
+  group_by(alpha_group,larval_abundance) %>% 
+  dplyr::summarise(`Proportion Non-Detect`=mean(drop_prop)) %>%
+  ggplot(aes(x=alpha_group, y=larval_abundance, fill=`Proportion Non-Detect`)) +
+  geom_tile()  +
+  geom_text(aes(label=round(`Proportion Non-Detect`,3)),colour="white", size =12)+
+scale_fill_viridis_c(begin = 0,end = .7)+
+  xlab("Amplification Efficiency") + 
+  ylab("Larvae Abundance")+ theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 16),
+axis.text.y = element_text(size = 16, angle = 0),
+          strip.text.x=element_text(size=20),
+legend.text=element_text(size=16),
+legend.title =element_text(size=20),
+axis.title.x =element_text(size = 20,  face = "bold"),
+axis.title.y = element_text(size = 20, face = "bold"))
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_6_tech_drop_tile.png"),
+width = 12,
+height = 8
+)
+```
+
+# Figure 6
+```{r}
+plotting_drop_outs_2 %>% 
+    filter(., larval_counts >0) %>% 
+  filter(., max_prop_reads >0) %>% 
+  ungroup() %>% 
+  group_by(Species,alpha_group,larval_abundance) %>% 
+  dplyr::summarise(`Proportion Non-Detect`=mean(drop_prop)) %>%
+  ggplot(aes(x=Species, y=larval_abundance, fill=`Proportion Non-Detect`)) +geom_tile()  +scale_fill_viridis_c(begin = 0,
+  end = .7) + facet_wrap(alpha_group ~., scales = "free_x") +
+    xlab("Amplification Efficiency") + 
+  ylab("Larvae Abundance")+ theme_bw() +
+theme(
+panel.background = element_rect(fill = 'white', colour = 'white'),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+axis.text.x = element_text(size = 14, angle =30, hjust=1),
+axis.text.y = element_text(size = 16, angle = 0),
+          strip.text.x=element_text(size=20),
+legend.text=element_text(size=16),
+legend.title =element_text(size=20),
+axis.title.x =element_text(size = 20,  face = "bold"),
+axis.title.y = element_text(size = 20, face = "bold"))
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "Figure_6b_tech_drop_tile_species.png"),
+width = 12,
+height = 8
+)
+
+```
+
+### 2x2 W/ 3x Drop Outs
+```{r}
+
+
+calcofi_use %>% 
+     # filter(larval_counts >0) %>% 
+    group_by(ID_mifish,station_id,ext_rep) %>% 
+  dplyr::summarise(non_na_tech_count = sum(!is.na(tech_rep)),
+    mean_prop_reads = mean(prop_reads),
+                   max_prop_reads=max(prop_reads),
+                   min_prop_reads=min(prop_reads),
+                   mean_prop_counts = mean(prop_counts),
+                   max_prop_counts=max(prop_counts),
+                   min_prop_counts=min(prop_counts)) %>% 
+  filter(., non_na_tech_count ==3) %>% 
+  mutate(Drop_outs = case_when(min_prop_reads > 0 & max_prop_reads > 0 ~"Three reps above zero",
+                              min_prop_reads == 0 & max_prop_reads > 0 ~"One rep is zero",
+                              min_prop_reads == 0 & max_prop_reads == 0 ~"All zero")) -> calcofi_dropout_prop_3x0
+  
+
+  calcofi_dropout_prop_3x0 %>% 
+  left_join(calcofi_dropout_prop2) %>% 
+    left_join(alpha_larval_counts) %>% 
+  filter(., !is.na(mean_prop_reads)) %>% 
+    mutate(., Species =ID_mifish)-> plotting_drop_outs_3x0
+  
+  
+
+plotting_drop_outs_3x0 %>% 
+  mutate(alpha_group = case_when(alpha >-0.07  ~"High Alpha",
+                              TRUE ~"Low Alpha")) %>% 
+    mutate(larval_abundance = case_when(larval_counts >10  ~ ">10 Larvae",
+                              larval_counts >0  ~ ">0 Larvae",
+                              TRUE ~"No Larvae")) %>% 
+  mutate(larval_abundance_prop = case_when(mean_prop_counts >.2  ~ ">20%",
+                              mean_prop_counts >0  ~ ">0%",
+                              TRUE ~"No Larvae"))-> plotting_drop_outs_3x0_v2
+
+plotting_drop_outs_3x0_v2$alpha_group <- factor(plotting_drop_outs_3x0_v2$alpha_group, levels = c("Low Alpha","High Alpha"))
+
+plotting_drop_outs_3x0_v2$larval_abundance <- factor(plotting_drop_outs_3x0_v2$larval_abundance, levels = c("No Larvae",
+                                                                                                  ">0 Larvae",
+                                                                                                  ">10 Larvae"))
+
+plotting_drop_outs_3x0_v2$larval_abundance_prop <- factor(plotting_drop_outs_3x0_v2$larval_abundance_prop, levels = c("No Larvae",
+                                                                                                  ">0%",
+                                                                                                  ">20%"))
+
+plotting_drop_outs_3x0_v2 %>% 
+  ungroup() %>% 
+  group_by(alpha_group,larval_abundance) %>% 
+  dplyr::summarise(`Proportion of Technical Replicates with Zero Reads`=mean(drop_prop)) %>%
+  ggplot(aes(x=alpha_group, y=larval_abundance, fill=`Proportion of Technical Replicates with Zero Reads`)) +geom_tile()  +scale_fill_viridis_c() + xlab("Amplification Efficiency") + ylab("Abundance")
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "tech_drop_tile_3x0.png"),
+width = 14,
+height = 8
+)
+
+plotting_drop_outs_3x0_v2 %>% 
+  ungroup() %>% 
+  group_by(Species,alpha_group,larval_abundance) %>% 
+  dplyr::summarise(`Proportion of Technical Replicates with Zero Reads`=mean(drop_prop)) %>%
+  ggplot(aes(x=Species, y=larval_abundance, fill=`Proportion of Technical Replicates with Zero Reads`)) +geom_tile()  +scale_fill_viridis_c() + xlab("Amplification Efficiency") + ylab("Abundance") + facet_wrap(alpha_group ~., scales = "free_x") +theme(axis.text.x = element_text(angle =30, hjust=1))
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "tech_drop_tile_species_3x0.png"),
+width = 14,
+height = 8
+)
+
+```
+
+```{r}
+plotting_drop_outs %>% 
+  mutate(alpha_group = case_when(alpha > 0  ~"High Alpha",
+                              alpha >-0.07  ~"Medium Alpha",
+                              TRUE ~"Low Alpha")) %>% 
+  ggplot(aes(y=drop_prop, x=log(larval_counts+1), colour=alpha)) +geom_count() +
+  scale_colour_viridis_c() +
+  geom_smooth(method = glm, method.args= list(family="quasibinomial")) +
+  theme(axis.text.x = element_text(angle =30, hjust=1)) +ylab("Proportion of Technical Replicates with Zero Reads") +facet_wrap(alpha_group~.)
+
+
+
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "drop_prop_logistic.png"),
+width = 14,
+height = 8
+)
+
+```
+
+```{r}
+
+plotting_drop_outs %>% 
+   mutate(alpha_group = case_when(alpha > 0  ~"High Alpha",
+                              alpha >-0.07  ~"Medium Alpha",
+                              TRUE ~"Low Alpha")) %>% 
+  ggplot(., aes(x=mean_prop_reads, y=drop_prop),colour=alpha) + geom_count() +
+  scale_colour_viridis_c() +
+  geom_smooth(method = glm, method.args= list(family="quasibinomial")) +
+  theme(axis.text.x = element_text(angle =30, hjust=1)) +ylab("Proportion of Technical Replicates with Zero Reads") +facet_wrap(alpha_group~.)
+
+
+
+
+```
+
+
+```{r}
+  
+calcofi_use %>% 
+      ungroup() %>% 
+  filter(., !is.na(mifish_reads)) %>% 
+  group_by(ID_mifish,station_id,ext_rep) %>% 
+  dplyr::summarise(meanprop = mean(prop_reads),
+            varprop = var(prop_reads)) %>%
+  filter(meanprop > 0) %>% 
+  ungroup() %>% 
+  mutate(index_dispersion = varprop/meanprop) %>% 
+  drop_na() -> id_calcofi
+
+
+calcofi_use %>% 
+      filter(., !is.na(mifish_reads)) %>%  
+    group_by(ID_mifish,station_id,ext_rep) %>% 
+  left_join(id_calcofi) %>% 
+  filter(!is.na(index_dispersion)) -> plotting_id
+
+plotting_id %>%  View()
+
+calcofi_use %>% 
+   group_by(ID_mifish,station_id,ext_rep) %>% 
+  dplyr::summarise(sum_larval_counts = sum(larval_counts)) -> sum_counts_tech
+
+calcofi_use %>% 
+   group_by(ID_mifish,station_id,ext_rep) %>% 
+  dplyr::summarise(sum_mifish_reads = sum(mifish_reads)) -> sum_mifish_reads
+
+id_calcofi%>% 
+  left_join(sum_counts_tech) %>% 
+  left_join(sum_mifish_reads) %>% 
+  left_join(alphas) %>% 
+ mutate(alpha_group = case_when(alpha > 0  ~"High Alpha",
+                              alpha >-0.07  ~"Medium Alpha",
+                              TRUE ~"Low Alpha")) %>% 
+    ungroup()  %>% 
+  ggplot(aes(y=sum_counts_tech, x=sum_mifish_reads, color= alpha)) +geom_point() +geom_smooth(method="lm") +
+  stat_poly_eq(formula = y~x, 
+                aes(label = paste(..rr.label..,..p.value.label.., sep = "~~~")), 
+                parse = TRUE,
+               label.x = 1.5,
+  label.y = 0.1, p.digits =2, rr.digits = 2,size = 7)  + scale_colour_viridis_d()
+
+
+
+ggsave(
+file = here::here("data","zack_ocean","figures_exploration", "index_dispersion_vs_mifish_reads.png"),
+width = 14,
+height = 8
+)
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,5 @@
+"0","coho_anchor <- coho_anchor %>% 
+  dplyr::select(bottle, newtime, creek, station, bio, species, meanpropreads, meancohodna, meantotdna_coho=meantotdna, meandnaconc_coho=meandnaconc )
+"
+"2","Error: object 'coho_anchor' not found
+"

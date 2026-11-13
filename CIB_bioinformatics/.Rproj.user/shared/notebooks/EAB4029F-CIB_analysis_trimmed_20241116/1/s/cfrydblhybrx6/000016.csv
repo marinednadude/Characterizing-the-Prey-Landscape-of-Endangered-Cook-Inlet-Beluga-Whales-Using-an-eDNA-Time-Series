@@ -1,0 +1,3 @@
+"0",""
+"0","#Kenai.seqrun1.005.S5.L001 need to remove the sample"
+"0","#other samples in this time point have crazy low read depth - why did they not get removed? Did you not do decontamination here?"

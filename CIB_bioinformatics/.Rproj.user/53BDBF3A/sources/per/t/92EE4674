@@ -1,0 +1,28 @@
+{
+    "id": "92EE4674",
+    "path": "~/Documents/GitHub/CIB_2021/seqrun1/analysis/20220928_CIB21_analysis.Rmd",
+    "project_path": "analysis/20220928_CIB21_analysis.Rmd",
+    "type": "r_markdown",
+    "hash": "4261165504",
+    "contents": "",
+    "dirty": false,
+    "created": 1664471138984.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "1606,0",
+        "scrollLine": "1551",
+        "docOutlineVisible": "1",
+        "docOutlineSize": "110"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1666994546,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1667254582692,
+    "read_only": false,
+    "read_only_alternatives": []
+}

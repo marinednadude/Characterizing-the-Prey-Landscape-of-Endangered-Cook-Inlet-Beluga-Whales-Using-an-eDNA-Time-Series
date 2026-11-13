@@ -1,0 +1,21 @@
+{
+    "debugBreakpointsState": {
+        "breakpoints": [
+            {
+                "id": 4,
+                "path": "~/Documents/GitHub/CIB_2021/CIB_bioinformatics/data/eDNA_data/data/Anacapa_processed_sequence_data/twentymile/seqrun1/decontam/20230117_generalized_decontam_seqrun1.R",
+                "line_number": 985,
+                "function_steps": "",
+                "function_name": "toplevel",
+                "state": 1,
+                "editor_state": 1,
+                "editor_line_number": 985,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": true,
+                "type": 1,
+                "is_package_breakpoint": false,
+                "package_name": ""
+            }
+        ]
+    }
+}

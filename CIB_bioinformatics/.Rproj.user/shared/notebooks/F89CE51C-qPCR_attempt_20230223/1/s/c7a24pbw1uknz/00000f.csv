@@ -1,0 +1,5 @@
+"0","qMod_chinook_tibble <- readRDS(file=here(""analysis"",""qMod_chinook_tibble.RDS""))"
+"0","qMod_coho_tibble <- readRDS(file=here(""analysis"",""qMod_coho_tibble.RDS""))"
+"0","qMod_eulachon_tibble <- readRDS(file=here(""analysis"",""qMod_eulachon_tibble.RDS""))"
+"0","qMod_beluga_tibble <- readRDS(file=here(""analysis"",""qMod_beluga_tibble.RDS""))"
+"0",""

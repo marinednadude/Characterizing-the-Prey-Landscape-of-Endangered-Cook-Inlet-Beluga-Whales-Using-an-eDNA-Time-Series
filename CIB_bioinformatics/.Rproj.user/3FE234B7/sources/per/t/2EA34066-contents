@@ -1,0 +1,111 @@
+```{r}
+library(dplyr)
+library(car)
+library(cowplot)
+
+res_aov <- aov(meandnaconc_coho ~ time_chunk * species,
+               data = coho_20m_analysis
+)
+
+summary(res_aov)
+
+res_aov_log <- aov(log(meandnaconc_coho) ~ time_chunk * species,
+                   data = coho_20m_analysis
+)
+
+summary(res_aov_log)
+model.tables(res_aov_log, type = "means", se = TRUE)
+
+# ANOVA procedure on rank-transformed data
+aov.rnk <- aov(
+  rank(meandnaconc_coho) ~ time_chunk * species, data = coho_20m_analysis,
+  contrasts = list(
+    MATRIX = 'contr.sum',
+    LOCATION = 'contr.sum'
+  )
+)
+
+summary(aov.rnk)
+
+
+par(mfrow = c(1, 2)) # combine plots
+
+# histogram
+hist(res_aov$residuals)
+
+# QQ-plot
+library(car)
+qqPlot(res_aov$residuals,
+       id = FALSE # id = FALSE to remove point identification
+)
+
+
+
+par(mfrow = c(1, 2)) # combine plots
+
+# histogram
+hist(res_aov_log$residuals)
+
+# QQ-plot
+library(car)
+qqPlot(res_aov_log$residuals,
+       id = FALSE # id = FALSE to remove point identification
+)
+
+
+
+par(mfrow = c(1, 2)) # combine plots
+
+# histogram
+hist(aov.rnk$residuals)
+
+# QQ-plot
+library(car)
+qqPlot(aov.rnk$residuals,
+       id = FALSE # id = FALSE to remove point identification
+)
+
+plot(aov.rnk, 1, main = "Rank-Transformed")
+
+
+library(emmeans)
+emmeans(aov.rnk, pairwise ~ time_chunk | species)
+
+em_out_category <- emmeans(aov.rnk,  ~time_chunk | species) 
+print(em_out_category)
+
+em_out_category %>% 
+  pairs() %>% 
+  test(joint = TRUE)
+
+library(multcomp)
+summary(glht(aov.rnk, linfct = mcp(species = "Tukey")))
+
+install.packages("ARTool")
+library(ARTool)
+coho_20m_analysis$time_chunk <- as.factor(coho_20m_analysis$time_chunk)
+coho_20m_analysis$species <- as.factor(coho_20m_analysis$species)
+
+art_model <- art(meandnaconc_coho ~ time_chunk +(1|species), data = coho_20m_analysis)
+# Conduct ANOVA on the ART model
+anova_art <- anova(art_model)
+print(anova_art)
+
+summary(anova_art)
+
+marginal = art.con(art_model, "species", interaction = FALSE,adjust="none")
+art_model$formula
+marginal = art.con(art_model, "time_chunk", interaction = FALSE,adjust="none")
+marginal
+Sum = as.data.frame(marginal)
+
+library(rcompanion)
+
+Sum = groupwiseMedian(meandnaconc_coho ~ time_chunk * species,
+                      data=coho_20m_analysis,
+                      R = 5000,
+                      bca=TRUE)
+Sum
+
+
+```

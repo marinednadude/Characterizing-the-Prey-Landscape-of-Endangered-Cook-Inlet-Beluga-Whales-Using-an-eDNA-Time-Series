@@ -1,0 +1,2 @@
+"0",""
+"0","rbind(ogo_table_abund,on_table_abund, omy_table_abund,oke_table_abund,oki_table_abund,ots_table_abund) %>%  knitr::kable()"

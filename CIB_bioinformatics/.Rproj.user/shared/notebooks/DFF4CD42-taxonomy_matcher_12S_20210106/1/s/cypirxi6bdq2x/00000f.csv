@@ -1,0 +1,7 @@
+"0",""
+"0","ASVs_fixed %>% "
+"0","  dplyr::select(-sum.taxonomy) %>% "
+"0","  unite(""sum.taxonomy"", c(""Domain"",""Phylum"",""Class"",""Order"",""Family"",""Genus"",""Species""), remove =F, sep="";"") %>% "
+"0","  dplyr::select(ASV,sum.taxonomy) -> hash.key_updated"
+"0",""
+"0","saveRDS(hash.key_updated, file=here(""data"",""Mock_community_data"",""data"",""mock_sequences"",""hash.key_updated.RDS""))"

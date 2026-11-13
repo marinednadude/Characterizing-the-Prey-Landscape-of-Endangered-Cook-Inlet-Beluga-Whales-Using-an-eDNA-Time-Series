@@ -1,0 +1,8 @@
+"0","Sum %>% 
+    left_join(overlap) %>% 
+  dplyr::select(Period=time_chunk, Taxa=ID_mifish, n, Median, `LCI-0.95` = Bca.lower, `UCI-0.95`=Bca.upper, `Confidence Interval`=Overlap) %>% 
+  arrange(Taxa) %>% 
+  mutate(., ) %>% 
+  kable()
+"
+"2","Joining with `by = join_by(ID_mifish)`"

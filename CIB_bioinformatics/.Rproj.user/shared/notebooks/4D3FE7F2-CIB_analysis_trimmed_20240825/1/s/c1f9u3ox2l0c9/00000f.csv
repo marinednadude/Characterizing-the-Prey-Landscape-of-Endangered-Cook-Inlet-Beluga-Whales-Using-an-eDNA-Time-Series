@@ -1,0 +1,4 @@
+"0",""
+"0","physeq_obj_kenai = prune_taxa(taxa_sums(physeq_obj_kenai) > 0, physeq_obj_kenai) "
+"0","physeq_obj_kenai = prune_samples(sample_sums(physeq_obj_kenai)>0, physeq_obj_kenai) "
+"0",""

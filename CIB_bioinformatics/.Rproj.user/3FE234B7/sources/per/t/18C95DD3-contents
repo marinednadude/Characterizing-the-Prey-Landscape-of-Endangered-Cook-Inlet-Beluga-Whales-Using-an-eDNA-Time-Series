@@ -1,0 +1,18 @@
+
+library(tidyverse)
+library(here)
+read_delim()
+library(openxlsx)
+read_delim(here("~/Documents/GitHub/fishDB-comparison/NEP_share/20241210_Current_NEP_gap_analysis/03_export/NEP_list_FINAL_merge_records.txt"), col_types = "c", na = c("","NA")) -> final_merge
+
+final_merge$Project.Request %>%  unique()
+
+final_merge %>%  
+  filter(., str_detect(Project.Request,"Keister Lab Salish Sea Zooplankton Species List|Newport Hydrographic Line|CalCOFI Zooplankton|EcoFOCI Zooplankton")) %>% 
+  mutate(., Priority = case_when(is.na(parent_NCBI) & is.na(parent_NCBI) &	is.na(accepted_NCBI) &	is.na(subtree_identifier_taxIDs) &	is.na(subtree_accepted_taxIDs) ~"Priority 1: Not in GenBank",
+                                 !is.na(circular_complete_verified_directHits) | !is.na(linear_complete_verified_directHits) | !is.na(linear_complete_verified_subTreeHits) | !is.na(circular_claimComplete_verified_subTreeHits) ~"Full Mitogenome Already Sequenced",
+                                 TRUE ~"Priority 2: No Mitogenome")) %>% 
+  dplyr::select(-subtree_identifier_taxIDs,-subtree_accepted_taxIDs, -high_potential_sra_directHits,-high_potential_sra_subTreeHits,-other_potential_sra_directHits,-other_potential_sra_subTreeHits) %>% 
+  write.xlsx(., file="~/Documents/GitHub/fishDB-comparison/NEP_share/20241210_Current_NEP_gap_analysis/03_export/zooplankton_records2.xlsx")
+
+read.delim("~/Documents/GitHub/fishDB-comparison/NEP_share/20241210_Current_NEP_gap_analysis/03_export/zooplankton_records.txt") -> outc

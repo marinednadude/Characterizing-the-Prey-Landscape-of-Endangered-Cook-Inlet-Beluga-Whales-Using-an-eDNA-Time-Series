@@ -1,0 +1,527 @@
+---
+title: "MiFish Mock Community"
+author: "Zack Gold"
+date: "1/17/2023"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(here)
+library(DECIPHER)
+library(taxonomizr)
+library(taxize)
+
+```
+
+
+```{r}
+mifish_detailed <- read.table(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","twentymile","seqrun2","c19_fishcard_taxonomy_tables","c19_fishcard_ASV_taxonomy_detailed.txt"), sep = "\t", header=TRUE)
+
+ASV_C60 <- read.table(file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","twentymile","seqrun2","c19_fishcard_taxonomy_tables","Summary_by_percent_confidence","60","c19_fishcard_ASV_raw_taxonomy_60.txt"), sep = "\t", header=TRUE)
+
+
+crux_fasta <- readDNAStringSet(file = here("data","eDNA_data","code","taxonomy_fix","CRUX_DB","global_database","Global_.fasta"))
+
+crux_taxonomy <- read.table(file = here("data","eDNA_data","code","taxonomy_fix","CRUX_DB","global_database","Global_taxonomy.txt"), sep="\t")
+
+
+mifish_detailed %>% 
+  filter(., fishcard_seq_number=="merged_c19_fishcard_206") -> n1
+
+n1$sequence
+
+
+```
+
+#Pull ASVS
+
+```{r}
+
+ASV_C60 %>% 
+  mutate(Tot_reads = rowSums(select(., contains("c19_fishcard_")))) %>% 
+  dplyr::select(ASV = fishcard_seq_number,Tot_reads, sum.taxonomy) %>% 
+  tidyr::separate(sum.taxonomy, into = c("Domain","Phylum","Class","Order","Family","Genus","Species"), remove =F, sep=";") %>% 
+  filter(., str_detect(ASV,"merged")) %>% 
+  filter(., !str_detect(ASV,"unmerged"))  -> ASVs_unidentified
+
+```
+
+## Create an alignment for Salmon sequences
+```{r, message=FALSE, warning=FALSE}
+
+crux_taxonomy %>% 
+  dplyr::select(Accession=V1, sum.taxonomy=V2) %>% 
+    separate(sum.taxonomy, into = c("Domain","Phylum","Class","Order","Family","Genus","Species"), remove =F, sep=";") %>% 
+filter(., str_detect(Genus,"Oncorhynchus")) %>% 
+  filter(., Species %in% c("Oncorhynchus tshawytscha","Oncorhynchus nerka","Oncorhynchus gorbuscha",
+                           "Oncorhynchus keta","Oncorhynchus kisutch","Oncorhynchus mykiss","Oncorhynchus clarkii")) %>% 
+  filter(., Accession!="LC091629.1") %>% #dropping questionable O. keta sequence UW 42256
+  unite("Name",c("Accession","Species"), remove=F, sep=":") %>% 
+ dplyr::select(Name, Accession, Species) -> salmon_crux
+
+
+crux_fasta[salmon_crux$Accession] -> salmon_fasta
+
+names(salmon_fasta) <- salmon_crux$Name
+
+# Oncorhynchus
+ASVs_unidentified %>% 
+   filter(., str_detect(Genus,"Oncorhynchus")) -> salmon_asvs
+  
+mifish_detailed %>% 
+  filter(., fishcard_seq_number %in% salmon_asvs$ASV) %>% 
+  dplyr::select(fishcard_seq_number,sequence) -> salmon_seqs
+
+selected_sequences <- salmon_seqs$sequence
+
+names(selected_sequences) <- salmon_seqs$fishcard_seq_number
+DNAStringSet(selected_sequences) -> salmon_string
+
+c(salmon_string,salmon_fasta) -> all_the_salmon
+#Align the sequences directly without translation
+DNA_salmon <- AlignSeqs(all_the_salmon) 
+
+BrowseSeqs(DNA_salmon,highlight=0)
+
+d <- DistanceMatrix(DNA_salmon, correction="none", verbose=FALSE)
+c <- TreeLine(myDistMatrix=d, method="UPGMA", cutoff=.01, showPlot=TRUE, verbose=FALSE)
+
+clusters <- Clusterize(all_the_salmon, cutoff=(1/186), invertCenters=FALSE)
+
+apply(clusters, 2, function(x) max(abs(x))) # number of clusters
+
+clusters %>% arrange(cluster)
+```
+
+
+```{r}
+
+clusters %>% 
+  add_rownames(., var = "Name") %>% 
+  separate(Name, into=c("ASV","Reference"), sep = ":") %>% 
+  arrange(cluster) %>% 
+  distinct() -> cluster_IDS
+
+
+clusters %>% 
+  add_rownames(., var = "Name") %>% 
+  separate(Name, into=c("ASV","Reference"), sep = ":") %>% 
+  arrange(cluster) %>% 
+  dplyr::select(cluster,Reference) %>% 
+  distinct() -> cluster_IDS_distinct
+
+cluster_IDS_distinct %>% 
+   filter(., !is.na(Reference)) %>% 
+  group_by(cluster) %>% summarise(n=sum(n())) %>% filter(n>1) -> duplicate_reference_cluster
+
+cluster_IDS_distinct %>% 
+   filter(., !is.na(Reference)) %>% 
+  filter(., !cluster %in% duplicate_reference_cluster$cluster) %>% 
+  dplyr::select(cluster, Species = Reference)-> cluster_based_trust_worthy_salmon_IDS
+
+clusters %>% 
+  add_rownames(., var = "Name") %>% 
+  separate(Name, into=c("ASV","Reference"), sep = ":") %>% 
+  filter(., is.na(Reference))  -> salmon_asvs_need_ID
+
+salmon_string[salmon_asvs_need_ID$ASV] -> salmon_asvs_need_ID_seqs
+
+#low reads for these assignments
+salmon_asvs_need_ID %>% 
+  left_join(salmon_asvs)
+
+names(salmon_asvs_need_ID_seqs)
+writeXStringSet(salmon_asvs_need_ID_seqs, file=here("data","eDNA_data","code","taxonomy_fix","ASVs_to_be_blasted","seqrun2_salmon_asvs_need_ID_seqs.fasta"))
+```
+
+
+
+```{r}
+blast_salmon <- read.csv(file = here("data","eDNA_data","code","taxonomy_fix","blast_alignments","VU3TEA1W016-Alignment-HitTable.csv"), header = FALSE)
+ 
+
+colnames(blast_salmon) <- c("ASV","Accession", "perc_identity", "alignment_length", "mismatches", "gap_opens", "q.start", "q.end", "s.start", "s.end", "evalue", "bit_score")
+
+crux_taxonomy %>%
+  dplyr::select(Accession=V1, sum.taxonomy=V2) %>% 
+  add_row(Accession = "NC_002980.1", sum.taxonomy = "Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus tshawytscha") %>% 
+  add_row(Accession = "NC_017838.1", sum.taxonomy = "Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus keta") -> crux_taxonomy_2
+
+blast_salmon %>% 
+  left_join(crux_taxonomy_2) -> holder4
+  
+holder4 %>% 
+  filter(., is.na(sum.taxonomy)) %>% 
+  ungroup() %>% 
+  dplyr::select(Accession) %>% 
+  distinct() -> accessions_on_genbank_not_in_crux
+
+# This is 80GB. Left the hard coded path so that folks know they have to DL themselves.
+taxonomizr::accessionToTaxa(accessions_on_genbank_not_in_crux$Accession, sqlFile="/Users/zgold/Documents/PMEL/bioinformatics/taxonomizr/accessionTaxa.sql") -> new_salmon_accessions
+
+getTaxonomy(new_salmon_accessions,"/Users/zgold/Documents/PMEL/bioinformatics/taxonomizr/accessionTaxa.sql") -> new_salmon_taxonomy
+
+new_salmon_taxonomy %>% 
+  as_tibble() %>% 
+  mutate(., IDs = new_salmon_accessions) %>% 
+  unite("sum.taxonomy",superkingdom,
+phylum,
+class,
+order,
+family,
+genus,
+species, sep=";") -> new_salmon_taxonomy
+
+accessions_on_genbank_not_in_crux %>% 
+  mutate(., IDs = new_salmon_accessions) %>% 
+  left_join(new_salmon_taxonomy) %>% 
+  distinct() %>% dplyr::select(Accession, sum.taxonomy) -> not_in_crux_Id
+
+not_in_crux_Id %>% 
+  filter(., sum.taxonomy!="NA;NA;NA;NA;NA;NA;NA") -> not_in_crux_Id_fix
+
+
+not_in_crux_Id %>% 
+  filter(., sum.taxonomy=="NA;NA;NA;NA;NA;NA;NA")  -> tester
+
+genbank2uid(tester$Accession) -> test2
+
+test2 %>% as_tibble(.name_repair ="unique") -> wide
+
+wide %>% 
+   unlist(., use.names=FALSE) -> longer
+
+ncbi_get_taxon_summary(longer) -> longer_tax
+dim(longer_tax)
+
+# tibble(uid=longer, tester$Accession) %>% 
+#   left_join(longer_tax) %>% 
+#   distinct() %>% 
+#   filter(., is.na(name)) -> missing_tax
+# 
+# ncbi_get_taxon_summary(missing_tax$uid) -> longer_tax_2
+# 
+tibble(uid=longer, tester$Accession) %>%
+  left_join(longer_tax) %>%
+  #left_join(longer_tax_2) %>%
+  distinct() %>%
+  filter(., !is.na(name)) -> good_ids
+# 
+# tibble(uid=longer, tester$Accession) %>% 
+#   left_join(longer_tax) %>% 
+#   left_join(longer_tax_2) %>% 
+#   distinct() %>% 
+#   filter(., is.na(name)) %>% 
+#   mutate(., name = c("Salvelinus sp. 7 sensu", "Salvelinus sp. 7", "Melanitta stejnegeri","Marinobacter sp. M5B strain M5B10.3.1"),
+#          rank = "species") -> missing_manual
+#   
+#rbind(good_ids, missing_manual) %>%
+
+good_ids %>%
+  mutate(., name = if_else(name =="Oncorhynchus mykiss nelsoni","Oncorhynchus mykiss",name)) %>%
+  dplyr::select(Accession=`tester$Accession`, Species=name) %>%  separate(Species, into=c("Genus","Species_epithet"), sep=" ", remove=F) -> named_accessions
+
+
+not_in_crux_Id %>% 
+      separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";", remove=F) %>% 
+  filter(., sum.taxonomy!="NA;NA;NA;NA;NA;NA;NA") %>% 
+  dplyr::select(-Accession) -> clean_tax
+
+crux_taxonomy_2 %>% 
+      separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";", remove=F) %>% 
+  dplyr::select(-Accession) -> clean_tax_crux
+
+named_accessions %>% 
+  left_join(clean_tax) %>% 
+  filter(., !is.na(sum.taxonomy)) %>% 
+  dplyr::select(Accession, sum.taxonomy) %>% distinct() -> named_accessions_clean
+
+named_accessions %>% 
+  left_join(clean_tax) %>% 
+  filter(., is.na(sum.taxonomy)) %>% 
+  dplyr::select(Accession, Genus) -> genera_helper
+
+genera_helper %>% 
+   left_join(clean_tax) %>% 
+  filter(., !is.na(sum.taxonomy)) %>% 
+   dplyr::select(Accession, Domain, Phylum, Class, Order, Family, Genus) %>%  distinct() %>% 
+  left_join(named_accessions) %>% 
+    unite("sum.taxonomy",Domain,
+Phylum,
+Class,
+Order,
+Family,
+Genus,
+Species, sep=";") %>% 
+dplyr::select(-Species_epithet) %>%  distinct() -> accession_with_crux_genera_fixed
+
+genera_helper %>%
+   left_join(clean_tax) %>%
+  filter(., is.na(sum.taxonomy)) -> still_bad
+# 
+# getId(still_bad$Genus, "/Users/zgold/Documents/PMEL/bioinformatics/taxonomizr/accessionTaxa.sql") -> ids_still_bad
+# 
+# getTaxonomy(ids_still_bad, "/Users/zgold/Documents/PMEL/bioinformatics/taxonomizr/accessionTaxa.sql") -> taxonomy_still_bad_fix
+# 
+# taxonomy_still_bad_fix %>% 
+#  as_tibble() %>% 
+#   mutate(., Accession = still_bad$Accession) %>% 
+#   dplyr::select(-species) -> new_taxonomy_still_bad_fix
+# 
+# new_taxonomy_still_bad_fix %>% 
+#    left_join(named_accessions) %>% 
+#     unite("sum.taxonomy",superkingdom,
+# phylum,
+# class,
+# order,
+# family,
+# genus,
+# Species, sep=";") %>% 
+# dplyr::select(Accession, sum.taxonomy,-Species_epithet, -Genus) %>%  distinct() -> accession_without_crux_genera_fixed
+
+intersect(not_in_crux_Id_fix$Accession,accession_with_crux_genera_fixed$Accession)
+#intersect(accession_without_crux_genera_fixed$Accession,accession_with_crux_genera_fixed$Accession)
+
+# rbind(not_in_crux_Id_fix, accession_with_crux_genera_fixed, accession_without_crux_genera_fixed, named_accessions_clean ) -> accessions_cleaned
+
+rbind(not_in_crux_Id_fix, accession_with_crux_genera_fixed, named_accessions_clean ) -> accessions_cleaned
+
+crux_taxonomy_2 %>% 
+  filter(., !Accession %in% accessions_cleaned$Accession) %>% 
+  rows_append(accessions_cleaned) %>% 
+  distinct()-> crux_taxonomy_3
+
+crux_taxonomy_3 %>% 
+   filter(., sum.taxonomy=="NA;NA;NA;NA;NA;NA;NA") 
+```
+```{r}
+
+blast_salmon %>% 
+  left_join(crux_taxonomy_3) %>% 
+  filter(., !is.na(sum.taxonomy)) %>% 
+ mutate(., sum.taxonomy= if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus kawamurae","Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus nerka",sum.taxonomy )) %>% 
+  group_by(ASV) %>% 
+  nest() %>% 
+  mutate (slice = purrr::map(data, 
+                                     function(.x){
+                                       .x %>%
+                                         ungroup() %>% 
+                                         filter(.,  perc_identity>99) %>% 
+                                         head(n=3)
+                                     })) %>% 
+  mutate (ID = purrr::map(slice, 
+                                     function(.x){
+                                       .x %>%
+                                         ungroup() %>% 
+                                         dplyr::select(sum.taxonomy) %>% 
+                                         distinct()
+                                     })) -> lol
+
+
+blast_salmon %>% 
+  left_join(crux_taxonomy_3) %>% 
+  filter(., !is.na(sum.taxonomy)) %>% 
+  filter(., ASV=="merged_c19_fishcard_303") %>% 
+ mutate(., sum.taxonomy= if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus kawamurae","Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Oncorhynchus;Oncorhynchus nerka",sum.taxonomy )) %>%  # O. kawamurae is a landlocked Japanese trout that is with 100% certainty not in our data.
+  group_by(ASV) %>% 
+  nest() %>% 
+  mutate (slice = purrr::map(data, 
+                                     function(.x){
+                                       .x %>%
+                                         ungroup() %>% 
+                                         filter(.,  perc_identity == 100) %>% 
+                                         head(n=3)
+                                     })) %>% 
+  mutate (ID = purrr::map(slice, 
+                                     function(.x){
+                                       .x %>%
+                                         ungroup() %>% 
+                                         dplyr::select(sum.taxonomy) %>% 
+                                         distinct()
+                                     })) -> lol_perf
+
+
+lol %>% 
+  dplyr::select(ASV,ID) %>% 
+  unnest() -> salmon_ids
+
+
+lol_perf %>% 
+  dplyr::select(ASV,ID) %>% 
+  unnest() -> salmon_ids_perf
+
+
+salmon_ids %>% 
+  filter(., !ASV %in% salmon_ids_perf$ASV) -> salmon_ids_99
+
+
+rbind(salmon_ids_99, salmon_ids_perf) -> salmon_ids_top
+
+salmon_ids_top %>% 
+  arrange(ASV) %>% 
+  group_by(ASV)  %>% 
+  nest() %>% 
+  mutate(data = purrr::map(data,  function(.x){
+    .x %>%
+      ungroup() %>% 
+      mutate(idx= match(sum.taxonomy, unique(sum.taxonomy))) %>% 
+      separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";", remove=F) %>% 
+      pivot_wider(names_from = idx, values_from = c(sum.taxonomy, Domain,Phylum,Order,Class, Family, Genus, Species),  names_glue = "{.value}:{idx}" ) %>% 
+      rowwise %>% 
+      mutate(Same_Species = n_distinct(unlist(across(starts_with('Species'), 
+                                                     ~ as.character(.x)))) == 1,
+             Same_Genus = n_distinct(unlist(across(starts_with('Genus'), 
+                                                   ~ as.character(.x)))) == 1,
+             Same_Family = n_distinct(unlist(across(starts_with('Family'), 
+                                                    ~ as.character(.x)))) == 1,
+             Same_Class = n_distinct(unlist(across(starts_with('Class'), 
+                                                   ~ as.character(.x)))) == 1,
+             Same_Order = n_distinct(unlist(across(starts_with('Order'), 
+                                                   ~ as.character(.x)))) == 1,
+             Same_Phylum = n_distinct(unlist(across(starts_with('Phylum'), 
+                                                    ~ as.character(.x)))) == 1,
+             Same_Domain = n_distinct(unlist(across(starts_with('Domain'), 
+                                                    ~ as.character(.x)))) == 1) %>%
+      ungroup() %>% 
+      mutate(., lca_taxonomic_path = case_when(Same_Species==TRUE ~ `sum.taxonomy:1`,
+                                               Same_Domain==FALSE ~ paste0(";",";",";",";",";",";"),
+                                               Same_Phylum==FALSE ~ paste0(`Domain:1`,";",";",";",";",";",";"),
+                                               Same_Order==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",";",";",";",";"),
+                                               Same_Class==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",`Order:1`,";",";",";",";"),
+                                               Same_Family==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",`Order:1`,";",`Class:1`,";",";",";"),
+                                               Same_Genus==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",`Order:1`,";",`Class:1`,";",`Family:1`,";",";"),
+                                               Same_Species==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",`Order:1`,";",`Class:1`,";",`Family:1`,";",`Genus:1`,";"),
+                                               TRUE ~"weird")) })) %>% 
+  unnest() %>% group_by(ASV,lca_taxonomic_path) %>% 
+  nest() -> asv_blast_lca_ids
+
+
+
+asv_blast_lca_ids %>%  dplyr::select(ASV, lca_taxonomic_path)-> blast_top_3_lca_assignments
+
+write_excel_csv(blast_top_3_lca_assignments, file=here("data","eDNA_data","code","taxonomy_fix","tax_out","seqrun2_blast_top_3_lca_assignments_salmon.csv"))
+
+  
+
+```
+
+
+```{r}
+
+cluster_IDS %>% 
+  filter(., is.na(Reference)) %>% 
+  left_join(salmon_ids_top) %>% 
+  dplyr::select(ASV, cluster, sum.taxonomy) ->  cluster_IDS_asvs
+  
+cluster_IDS %>% 
+    filter(., !is.na(Reference)) %>% 
+  left_join(crux_taxonomy_3, by=c("ASV"="Accession")) %>% 
+  dplyr::select(ASV, cluster, sum.taxonomy) ->  cluster_IDS_reference
+
+rbind(cluster_IDS_asvs,cluster_IDS_reference) %>% 
+  ungroup() %>% 
+  arrange(cluster) %>% 
+  dplyr::select(-ASV) %>% 
+  distinct() %>% 
+  group_by(cluster)  %>% 
+  nest() %>% 
+  mutate(data = purrr::map(data,  function(.x){
+    .x %>%
+      ungroup() %>% 
+      mutate(idx= match(sum.taxonomy, unique(sum.taxonomy))) %>% 
+      separate(sum.taxonomy, into=c("Domain","Phylum","Class","Order","Family","Genus","Species"), sep=";", remove=F) %>% 
+      pivot_wider(names_from = idx, values_from = c(sum.taxonomy, Domain,Phylum,Order,Class, Family, Genus, Species),  names_glue = "{.value}:{idx}" ) %>% 
+      rowwise %>% 
+      mutate(Same_Species = n_distinct(unlist(across(starts_with('Species'), 
+                                                     ~ as.character(.x)))) == 1,
+             Same_Genus = n_distinct(unlist(across(starts_with('Genus'), 
+                                                   ~ as.character(.x)))) == 1,
+             Same_Family = n_distinct(unlist(across(starts_with('Family'), 
+                                                    ~ as.character(.x)))) == 1,
+             Same_Class = n_distinct(unlist(across(starts_with('Class'), 
+                                                   ~ as.character(.x)))) == 1,
+             Same_Order = n_distinct(unlist(across(starts_with('Order'), 
+                                                   ~ as.character(.x)))) == 1,
+             Same_Phylum = n_distinct(unlist(across(starts_with('Phylum'), 
+                                                    ~ as.character(.x)))) == 1,
+             Same_Domain = n_distinct(unlist(across(starts_with('Domain'), 
+                                                    ~ as.character(.x)))) == 1) %>%
+      ungroup() %>% 
+      mutate(., lca_taxonomic_path = case_when(Same_Species==TRUE ~ `sum.taxonomy:1`,
+                                               Same_Domain==FALSE ~ paste0(";",";",";",";",";",";"),
+                                               Same_Phylum==FALSE ~ paste0(`Domain:1`,";",";",";",";",";",";"),
+                                               Same_Order==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",";",";",";",";"),
+                                               Same_Class==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",`Order:1`,";",";",";",";"),
+                                               Same_Family==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",`Order:1`,";",`Class:1`,";",";",";"),
+                                               Same_Genus==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",`Order:1`,";",`Class:1`,";",`Family:1`,";",";"),
+                                               Same_Species==FALSE ~ paste0(`Domain:1`,";",`Phylum:1`,";",`Order:1`,";",`Class:1`,";",`Family:1`,";",`Genus:1`,";"),
+                                               TRUE ~"weird")) })) %>% 
+  unnest() %>% group_by(cluster,lca_taxonomic_path) %>% 
+  nest()  -> lca_ids_cluster
+
+cluster_IDS_asvs %>% 
+left_join(lca_ids_cluster) %>%  dplyr::select(ASV, lca_taxonomic_path_cluster=lca_taxonomic_path) %>% 
+  filter(., ASV %in% blast_top_3_lca_assignments$ASV) %>% distinct() -> cluster_3_lca_assignments
+
+write_excel_csv(cluster_3_lca_assignments, file=here("data","eDNA_data","code","taxonomy_fix","tax_out","seqrun2_cluster_3_lca_assignments_salmon.csv"))
+
+blast_top_3_lca_assignments %>% 
+  left_join(cluster_3_lca_assignments) %>% 
+  mutate(., Match = if_else(lca_taxonomic_path==lca_taxonomic_path_cluster,"Same","Different")) %>% 
+  filter(., Match =="Different")
+#all IDs are the same
+```
+
+## Sanity Check
+
+```{r}
+cluster_IDS %>% 
+  filter(., is.na(Reference)) %>% 
+  left_join(cluster_based_trust_worthy_salmon_IDS) %>% 
+    filter(., !is.na(Species)) %>% 
+  left_join(blast_top_3_lca_assignments) %>% 
+  left_join(cluster_3_lca_assignments) 
+
+# The cluster based algorithm for merged_c19_fishcard_60 is incorrect, will use the exact match LCA
+
+```
+
+```{r}
+
+ASVs_unidentified %>% 
+  filter(., !ASV %in% blast_top_3_lca_assignments$ASV) %>% 
+  dplyr::select(-Tot_reads) -> ASVs_unidentified_not_salmon
+
+colnames(ASVs_unidentified_not_salmon)
+
+ASVs_unidentified %>% 
+  filter(., ASV %in% blast_top_3_lca_assignments$ASV) %>% 
+  left_join(blast_top_3_lca_assignments, by=c("ASV")) %>% 
+  dplyr::select(ASV, sum.taxonomy=lca_taxonomic_path) %>% 
+  tidyr::separate(sum.taxonomy, into = c("Domain","Phylum","Class","Order","Family","Genus","Species"), remove =F, sep=";") -> ASVs_unidentified_salmon
+
+rbind(ASVs_unidentified_not_salmon, ASVs_unidentified_salmon) -> ASVs_fixed
+
+ASVs_fixed %>% 
+  dplyr::select(seq_number=ASV,sum.taxonomy) -> hash.key_updated
+
+hash.key_updated %>% 
+  mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Gadiformes;Gadidae;Gadus;Gadus chalcogrammus","Eukaryota;Chordata;Actinopteri;Gadiformes;Gadidae;Gadus;",sum.taxonomy)) %>% 
+    mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Gadiformes;Gadidae;Gadus;Gadus macrocephalus","Eukaryota;Chordata;Actinopteri;Gadiformes;Gadidae;Gadus;",sum.taxonomy)) %>% 
+    mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Gadiformes;Gadidae;Gadus;Gadus morhua","Eukaryota;Chordata;Actinopteri;Gadiformes;Gadidae;Gadus;",sum.taxonomy)) %>% 
+   mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Perciformes;Cottidae;Cottus;Cottus pollux","Eukaryota;Chordata;Actinopteri;Perciformes;Cottidae;Cottus;",sum.taxonomy)) %>% 
+ mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Perciformes;Cottidae;Cottus;Cottus sp. OGA-1","Eukaryota;Chordata;Actinopteri;Perciformes;Cottidae;Cottus;",sum.taxonomy)) %>% 
+  mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Salvelinus;","Eukaryota;Chordata;Actinopteri;Salmoniformes;Salmonidae;Salvelinus;Salvelinus malma",sum.taxonomy)) %>% 
+  mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Perciformes;Gasterosteidae;Pungitius;","Eukaryota;Chordata;Actinopteri;Perciformes;Gasterosteidae;Pungitius;Pungitius pungitius",sum.taxonomy)) %>% 
+  mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Pleuronectiformes;Pleuronectidae;Hippoglossus;","Eukaryota;Chordata;Actinopteri;Pleuronectiformes;Pleuronectidae;Hippoglossus;Hippoglossus stenolepis",sum.taxonomy)) %>% 
+  mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Pleuronectiformes;Pleuronectidae;;","Eukaryota;Chordata;Actinopteri;Pleuronectiformes;Pleuronectidae;Platichthys;Platichthys stellatus",sum.taxonomy)) %>% 
+  mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Mammalia;Cingulata;Chlamyphoridae;;","Eukaryota;Chordata;Mammalia;Rodentia;Castoridae;Castor;Castor canadensis",sum.taxonomy)) %>% 
+  mutate(., sum.taxonomy=if_else(sum.taxonomy=="Eukaryota;Chordata;Actinopteri;Osmeriformes;Osmeridae;;","Eukaryota;Chordata;Actinopteri;Osmeriformes;Osmeridae;Thaleichthys;Thaleichthys pacificus",sum.taxonomy)) -> hash.key_updated
+
+
+saveRDS(hash.key_updated, file=here("data","eDNA_data","data","Anacapa_processed_sequence_data","twentymile","seqrun2","decontam","hash.key_updated.RDS"))
+```
+
+

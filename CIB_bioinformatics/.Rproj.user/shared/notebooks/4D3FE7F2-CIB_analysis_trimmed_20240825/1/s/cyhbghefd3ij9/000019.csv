@@ -1,0 +1,11 @@
+"0","combined_data_long_reads_c %>% 
+  filter(Sample %in% beluga_sample_w_problems) %>% 
+  filter(., prop_reads >0.05) %>% 
+  group_by(New_name, sum.taxonomy) %>% 
+  summarise(max(prop_reads)) %>% 
+  arrange(desc(`max(prop_reads)`)) %>% 
+  slice(1)
+"
+"1","[38;5;232m`summarise()` has grouped output by 'New_name'. You can override using
+the `.groups` argument.[39m
+"

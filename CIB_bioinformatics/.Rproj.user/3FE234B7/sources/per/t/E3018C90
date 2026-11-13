@@ -1,0 +1,27 @@
+{
+    "id": "E3018C90",
+    "path": "~/Documents/GitHub/CIB_2021/CIB_bioinformatics/data/qPCR_results/code/qPCR_attempt_20230223.Rmd",
+    "project_path": "data/qPCR_results/code/qPCR_attempt_20230223.Rmd",
+    "type": "r_markdown",
+    "hash": "2114420260",
+    "contents": "",
+    "dirty": false,
+    "created": 1740696794132.0,
+    "source_on_save": false,
+    "relative_order": 22,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "540,26",
+        "scrollLine": "537",
+        "docOutlineVisible": "1"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1794536799,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1794536799240,
+    "read_only": false,
+    "read_only_alternatives": []
+}

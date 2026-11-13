@@ -1,0 +1,283 @@
+---
+title: "Appendix 5 qPCR Anchor Comparisons"
+author: "Zack Gold"
+date: "2024-08-25"
+output: pdf_document
+---
+
+# Relative Importance of Season + Depth + Site on Kenai River
+
+2. In high tidal flow riverine systems, there is minimal added benefit in sampling multiple sites and depths along the river. Thus we strongly **recommend a reallocation of sampling effort, focusing on a single site sampled more frequently**. 
+
+# NMDS + PERMANOVA
+
+# Where Quantitative Metabarcoding Breaks
+3. Our results demonstrate the power of quantitative metabarcoding frameworks for the accurate interpretation of observed eDNA signatures. The framework employed in this study leveraged three data streams 1) qPCR assays which provide absolute abundance estimates, 2) metabarcoding data which provide biased proportional abundances, and 3) mock communities to correct for the amplification biases impacting metabarcoding data. Successful application of these approaches requires:
+    
+      1) qPCR assay(s) targeting the most abundant species observed in eDNA samples, 
+
+      2) Reliable mock community data for target species, and 
+      
+      3) No swamping of metabarcoding signals. 
+
+    Thus, we recommend the application of **additional Sockeye, Pink, and Chum salmon qPCR measurements in addition to Eulachon, Coho, King, and Beluga qPCR assays** as well as a **more comprehensive mock community dataset** to provide valuable insights to inform future quantitative metabarcoding applications identified above.  
+    
+    
+## Swamping Issues
+
+## Detection Issues
+
+### Comparison  ---------------------------------------------------------------------------
+
+```{r}
+library(ggpmisc)
+library(tidyverse)
+library(here)
+library(ggpubr)
+
+chinook_anchor <- readRDS(here("analysis","Output","chinook_anchor_abs_abundance_notflowcorrected.RDS"))
+coho_anchor <- readRDS(here("analysis","Output","coho_anchor_abs_abundance_notflowcorrected.RDS"))
+
+chinook_anchor <- chinook_anchor %>% 
+  dplyr::select(bottle, newtime, creek, station, bio, species, meanpropreads, meanchinookdna, meantotdna_chinook=meantotdna, meandnaconc_chinook=meandnaconc )
+
+coho_anchor <- coho_anchor %>% 
+  dplyr::select(bottle, newtime, creek, station, bio, species, meanpropreads, meancohodna, meantotdna_coho=meantotdna, meandnaconc_coho=meandnaconc )
+
+chinook_anchor %>% 
+  left_join(coho_anchor) -> chinook_coho_combo
+
+```
+
+
+# Total DNA per sample is poorly predicted by concentration of one vs. the other
+```{r}
+
+  chinook_coho_combo %>% 
+  ggplot(aes(x=meantotdna_coho ,y=meantotdna_chinook)) +geom_point() + geom_abline(slope = 1, colour ="red", size=1, linetype=2) +
+  stat_poly_eq(aes(label = paste(after_stat(eq.label),
+                                 after_stat(rr.label), sep = "*\", \"*")), size=8) +  stat_poly_line()  +  theme_pubr()+theme(axis.text.x = element_text(size=16),
+                                                                                   axis.text.y = element_text(size=16),
+                                                                                   axis.title.x = element_text(size=20, face="bold"),
+                                                                                   axis.title.y = element_text(size=20, face="bold")) +
+    xlab("Total DNA Copies per L \n Predicted using Coho as Anchor") + 
+    ylab("Total DNA Copies per L \n Predicted using Chinook as Anchor")  +
+  scale_x_log10(labels = label_comma(), limits=c(10000,300000)) +
+  scale_y_log10(labels = label_comma(), limits=c(10000,300000))
+  
+  
+   ggsave(here("analysis","Figures","Figure_S5.1_Total_DNA_coho_vs_chinook_anchors_all_samples.png"), units="in", width=12, height=8)
+
+```
+
+# Exclude < 5% Total DNA per sample is poorly predicted by concentration of one vs. the other
+```{r}
+chinook_coho_combo %>% 
+  filter(., species=="Oncorhynchus tshawytscha") %>% 
+  filter(., meanpropreads > 0.04) -> chinook_present_0.05
+
+chinook_coho_combo %>% 
+  filter(., species=="Oncorhynchus kisutch") %>% 
+  filter(., meanpropreads > 0.04) -> coho_present_0.05
+
+  chinook_coho_combo %>% 
+    filter(., bottle %in% coho_present_0.05$bottle) %>% 
+        filter(., bottle %in% chinook_present_0.05$bottle) %>% 
+  ggplot(aes(x=meantotdna_coho ,y=meantotdna_chinook)) +geom_point() + geom_abline(slope = 1, colour ="red", size=1, linetype=2) +
+  stat_poly_eq(aes(label = paste(after_stat(eq.label),
+                                 after_stat(rr.label), sep = "*\", \"*")), size=8) +  stat_poly_line()  +  theme_pubr()+theme(axis.text.x = element_text(size=16),
+                                                                                   axis.text.y = element_text(size=16),
+                                                                                   axis.title.x = element_text(size=20, face="bold"),
+                                                                                   axis.title.y = element_text(size=20, face="bold")) +
+    xlab("Total DNA Copies per L \n Predicted using Coho as Anchor") + 
+    ylab("Total DNA Copies per L \n Predicted using Chinook as Anchor")  +
+  scale_x_log10(labels = label_comma(), limits=c(10000,300000)) +
+  scale_y_log10(labels = label_comma(), limits=c(10000,300000))
+  
+  
+   ggsave(here("analysis","Figures","Figure_S5.2_Total_DNA_coho_vs_chinook_anchors.png"), units="in", width=12, height=8)
+
+   chinook_coho_combo %>% 
+    filter(., bottle %in% coho_present_0.05$bottle) %>% 
+        filter(., bottle %in% chinook_present_0.05$bottle) -> chinook_coho_combo_tot
+   
+lm_tot <- lm(meantotdna_chinook~meantotdna_coho, data=chinook_coho_combo_tot)
+summary(lm_tot)
+```
+
+
+
+# Solid predicitive capabilities of using one anchor vs. another
+
+```{r}
+
+chinook_coho_combo %>%
+  ungroup() %>% 
+  #filter(., species !="Thaleichthys pacificus") %>% 
+  ggplot(aes(y=meandnaconc_chinook ,x=meandnaconc_coho)) +geom_point() + geom_abline(slope = 1, colour ="red", size=1, linetype=2) +
+  stat_poly_eq(aes(label = paste(after_stat(eq.label),
+                                 after_stat(rr.label), sep = "*\", \"*")), cex=8) + 
+  stat_poly_line() + 
+  ylab("DNA Copies per L \n Predicted using Chinook as Anchor") +
+    xlab("DNA Copies per L \n Predicted using Coho as Anchor") + theme_pubr()+theme(axis.text.x = element_text(size=16),
+                                                                                   axis.text.y = element_text(size=16),
+                                                                                   axis.title.x = element_text(size=20, face="bold"),
+                                                                                   axis.title.y = element_text(size=20, face="bold"))  +
+  scale_x_log10(labels = label_comma() ) +
+  scale_y_log10(labels = label_comma())
+
+ggsave(here("analysis","Figures","Figure_S5.3_species_predicted_abundance_coho_vs_chinook_anchors.png"), units="in", width=12, height=8)
+```
+
+
+
+```{r}
+chinook_anchor %>%
+  filter(., creek %in% c("Twentymile")) %>% 
+  filter(., species =="Oncorhynchus tshawytscha") %>% 
+    mutate(., `Chinook as Anchor`= "Chinook as Anchor") %>% 
+  ggplot(aes(x = as.Date(newtime))) +
+  geom_point(aes(y = meandnaconc_chinook), color="#a2d2df") +
+  #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))  +
+  facet_grid(.~`Chinook as Anchor`, scales = "free") +
+  labs(x="Date", y="Total Chinook \n DNA Copies per L")  +
+  scale_y_continuous(labels = label_comma(), limits=c(0,25000)) +
+  theme_bw() +theme(legend.position="none",strip.text = element_text(face = "bold", size=16), strip.background = element_rect(fill = "white", color = "black")) +theme(axis.text.x = element_text(size=16),
+                                                                                   axis.text.y = element_text(size=16),
+                                                                                   axis.title.x = element_text(size=20, face="bold"),
+                                                                                   axis.title.y = element_text(size=20, face="bold")) -> plot_1a
+
+coho_anchor %>%
+  filter(., creek %in% c("Twentymile")) %>% 
+  filter(., species =="Oncorhynchus tshawytscha") %>% 
+  mutate(., `Coho as Anchor`= "Coho as Anchor") %>% 
+  ggplot(aes(x = as.Date(newtime))) +
+  geom_point(aes(y = meandnaconc_coho), color="#a2d2df") +
+  #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))  +
+  facet_grid(.~`Coho as Anchor`, scales = "free") +
+  labs(x="Date", y="Total Chinook \n DNA Copies per L")+
+    scale_y_continuous(labels = label_comma(), limits=c(0,25000)) +
+  theme_bw() +theme(legend.position="none", strip.text = element_text(face = "bold", size=16), strip.background = element_rect(fill = "white", color = "black")) +theme(axis.text.x = element_text(size=16),
+                                                                                   axis.text.y = element_text(size=16),
+                                                                                   axis.title.x = element_text(size=20, face="bold"),
+                                                                                   axis.title.y = element_text(size=20, face="bold")) -> plot_1b
+library(patchwork)
+plot_1a +plot_1b+ 
+  plot_layout(ncol = 1, guides = "collect")
+
+ggsave(here("analysis","Figures","Figure_S5.4_20M_chinook_predicted_from_different_anchors.png"), units="in", width=12, height=8)
+```
+
+```{r}
+
+chinook_coho_combo %>% 
+  filter(., species=="Oncorhynchus tshawytscha") %>% 
+  filter(., meanpropreads > 0.00003) -> chinook_present_0.01
+
+chinook_coho_combo %>% 
+  filter(., species=="Oncorhynchus kisutch") %>% 
+  filter(., meanpropreads > 0.00003) -> coho_present_0.01
+
+
+chinook_anchor %>%
+  filter(., creek %in% c("Twentymile")) %>% 
+  filter(., species =="Oncorhynchus kisutch") %>% 
+    mutate(., `Chinook as Anchor`= "Chinook as Anchor") %>% 
+    filter(., bottle %in% chinook_present_0.01$bottle) %>% 
+        filter(., bottle %in% coho_present_0.01$bottle) %>%
+  ggplot(aes(x = as.Date(newtime))) +
+  geom_point(aes(y = meandnaconc_chinook), color="grey50") +
+  #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))  +
+  facet_grid(.~`Chinook as Anchor`, scales = "free") +
+  labs(x="Date", y="Total Coho \n DNA Copies per L")  +
+  scale_y_continuous(labels = label_comma(), limits=c(0,150000)) +
+  theme_bw() +theme(legend.position="none",strip.text = element_text(face = "bold", size=16), strip.background = element_rect(fill = "white", color = "black"))+theme(axis.text.x = element_text(size=16),
+                                                                                   axis.text.y = element_text(size=16),
+                                                                                   axis.title.x = element_text(size=20, face="bold"),
+                                                                                   axis.title.y = element_text(size=20, face="bold"))-> plot_2a
+
+coho_anchor %>%
+  filter(., creek %in% c("Twentymile")) %>% 
+  filter(., species =="Oncorhynchus kisutch") %>% 
+  mutate(., `Coho as Anchor`= "Coho as Anchor") %>% 
+      filter(., bottle %in% chinook_present_0.01$bottle) %>% 
+        filter(., bottle %in% coho_present_0.01$bottle) %>%
+  ggplot(aes(x = as.Date(newtime))) +
+  geom_point(aes(y = meandnaconc_coho), color="grey50") +
+  #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))  +
+  facet_grid(.~`Coho as Anchor`, scales = "free") +
+  labs(x="Date", y="Total Coho \n DNA Copies per L")+
+    scale_y_continuous(labels = label_comma(), limits=c(0,150000)) +
+  theme_bw() +theme(legend.position="none", strip.text = element_text(face = "bold", size=16), strip.background = element_rect(fill = "white", color = "black"))+theme(axis.text.x = element_text(size=16),
+                                                                                   axis.text.y = element_text(size=16),
+                                                                                   axis.title.x = element_text(size=20, face="bold"),
+                                                                                   axis.title.y = element_text(size=20, face="bold")) -> plot_2b
+library(patchwork)
+plot_2a +plot_2b+ 
+  plot_layout(ncol = 1, guides = "collect")
+
+ggsave(here("analysis","Figures","Figure_S5.5_Figure_20M_coho_predicted_from_different_anchors.png"), units="in", width=12, height=8)
+```
+
+### Figure 6.
+```{r,Figure_6_quant_v3, echo=FALSE,message=FALSE,warning=FALSE,fig.align = "center", fig.height = 8, fig.width = 12,out.width = "6.5in"}
+
+library("ggsignif")
+
+chinook_coho_combo %>% 
+  mutate(species = recode_values(species, 
+    "Oncorhynchus gorbuscha" ~ "**Pink** <br> <i>O. gorbuscha<i>",
+    "Oncorhynchus keta" ~ "**Chum** <br> <i>O. keta<i>",
+     "Oncorhynchus kisutch" ~ "**Coho** <br> <i>O. kisutch<i>",
+     "Oncorhynchus nerka" ~ "**Sockeye** <br> <i>O. nerka<i>",
+     "Oncorhynchus tshawytscha" ~ "**King** <br> <i>O. tshawytscha<i>"  )) %>%
+  filter(., creek %in% c("Twentymile")) %>% 
+  mutate(., newtime = str_sub(newtime,start=1L,end=-4L ),
+         newtime= str_replace(newtime, "21","2021"),
+         Sample_date = as.Date(newtime)) %>% 
+  mutate(time_chunk = case_when(Sample_date < '2021-08-16' ~"Before",
+    Sample_date > "2021-10-21" ~"After",
+    TRUE ~"During")) %>% 
+  filter(., time_chunk != "After") %>% 
+ mutate(., Units ="copies/L") %>% 
+  filter(., meandnaconc_chinook < 500000) -> chinook_coho_combo_2
+
+chinook_coho_combo_2$species <- factor(chinook_coho_combo_2$species, levels = c("**Pink** <br> <i>O. gorbuscha<i>","**Chum** <br> <i>O. keta<i>","**Coho** <br> <i>O. kisutch<i>","**Sockeye** <br> <i>O. nerka<i>","**King** <br> <i>O. tshawytscha<i>"))
+  
+my_comparisons <- list( c("Before", "During"))
+library(ggtext)
+
+chinook_coho_combo_2 %>% 
+  ggplot(aes(x = time_chunk, colour = species, y = meandnaconc_chinook)) +
+  geom_boxplot(aes(fill=species), alpha=0.1) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.2),shape = 1) +scale_color_manual(values = c("#efb28c","#fa8775","grey50","#5f865f","#a2d2df")) +scale_fill_manual(values = c("#efb28c","#fa8775","grey50","#5f865f","#a2d2df")) +facet_wrap(.~species, nrow=1)   +
+    labs(x="Period of Beluga Whale Occupancy", y="Estimated DNA copies / L") +
+  theme_pubr()  +theme(legend.position = "none",
+strip.text = element_markdown(size = 18, face = "plain"), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "grey50"),
+panel.background = element_blank(), axis.text = element_text(size=18), axis.title.x = element_text(size=24, face = "bold", vjust =  0.5), axis.title.y = element_text(size=24, face = "bold", vjust = 1.5)) + 
+  stat_compare_means(comparisons = my_comparisons, 
+ label="p.signif",  size = 10, color="black") +
+  scale_y_continuous(labels = comma, limits=c(0,150000)) -> Figure_chinook_anchor
+  
+  
+Figure_chinook_anchor$layers[[3]]$aes_params$fontface <- "bold"
+
+Figure_chinook_anchor
+ 
+ggsave(file = here::here("analysis", "figures", "Figure_S5.6_chinook_anchor.png"),
+  width = 12,
+  height = 8
+  )
+
+```
+
+```{r}
+chinook_coho_combo %>% 
+  group_by(species) %>% 
+  dplyr::summarise(mean(meanpropreads), sd(meanpropreads),min(meanpropreads), max(meanpropreads))
+
+```
+
+
+    
+    

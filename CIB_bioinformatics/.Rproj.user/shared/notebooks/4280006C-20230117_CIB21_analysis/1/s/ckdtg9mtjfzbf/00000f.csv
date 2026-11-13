@@ -1,0 +1,4 @@
+"0",""
+"0","physeq_obj = prune_taxa(taxa_sums(physeq_obj) > 0, physeq_obj) "
+"0","physeq_obj = prune_samples(sample_sums(physeq_obj)>0, physeq_obj) "
+"0",""

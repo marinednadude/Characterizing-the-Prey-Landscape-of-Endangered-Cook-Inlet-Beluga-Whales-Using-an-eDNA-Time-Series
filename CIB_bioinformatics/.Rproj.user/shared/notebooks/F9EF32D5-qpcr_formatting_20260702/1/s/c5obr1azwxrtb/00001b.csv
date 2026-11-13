@@ -1,0 +1,8 @@
+"0",""
+"0",""
+"0","#   qPCR_AK_data %>% "
+"0","#   filter(., Plate==""20m_1a"") %>% "
+"0","#  filter(., Project == ""Passive"")  %>% "
+"0","#   dplyr::select(Well) %>%  distinct() -> remove_passive"
+"0","# "
+"0","# saveRDS(remove_passive, file=here(""remove_passive.RDS""))"

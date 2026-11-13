@@ -1,0 +1,9 @@
+"0","qPCR_4_species$New_name_no_tech %>%  unique() %>%  length()
+
+qPCR_4_species %>% 
+  group_by(., `Target Name`) %>% 
+  filter(., mean_dnacopy_L > 0 ) %>% 
+  dplyr::summarise(mean(mean_dnacopy_L), max(mean_dnacopy_L), sd(mean_dnacopy_L), n_distinct(New_name_no_tech))
+  "
+"2","/bin/sh: r.qPCR: command not found
+"
