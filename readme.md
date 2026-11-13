@@ -21,10 +21,7 @@ leucas*), Eulachon (*Thaleichthys pacificus*), and King salmon
 Here we follow the workflow laid out in Andruszkiewicz Allan et al. 2023
 (Allan et al. 2023).
 
-<figure>
-<img src="./Flowchart_gold_beluga_analysis_2.jpg" alt="image" />
-<figcaption aria-hidden="true">image</figcaption>
-</figure>
+![Flowchart](https://github.com/marinednadude/Characterizing-the-Prey-Landscape-of-Endangered-Cook-Inlet-Beluga-Whales-Using-an-eDNA-Time-Series/blob/main/CIB_bioinformatics/Flowchart_gold_beluga_analysis_2.jpg)
 
 **Figure 2.** Workflow diagram of quantitative metabarcoding approach.
 
