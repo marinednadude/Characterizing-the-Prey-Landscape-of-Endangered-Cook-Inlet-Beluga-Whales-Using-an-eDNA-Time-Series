@@ -2,7 +2,7 @@
 title: "Cook Inlet Beluga Readme File"
 author: "Zack Gold"
 date: "2026-11-12"
-output: github_document
+output: pdf_document
 bibliography: export-data.bib
 ---
 
