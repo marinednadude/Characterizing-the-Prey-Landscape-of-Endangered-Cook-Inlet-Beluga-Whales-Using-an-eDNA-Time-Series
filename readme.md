@@ -3,7 +3,8 @@ Cook Inlet Beluga Readme File
 Zack Gold
 2026-11-12
 
-# [FULL DATA DOWNLOAD AVAILABLE ON ZENODO. THIS IS MISSING LARGE FILES](https://doi.org/10.5281/zenodo.24183095)
+#### [FULL DATA DOWNLOAD AVAILABLE ON ZENODO. THIS GitHub Repo is missing large data files](https://doi.org/10.5281/zenodo.24183095)
+#### [Zenodo GitHub Repo](https://doi.org/10.5281/zenodo.24293520)
 
 # Workflow
 
