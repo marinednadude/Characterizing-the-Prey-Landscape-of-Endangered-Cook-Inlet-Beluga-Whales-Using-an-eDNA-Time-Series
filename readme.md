@@ -3,6 +3,8 @@ Cook Inlet Beluga Readme File
 Zack Gold
 2026-11-12
 
+# [FULL DATA DOWNLOAD AVAILABLE ON ZENODO. THIS IS MISSING LARGE FILES](https://doi.org/10.5281/zenodo.24183095)
+
 # Workflow
 
 To generate quantitative metabarcoding we are integrating multiple
